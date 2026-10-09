@@ -99,11 +99,13 @@ def proxy_pdf(url: str = Query(..., description="OpenParlData PDF file URL")):
     try:
         resp = requests.get(url, stream=True, timeout=30)
         resp.raise_for_status()
-        content_type = resp.headers.get("content-type", "application/pdf")
         return StreamingResponse(
             io.BytesIO(resp.content),
-            media_type=content_type,
-            headers={"Content-Disposition": "inline"}
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": 'inline; filename="document.pdf"',
+                "Content-Type": "application/pdf"
+            }
         )
     except Exception as e:
         logger.error(f"Error proxying PDF from {url}: {e}")

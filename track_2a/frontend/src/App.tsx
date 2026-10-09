@@ -26,6 +26,26 @@ function getText(val: any): string {
   return String(val);
 }
 
+/**
+ * Normalizes documents from an affair into a clean array
+ */
+function getAffairDocs(affair: any): DocumentItem[] {
+  if (!affair || !affair.docs) return [];
+  const rawList = Array.isArray(affair.docs)
+    ? affair.docs
+    : (Array.isArray(affair.docs?.data) ? affair.docs.data : []);
+
+  return rawList
+    .map((d: any) => ({
+      id: d.id,
+      title: d.name || d.title || `Doc #${d.id}`,
+      url: d.url_oparl || d.url || '',
+      type: d.type || 'pdf',
+      date: d.date,
+    }))
+    .filter((d: any) => Boolean(d.url));
+}
+
 export function App() {
   const [bodyKey, setBodyKey] = useState<string>('ZH');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -41,46 +61,48 @@ export function App() {
     setErrorMsg(null);
     try {
       const params = new URLSearchParams({
-      body_key: bodyKey,
-      search_mode: searchMode,
-      limit: '10',
-      expand: 'docs',
-    });
-    if (searchQuery.trim()) {
-      params.append('search', searchQuery.trim());
-    }
+        body_key: bodyKey,
+        search_mode: searchMode,
+        limit: '10',
+        expand: 'docs',
+      });
+      if (searchQuery.trim()) {
+        params.append('search', searchQuery.trim());
+      }
 
-    const response = await fetch(`/api/affairs?${params.toString()}`);
-    if (!response.ok) {
-      throw new Error(`API returned HTTP ${response.status}: ${response.statusText}`);
-    }
-    const result = await response.json();
-    const dataList = result.data || [];
-    setAffairs(dataList);
-    if (dataList.length > 0) {
-      setSelectedAffairId(dataList[0].id);
-      // Auto-select first doc if available
-      const firstDoc = dataList[0].docs?.[0];
-      if (firstDoc) {
-        setActiveDoc(firstDoc);
+      const response = await fetch(`/api/affairs?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error(`API returned HTTP ${response.status}: ${response.statusText}`);
+      }
+      const result = await response.json();
+      const dataList = result.data || [];
+      setAffairs(dataList);
+      if (dataList.length > 0) {
+        // Find first affair with documents
+        const firstWithDocs = dataList.find((a: any) => getAffairDocs(a).length > 0) || dataList[0];
+        setSelectedAffairId(firstWithDocs.id);
+        const docs = getAffairDocs(firstWithDocs);
+        if (docs.length > 0) {
+          setActiveDoc(docs[0]);
+        } else {
+          setActiveDoc(null);
+        }
       } else {
+        setSelectedAffairId(null);
         setActiveDoc(null);
       }
-    } else {
-      setSelectedAffairId(null);
-      setActiveDoc(null);
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Failed to fetch affairs');
+    } finally {
+      setLoading(false);
     }
-  } catch (err: any) {
-    setErrorMsg(err.message || 'Failed to fetch affairs');
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const handleSelectAffair = (affair: ParliamentaryAffairItem) => {
     setSelectedAffairId(affair.id);
-    if (affair.docs && affair.docs.length > 0) {
-      setActiveDoc(affair.docs[0]);
+    const docs = getAffairDocs(affair);
+    if (docs.length > 0) {
+      setActiveDoc(docs[0]);
     } else {
       setActiveDoc(null);
     }
@@ -199,6 +221,7 @@ export function App() {
 
             {affairs.map((affair) => {
               const isSelected = affair.id === selectedAffairId;
+              const docsList = getAffairDocs(affair);
               return (
                 <div
                   key={affair.id}
@@ -215,13 +238,13 @@ export function App() {
                   <div className="affair-meta">
                     {affair.begin_date && <span>📅 {affair.begin_date}</span>}
                     {affair.state && <span>Status: {getText(affair.state)}</span>}
-                    {affair.docs && <span>📄 {affair.docs.length} docs</span>}
+                    {docsList.length > 0 && <span>📄 {docsList.length} docs</span>}
                   </div>
 
                   {/* Documents list */}
-                  {affair.docs && affair.docs.length > 0 && (
+                  {docsList.length > 0 && (
                     <div className="docs-tag-list">
-                      {affair.docs.map((doc) => (
+                      {docsList.map((doc) => (
                         <button
                           key={doc.id}
                           className="doc-btn"
