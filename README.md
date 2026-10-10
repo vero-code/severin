@@ -43,8 +43,10 @@ severin/
 │   │   ├── test_dataset.py            # Automated test enforcing the 100 MB directory limit
 │   │   ├── test_pdf_parser.py         # Tests for page extraction and snippet search
 │   │   └── test_cscs_client.py        # CSCS connection and Rule 5 compliance test
-│   ├── data/sample_pdfs/              # Curated nationwide dataset (27 PDFs, ~19.7 MB)
-│   │   └── manifest.json              # Traceable metadata manifest for all samples
+│   ├── data/
+│   │   ├── sample_pdfs/               # Curated nationwide dataset (27 PDFs, ~19.7 MB)
+│   │   │   └── manifest.json          # Traceable metadata manifest for all samples
+│   │   └── telemetry.json             # Persistent client-side CSCS telemetry tracker
 │   ├── frontend/                      # Vite + React + TypeScript SPA Explorer
 │   ├── technical_report.md            # Official evaluation write-up for judges
 │   ├── Makefile                       # Execution target for jury evaluation
@@ -72,10 +74,22 @@ severin/
 - Extracts text page-by-page preserving 1-indexed physical PDF page numbers.
 - Injects LLM boundary markers (`--- [PAGE X] ---`) and calculates character offsets for highlightable evidence.
 
-### 5. Deterministic CSCS Inference Client (`track_2a/src/cscs_client.py`)
+### 5. Deterministic CSCS Inference Client & Live Telemetry (`track_2a/src/cscs_client.py`)
 - Direct integration with `https://api.inference.cscs.ch/v1` serving `swiss-ai/Apertus-v1.5-8B`.
 - Strictly locks `temperature=0.0` for reproducible, hallucination-free output (Rule 5).
-- Client-side token and latency telemetry tracking.
+- **Client-Side Telemetry & Resource Accounting**: Per official CSCS guidance (*"detailed telemetry is limited today, record usage client-side"*), SEVERIN records, audits, and visualizes LLM consumption in real-time.
+
+#### Telemetry Metrics & Calculation Methodology
+| Metric | Calculation & Source of Truth | Purpose & Hackathon Evidence |
+|---|---|---|
+| **`#` (Call Index)** | Sequential counter: `idx + 1` | Chronological audit trail of all invocations |
+| **`Time`** | Timestamp: `datetime.now()` at response receipt | Verifies execution timestamps and timeline |
+| **`Canton / Task`** | OpenParlData body key (`ZH`, `AG`, `CHE`) & task title | Traces token expenditure directly to specific parliamentary documents |
+| **`In / Out`** | CSCS vLLM response: `usage.prompt_tokens` / `usage.completion_tokens` | Distinguishes document prompt length from structured output |
+| **`Total`** | Formula: $\text{Prompt} + \text{Completion}$ tokens | Accurate accounting against CSCS project token quota |
+| **`Speed (Latency)`** | High-precision timer: $t_{\text{received}} - t_{\text{sent}}$ via `time.perf_counter()` | Measures round-trip supercomputing inference latency (e.g. 0.15s) |
+| **`Provenance`** | Ratio: $\frac{\text{Verified Quotes}}{\text{Total Extracted Facts}} \times 100\%$ via `verify_provenance()` | **Zero-hallucination verification**: proves facts are grounded in PDF pages |
+| **`Status`** | HTTP response code (`200 OK`) | Confirms error-free execution on CSCS Alps infrastructure |
 
 ### 6. Live Full-Stack Workbench (`track_2a/src/server.py`, `track_2a/frontend/`)
 - **FastAPI Backend**: live OpenAPI/Swagger specification at `/docs`, unified schema at `/api/schema`, and CORS/streaming PDF proxy.
