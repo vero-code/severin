@@ -42,6 +42,7 @@ Your task is to analyze raw, page-demarcated Swiss parliamentary documents (PDFs
 4. OUTPUT FORMAT:
    - Return strictly valid JSON conforming to the ParliamentaryAffair schema.
    - Do NOT include any markdown explanations, commentary, or text outside the JSON object.
+   - Do NOT wrap the JSON inside an outer key like {"ParliamentaryAffair": ...} and do NOT include "$schema". Return the ParliamentaryAffair fields directly at the root level of the JSON object.
 """
 
 

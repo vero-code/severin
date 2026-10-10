@@ -162,6 +162,45 @@ def verify_provenance(
 # Main Extraction Pipeline
 # ============================================================================
 
+def normalize_extracted_dict(raw_dict: Any) -> Dict[str, Any]:
+    """
+    Normalize raw dictionary returned by LLM:
+    - If wrapped in an outer envelope key like 'ParliamentaryAffair', 'affair', 'data', unwraps it.
+    - Strips JSON-schema meta properties ('$schema', '$id', '$defs', 'definitions').
+    - Normalizes casing for enum fields ('level', 'affair_type', 'language', 'canton_or_body').
+    - Preserves top-level metadata hints if present.
+    """
+    if not isinstance(raw_dict, dict):
+        return raw_dict
+
+    # 1. Check for outer envelope wrapper
+    for wrapper in ("ParliamentaryAffair", "parliamentary_affair", "affair", "data", "result", "record"):
+        if wrapper in raw_dict and isinstance(raw_dict[wrapper], dict):
+            inner = raw_dict.pop(wrapper)
+            # Carry over any other valid fields from top-level
+            for k, v in raw_dict.items():
+                if not k.startswith("$") and k not in inner:
+                    inner[k] = v
+            raw_dict = inner
+            break
+
+    # 2. Strip metadata keys that violate extra='forbid'
+    for meta_key in ("$schema", "$id", "$defs", "definitions", "_comment"):
+        raw_dict.pop(meta_key, None)
+
+    # 3. Defensive casing normalization
+    if isinstance(raw_dict.get("level"), str):
+        raw_dict["level"] = raw_dict["level"].strip().lower()
+    if isinstance(raw_dict.get("affair_type"), str):
+        raw_dict["affair_type"] = raw_dict["affair_type"].strip().lower()
+    if isinstance(raw_dict.get("language"), str):
+        raw_dict["language"] = raw_dict["language"].strip().lower()
+    if isinstance(raw_dict.get("canton_or_body"), str):
+        raw_dict["canton_or_body"] = raw_dict["canton_or_body"].strip().upper()
+
+    return raw_dict
+
+
 def clean_llm_json_response(content: str) -> str:
     """Strip markdown code fence wrappers if present in LLM response."""
     cleaned = content.strip()
@@ -241,6 +280,8 @@ def extract_affair_from_pdf(
     except json.JSONDecodeError as e:
         logger.error(f"Failed to parse LLM JSON response: {e}\nRaw Content:\n{raw_content[:500]}")
         raise ValueError(f"Model returned invalid JSON: {e}")
+
+    raw_dict = normalize_extracted_dict(raw_dict)
 
     # Inject hints if missing from extracted output
     if affair_id_hint and not raw_dict.get("affair_id"):

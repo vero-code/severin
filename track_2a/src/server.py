@@ -7,6 +7,7 @@ Track 2A - Hack Apertus 2026.
 import io
 import logging
 from typing import Optional
+from pydantic import BaseModel
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
@@ -171,5 +172,87 @@ def get_telemetry():
     except Exception as e:
         logger.error(f"Error reading telemetry: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+class ExtractRequest(BaseModel):
+    url: Optional[str] = None
+    sample_file: Optional[str] = None
+    canton_hint: Optional[str] = None
+    affair_id_hint: Optional[int] = None
+
+
+@app.post("/api/extract")
+def extract_document(req: ExtractRequest):
+    """
+    Execute conservative extraction using Swiss-AI Apertus 1.5-8B on CSCS Alps.
+    Verifies citations and calculates strict provenance score against source PDF.
+    """
+    import tempfile
+    from pathlib import Path
+    from .extractor import extract_affair_from_pdf
+
+    sample_dir = Path(__file__).resolve().parent.parent / "data" / "sample_pdfs"
+
+    target_pdf: Optional[Path] = None
+    temp_file: Optional[Path] = None
+
+    try:
+        if req.sample_file:
+            candidate = sample_dir / req.sample_file
+            if candidate.exists():
+                target_pdf = candidate
+            else:
+                raise HTTPException(status_code=404, detail=f"Sample PDF not found: {req.sample_file}")
+        elif req.url:
+            if not (req.url.startswith("https://") or req.url.startswith("http://")):
+                raise HTTPException(status_code=400, detail="Invalid PDF URL protocol")
+            resp = requests.get(req.url, stream=True, timeout=45)
+            resp.raise_for_status()
+            with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+                tmp.write(resp.content)
+                temp_file = Path(tmp.name)
+            target_pdf = temp_file
+        else:
+            raise HTTPException(status_code=400, detail="Must provide either 'url' or 'sample_file'")
+
+        affair, report = extract_affair_from_pdf(
+            pdf_path=target_pdf,
+            canton_hint=req.canton_hint,
+            affair_id_hint=req.affair_id_hint
+        )
+
+        return {
+            "affair": affair.model_dump(),
+            "provenance_report": report,
+            "telemetry": CSCSInferenceClient.get_global_telemetry()
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Extraction failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Extraction failed: {str(e)}")
+    finally:
+        if temp_file and temp_file.exists():
+            try:
+                temp_file.unlink()
+            except Exception:
+                pass
+
+
+@app.get("/api/sample-pdfs")
+def list_sample_pdfs():
+    """List curated nationwide Swiss cantonal sample PDFs from data/sample_pdfs/manifest.json."""
+    from pathlib import Path
+    import json
+    manifest_path = Path(__file__).resolve().parent.parent / "data" / "sample_pdfs" / "manifest.json"
+    if manifest_path.exists():
+        try:
+            with open(manifest_path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            logger.error(f"Error reading manifest: {e}")
+            raise HTTPException(status_code=500, detail=str(e))
+    return []
 
 
