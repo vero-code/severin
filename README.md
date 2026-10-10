@@ -86,7 +86,9 @@ severin/
 | **`Time`** | Timestamp: `datetime.now()` at response receipt | Verifies execution timestamps and timeline |
 | **`Canton / Task`** | OpenParlData body key (`ZH`, `AG`, `CHE`) & task title | Traces token expenditure directly to specific parliamentary documents |
 | **`In / Out`** | CSCS vLLM response: `usage.prompt_tokens` / `usage.completion_tokens` | Distinguishes document prompt length from structured output |
-| **`Total`** | Formula: $\text{Prompt} + \text{Completion}$ tokens | Accurate accounting against CSCS project token quota |
+| **`Cached`** | CSCS vLLM response: `usage.prompt_tokens_details.cached_tokens` | **Alps GH200 prefix cache hit**: 100% free (0.00 CHF), cuts latency significantly |
+| **`Total`** | Formula: $\text{Prompt} + \text{Completion}$ tokens | Accurate accounting against CSCS project token usage |
+| **`Cost (CHF)`** | Official CSCS Academia Tariff: $(\text{In} - \text{Cached}) \times \frac{0.01}{10^6} + \text{Out} \times \frac{0.04}{10^6}$ | **Economic Feasibility**: proves real-world cost effectiveness (~0.01 CHF per canton) |
 | **`Speed (Latency)`** | High-precision timer: $t_{\text{received}} - t_{\text{sent}}$ via `time.perf_counter()` | Measures round-trip supercomputing inference latency (e.g. 0.15s) |
 | **`Provenance`** | Ratio: $\frac{\text{Verified Quotes}}{\text{Total Extracted Facts}} \times 100\%$ via `verify_provenance()` | **Zero-hallucination verification**: proves facts are grounded in PDF pages |
 | **`Status`** | HTTP response code (`200 OK`) | Confirms error-free execution on CSCS Alps infrastructure |
