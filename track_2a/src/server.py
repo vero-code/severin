@@ -14,6 +14,7 @@ import requests
 
 from .api_client import OpenParlDataClient
 from .enums import SearchMode
+from .schema import export_json_schema
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("severin_server")
@@ -40,6 +41,19 @@ client = OpenParlDataClient(timeout=30)
 def health_check():
     """Health check endpoint."""
     return {"status": "ok", "app": "SEVERIN", "version": "1.0.0"}
+
+
+@app.get("/api/schema")
+def get_unified_schema():
+    """
+    Return JSON Schema for ParliamentaryAffair representation model.
+    Used for LLM structured output specification and schema inspection.
+    """
+    try:
+        return export_json_schema()
+    except Exception as e:
+        logger.error(f"Error exporting schema: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/api/bodies")
