@@ -2,15 +2,15 @@
   "model": "swiss-ai/Apertus-v1.5-8B",
   "endpoint": "https://api.inference.cscs.ch/v1",
   "status": "online",
-  "total_requests": 3,
-  "total_prompt_tokens": 210,
-  "total_completion_tokens": 6,
+  "total_requests": 5,
+  "total_prompt_tokens": 9734,
+  "total_completion_tokens": 1336,
   "total_cached_tokens": 128,
-  "total_tokens": 216,
-  "total_cost_chf": 0.000002,
-  "total_latency_seconds": 0.39,
-  "average_latency_seconds": 0.13,
-  "last_request_at": "2026-10-10T14:55:12.454878",
+  "total_tokens": 11070,
+  "total_cost_chf": 0.00015,
+  "total_latency_seconds": 11.04,
+  "average_latency_seconds": 2.207,
+  "last_request_at": "2026-10-10T16:51:52.271551",
   "history": [
     {
       "timestamp": "2026-10-10T12:47:09+03:00",
@@ -52,6 +52,34 @@
       "total_tokens": 72,
       "cost_chf": 1e-06,
       "latency_sec": 0.129,
+      "status": "success"
+    },
+    {
+      "timestamp": "2026-10-10T16:48:06.210971",
+      "model": "swiss-ai/Apertus-v1.5-8B",
+      "task": "Extract: ZH_341002_927679",
+      "canton": "ZH",
+      "provenance_score": 0.667,
+      "prompt_tokens": 4762,
+      "completion_tokens": 665,
+      "cached_tokens": 0,
+      "total_tokens": 5427,
+      "cost_chf": 7.4e-05,
+      "latency_sec": 5.592,
+      "status": "success"
+    },
+    {
+      "timestamp": "2026-10-10T16:51:52.268427",
+      "model": "swiss-ai/Apertus-v1.5-8B",
+      "task": "Extract: ZH_341002_927679",
+      "canton": "ZH",
+      "provenance_score": 1.0,
+      "prompt_tokens": 4762,
+      "completion_tokens": 665,
+      "cached_tokens": 0,
+      "total_tokens": 5427,
+      "cost_chf": 7.4e-05,
+      "latency_sec": 5.056,
       "status": "success"
     }
   ]

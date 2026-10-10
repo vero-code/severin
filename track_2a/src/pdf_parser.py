@@ -16,11 +16,17 @@ logger = logging.getLogger("pdf_parser")
 
 
 def clean_page_text(text: str) -> str:
-    """Normalize excessive whitespace while preserving paragraph structure."""
+    """Normalize excessive whitespace and PDF glyph artifacts while preserving structure."""
     if not text:
         return ""
-    # Normalize non-breaking spaces and weird form feeds
-    cleaned = text.replace("\xa0", " ").replace("\x0c", "\n")
+    # Normalize non-breaking spaces, form feeds, soft hyphens, and replacement glyphs
+    cleaned = (
+        text.replace("\xa0", " ")
+        .replace("\x0c", "\n")
+        .replace("\xad", "")
+        .replace("\u200b", "")
+        .replace("\ufffd", "")
+    )
     # Collapse 3+ consecutive newlines to double newline
     cleaned = re.sub(r"\n{3,}", "\n\n", cleaned)
     # Strip trailing/leading spaces on lines
@@ -94,10 +100,32 @@ def format_pages_for_llm(pages: List[Dict[str, Any]]) -> str:
     return "\n\n".join(demarcated_blocks)
 
 
+def normalize_for_matching(text: str) -> str:
+    """Normalize text for resilient quote matching across PDF extraction artifacts."""
+    if not text:
+        return ""
+    # Strip soft hyphens, zero-width spaces, replacement glyphs, and control characters
+    cleaned = re.sub(r"[\xad\u200b\ufffd\x00-\x08\x0b\x0c\x0e-\x1f]", "", text)
+    # Normalize typographic dashes and quotes
+    cleaned = (
+        cleaned.replace("–", "-")
+        .replace("—", "-")
+        .replace("«", '"')
+        .replace("»", '"')
+        .replace("“", '"')
+        .replace("”", '"')
+        .replace("„", '"')
+    )
+    # De-hyphenate words broken across line wraps: e.g. "Opferhil-\nfeverordnung" -> "Opferhilfeverordnung"
+    cleaned = re.sub(r"(\w+)-\s*\n\s*(\w+)", r"\1\2", cleaned)
+    # Collapse all whitespace sequences into single space
+    return " ".join(cleaned.split())
+
+
 def find_snippet_offsets(snippet: str, page_text: str) -> Tuple[Optional[int], Optional[int]]:
     """
     Locate character offsets (char_start, char_end) of a verbatim snippet within page text.
-    Supports case-insensitive and normalized whitespace matching.
+    Resilient to whitespace variances, PDF soft-hyphens, line wraps, and typographic quotes.
     """
     if not snippet or not page_text:
         return None, None
@@ -120,6 +148,33 @@ def find_snippet_offsets(snippet: str, page_text: str) -> Tuple[Optional[int], O
     norm_page = normalize_ws(page_text)
     idx = norm_page.lower().find(norm_snippet.lower())
     if idx != -1:
-        return idx, idx + len(norm_snippet)
+        # Approximate offset back to page_text using anchor prefix
+        anchor = norm_snippet[:min(25, len(norm_snippet))].strip()
+        anchor_idx = page_text.lower().find(anchor.lower())
+        if anchor_idx != -1:
+            return anchor_idx, min(len(page_text), anchor_idx + len(snippet))
+        return 0, min(len(page_text), len(snippet))
+
+    # 4. Deep artifact normalization (soft-hyphens, de-hyphenation, quotes)
+    clean_s = normalize_for_matching(snippet)
+    clean_p = normalize_for_matching(page_text)
+    idx = clean_p.lower().find(clean_s.lower())
+    if idx != -1:
+        anchor = clean_s[:min(25, len(clean_s))].strip()
+        anchor_idx = page_text.lower().find(anchor.lower())
+        if anchor_idx != -1:
+            return anchor_idx, min(len(page_text), anchor_idx + len(snippet))
+        return 0, min(len(page_text), len(snippet))
+
+    # 5. Long prefix anchor match (if LLM truncated or slightly appended punctuation)
+    if len(clean_s) > 30:
+        prefix = clean_s[:30]
+        idx = clean_p.lower().find(prefix.lower())
+        if idx != -1:
+            anchor = prefix[:20]
+            anchor_idx = page_text.lower().find(anchor.lower())
+            if anchor_idx != -1:
+                return anchor_idx, min(len(page_text), anchor_idx + len(snippet))
+            return 0, min(len(page_text), len(snippet))
 
     return None, None
