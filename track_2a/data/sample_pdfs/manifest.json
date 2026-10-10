@@ -1,0 +1,65 @@
+[
+  {
+    "file_name": "ZH_341002_927679.pdf",
+    "affair_id": 341002,
+    "short_id": null,
+    "title": {
+      "de": "Änderung der Kantonalen Opferhilfeverordnung (KOHV)"
+    },
+    "body_key": "ZH",
+    "level": "cantonal",
+    "language": "de",
+    "doc_id": 927679,
+    "doc_name": "JI - Brief RRin Fehr Änderung der Kantonalen Opferhilfeveror",
+    "url": "https://files.openparldata.ch/doc/ZH/8c8ee80e93f9ebf772acaff0928cce1bcd2adfc6592cc2b70c8c0ba3ea202556",
+    "size_bytes": 112720
+  },
+  {
+    "file_name": "GR_337559_920605.pdf",
+    "affair_id": 337559,
+    "short_id": null,
+    "title": {
+      "de": "Die Rekordhitze und -trockenheit"
+    },
+    "body_key": "GR",
+    "level": "cantonal",
+    "language": "de",
+    "doc_id": 920605,
+    "doc_name": "Anfrage Kreiliger betreffend die Rekordhitze und -trockenheit",
+    "url": "https://files.openparldata.ch/doc/GR/b61acc7a2dde46fd1323267a40bfd3fe8d9215362f18eec5a5ef21f1d72c1eee",
+    "size_bytes": 118241
+  },
+  {
+    "file_name": "BE_340901_927364.pdf",
+    "affair_id": 340901,
+    "short_id": null,
+    "title": {
+      "de": "Wie reagiert der Kanton auf die dramatische Lage unserer Wälder? Ist die heutige Waldbewirtschaftung noch zeitgemäss?",
+      "fr": "Que fait le canton face à la situation alarmante de nos forêts ? La gestion forestière actuelle est-elle encore adaptée à notre époque ?"
+    },
+    "body_key": "BE",
+    "level": "cantonal",
+    "language": "de",
+    "doc_id": 927364,
+    "doc_name": "Vorstoss-de (PDF)",
+    "url": "https://files.openparldata.ch/doc/BE/57aec3957cd36b1fe28731eaac1cab480c79cd3e8646401a627638ba4d312dfa",
+    "size_bytes": 271769
+  },
+  {
+    "file_name": "CHE_326604_819055.pdf",
+    "affair_id": 326604,
+    "short_id": null,
+    "title": {
+      "de": "Nein zum F-35",
+      "fr": "Non aux F-35",
+      "it": "No agli F-35"
+    },
+    "body_key": "CHE",
+    "level": "federal",
+    "language": "de",
+    "doc_id": 819055,
+    "doc_name": "Unterschriftenliste",
+    "url": "https://files.openparldata.ch/doc/CHE/fb3af4817db95ff0fef1fc399368a9629128e2d0f87864c2b003eff40edc79d5",
+    "size_bytes": 78047
+  }
+]
