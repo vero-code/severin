@@ -149,7 +149,10 @@ class CSCSInferenceClient:
         model: Optional[str] = None,
         max_tokens: int = 4096,
         response_format: Optional[Dict[str, str]] = None,
-        temperature: float = 0.0
+        temperature: float = 0.0,
+        task: str = "general",
+        canton: Optional[str] = None,
+        provenance_score: Optional[float] = None
     ) -> Dict[str, Any]:
         """
         Execute a chat completion request against CSCS inference.
@@ -160,6 +163,9 @@ class CSCSInferenceClient:
         :param max_tokens: Maximum tokens in completion.
         :param response_format: Optional OpenAI response_format, e.g. {"type": "json_object"}.
         :param temperature: Ignored if non-zero; locked to 0.0 for reproducibility.
+        :param task: Label for telemetry (e.g. "Smoke Test", "Extract: ZH-2026-3713").
+        :param canton: Canton or jurisdiction abbreviation (e.g. "ZH", "AG", "CHE").
+        :param provenance_score: Optional provenance verification ratio (0.0 - 1.0).
         :return: Dict containing 'content', 'model', 'prompt_tokens', 'completion_tokens', 'latency_sec'.
         """
         # Rule 5: Force temperature=0.0 for deterministic and hallucination-free outputs
@@ -178,7 +184,7 @@ class CSCSInferenceClient:
             kwargs["response_format"] = response_format
 
         try:
-            logger.info(f"Sending request to CSCS model '{target_model}' (temp={actual_temperature})...")
+            logger.info(f"Sending request to CSCS model '{target_model}' (temp={actual_temperature}, task={task})...")
             response = self.client.chat.completions.create(**kwargs)
             latency = time.perf_counter() - start_time
 
@@ -199,6 +205,9 @@ class CSCSInferenceClient:
             self.history.append({
                 "timestamp": datetime.now().isoformat(),
                 "model": target_model,
+                "task": task,
+                "canton": canton,
+                "provenance_score": provenance_score,
                 "prompt_tokens": prompt_tokens,
                 "completion_tokens": completion_tokens,
                 "total_tokens": prompt_tokens + completion_tokens,

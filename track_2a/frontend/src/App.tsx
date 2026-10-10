@@ -220,10 +220,11 @@ export function App() {
                   <tr>
                     <th>#</th>
                     <th>Time</th>
-                    <th>Prompt</th>
-                    <th>Output</th>
+                    <th>Canton / Task</th>
+                    <th>In / Out</th>
                     <th>Total</th>
                     <th>Speed</th>
+                    <th>Provenance</th>
                     <th>Status</th>
                   </tr>
                 </thead>
@@ -235,10 +236,24 @@ export function App() {
                         <td className="mono">
                           {item.timestamp ? new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '12:47:09'}
                         </td>
-                        <td className="mono">{item.prompt_tokens.toLocaleString()}</td>
-                        <td className="mono">{item.completion_tokens.toLocaleString()}</td>
+                        <td>
+                          {item.canton && <span className="telemetry-canton-badge">{item.canton}</span>}
+                          <span className="telemetry-task-title">{item.task || 'Inference'}</span>
+                        </td>
+                        <td className="mono" style={{ color: 'var(--text-secondary)' }}>
+                          {item.prompt_tokens.toLocaleString()} / {item.completion_tokens.toLocaleString()}
+                        </td>
                         <td className="mono font-bold text-accent">{item.total_tokens.toLocaleString()}</td>
                         <td className="mono">{item.latency_sec}s</td>
+                        <td>
+                          {item.provenance_score !== null && item.provenance_score !== undefined ? (
+                            <span className="provenance-pill">
+                              {Math.round(item.provenance_score * 100)}% match
+                            </span>
+                          ) : (
+                            <span style={{ color: 'var(--text-muted)' }}>—</span>
+                          )}
+                        </td>
                         <td><span className="status-pill-ok">200 OK</span></td>
                       </tr>
                     ))
@@ -246,10 +261,14 @@ export function App() {
                     <tr>
                       <td className="mono">#1</td>
                       <td className="mono">12:47:09</td>
-                      <td className="mono">70</td>
-                      <td className="mono">2</td>
+                      <td>
+                        <span className="telemetry-canton-badge">CSCS</span>
+                        <span className="telemetry-task-title">Smoke Test (Ping)</span>
+                      </td>
+                      <td className="mono" style={{ color: 'var(--text-secondary)' }}>70 / 2</td>
                       <td className="mono font-bold text-accent">72</td>
                       <td className="mono">0.15s</td>
+                      <td><span className="provenance-pill">100% match</span></td>
                       <td><span className="status-pill-ok">200 OK</span></td>
                     </tr>
                   )}

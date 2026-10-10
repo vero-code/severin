@@ -13,6 +13,9 @@
     {
       "timestamp": "2026-10-10T12:47:09+03:00",
       "model": "swiss-ai/Apertus-v1.5-8B",
+      "task": "CSCS Smoke Test (Ping)",
+      "canton": "CSCS",
+      "provenance_score": 1.0,
       "prompt_tokens": 70,
       "completion_tokens": 2,
       "total_tokens": 72,

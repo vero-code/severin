@@ -59,6 +59,9 @@ export interface ParsePdfResponse {
 export interface TelemetryHistoryItem {
   timestamp: string;
   model: string;
+  task?: string;
+  canton?: string;
+  provenance_score?: number | null;
   prompt_tokens: number;
   completion_tokens: number;
   total_tokens: number;
