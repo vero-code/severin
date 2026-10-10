@@ -31,18 +31,21 @@ severin/
 │   ├── src/
 │   │   ├── schema.py                  # Pydantic v2 canonical schema + strict Provenance model
 │   │   ├── enums.py                   # Controlled vocabularies (AffairType, Levels, Statuses)
+│   │   ├── prompts.py                 # Grounded extraction prompts with zero-hallucination rules
+│   │   ├── extractor.py               # Conservative extractor + algorithmic provenance verifier
 │   │   ├── api_client.py              # Production-grade OpenParlData REST API client
 │   │   ├── adapter.py                 # Multi-level, trilingual API-to-Schema transformer
 │   │   ├── dataset.py                 # Curated dataset downloader with 100 MB limit guard
 │   │   ├── pdf_parser.py              # Page-level PDF text extractor with offset tracking
 │   │   ├── cscs_client.py             # CSCS Apertus-v1.5-8B client (Rule 5, temperature=0.0)
-│   │   └── server.py                  # FastAPI backend with /api/schema and PDF proxy
+│   │   └── server.py                  # FastAPI backend with /api/extract, /api/sample-pdfs, PDF proxy
 │   ├── tests/
 │   │   ├── test_schema.py             # Unit tests for schema validation & anti-hallucination
 │   │   ├── test_adapter.py            # Unit & live integration tests for API adapter
 │   │   ├── test_dataset.py            # Automated test enforcing the 100 MB directory limit
 │   │   ├── test_pdf_parser.py         # Tests for page extraction and snippet search
-│   │   └── test_cscs_client.py        # CSCS connection and Rule 5 compliance test
+│   │   ├── test_cscs_client.py        # CSCS connection and Rule 5 compliance test
+│   │   └── test_extractor.py          # Live extraction test with algorithmic citation verification
 │   ├── data/
 │   │   ├── sample_pdfs/               # Curated nationwide dataset (27 PDFs, ~19.7 MB)
 │   │   │   └── manifest.json          # Traceable metadata manifest for all samples
@@ -93,9 +96,19 @@ severin/
 | **`Provenance`** | Ratio: $\frac{\text{Verified Quotes}}{\text{Total Extracted Facts}} \times 100\%$ via `verify_provenance()` | **Zero-hallucination verification**: proves facts are grounded in PDF pages |
 | **`Status`** | HTTP response code (`200 OK`) | Confirms error-free execution on CSCS Alps infrastructure |
 
-### 6. Live Full-Stack Workbench (`track_2a/src/server.py`, `track_2a/frontend/`)
-- **FastAPI Backend**: live OpenAPI/Swagger specification at `/docs`, unified schema at `/api/schema`, and CORS/streaming PDF proxy.
-- **React-TS SPA**: clean split-screen viewer displaying affairs, embedded original Swiss PDFs, and extracted page text side-by-side.
+### 6. Conservative Extractor & Algorithmic Provenance Verifier (`track_2a/src/extractor.py`, `track_2a/src/prompts.py`)
+- **Strict Rule of Absence**: Mandates `null` or `[]` for any field not explicitly cited in the source text, preventing LLM extrapolation of fictitious authors, questions, or budgets.
+- **Verifiable Provenance Grounding**: Extracts mandatory 1-indexed PDF `page_number` and verbatim `source_text_snippet`.
+- **Algorithmic Citation Verifier (`verify_provenance`)**: Deterministically audits quotes against physical PDF page texts, calculates exact character offsets (`char_start`, `char_end`), and computes the verifiable provenance match score (e.g., 93%–100%).
+- **Defensive Output Normalization**: Unwraps model response envelopes and sanitizes schema meta-properties (`$schema`, `$defs`) without compromising Pydantic `extra="forbid"` safety.
+
+### 7. Interactive Full-Stack Explorer (`track_2a/frontend/`, `track_2a/src/server.py`)
+- **Dual Action Bar**: Live OpenParlData API queries side by side with an instant 27-canton curated offline sample picker.
+- **Three-Way Document Inspector**:
+  1. `📄 PDF Preview`: Native embedded PDF iframe view.
+  2. `📝 Extracted Text`: Page-by-page raw text view.
+  3. `✨ Apertus Extracted Affair`: Visual cards displaying extracted metadata, authors with cantonal affiliations, verbatim rationale quotes, and a complete Provenance Verification Audit Log.
+- **Live CSCS Telemetry Bar**: Real-time micro-CHF cost accounting, token metrics, latency, and Alps GH200 PagedAttention cache monitoring.
 
 ---
 
@@ -116,6 +129,7 @@ python tests/test_adapter.py
 python tests/test_dataset.py
 python tests/test_pdf_parser.py
 python tests/test_cscs_client.py
+python tests/test_extractor.py
 ```
 
 ### 3. Launch the Backend & Interactive UI
