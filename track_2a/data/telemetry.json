@@ -1,0 +1,23 @@
+{
+  "model": "swiss-ai/Apertus-v1.5-8B",
+  "endpoint": "https://api.inference.cscs.ch/v1",
+  "status": "online",
+  "total_requests": 1,
+  "total_prompt_tokens": 70,
+  "total_completion_tokens": 2,
+  "total_tokens": 72,
+  "total_latency_seconds": 0.15,
+  "average_latency_seconds": 0.15,
+  "last_request_at": "2026-10-10T12:47:09+03:00",
+  "history": [
+    {
+      "timestamp": "2026-10-10T12:47:09+03:00",
+      "model": "swiss-ai/Apertus-v1.5-8B",
+      "prompt_tokens": 70,
+      "completion_tokens": 2,
+      "total_tokens": 72,
+      "latency_sec": 0.15,
+      "status": "success"
+    }
+  ]
+}

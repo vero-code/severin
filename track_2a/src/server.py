@@ -16,6 +16,7 @@ from .api_client import OpenParlDataClient
 from .enums import SearchMode
 from .schema import export_json_schema
 from .pdf_parser import extract_pdf_pages
+from .cscs_client import CSCSInferenceClient
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("severin_server")
@@ -160,4 +161,15 @@ def parse_pdf(url: str = Query(..., description="OpenParlData PDF file URL")):
     except Exception as e:
         logger.error(f"Error parsing PDF from {url}: {e}")
         raise HTTPException(status_code=502, detail=f"Failed to parse PDF: {e}")
+
+
+@app.get("/api/telemetry")
+def get_telemetry():
+    """Retrieve cumulative LLM inference telemetry from CSCS (Rule 5 compliance)."""
+    try:
+        return CSCSInferenceClient.get_global_telemetry()
+    except Exception as e:
+        logger.error(f"Error reading telemetry: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 

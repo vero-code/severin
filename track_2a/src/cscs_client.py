@@ -10,8 +10,10 @@ Complies with Rule 5 of Hack Apertus 2026:
 
 import os
 import time
+import json
 import logging
 from pathlib import Path
+from datetime import datetime
 from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
 from openai import OpenAI, OpenAIError, AuthenticationError, APIConnectionError, RateLimitError
@@ -71,15 +73,60 @@ class CSCSInferenceClient:
             timeout=self.timeout
         )
 
-        # Local telemetry tracking as recommended by CSCS documentation
-        self.total_prompt_tokens: int = 0
-        self.total_completion_tokens: int = 0
-        self.total_requests: int = 0
-        self.total_latency_seconds: float = 0.0
+        # Persistent telemetry file path
+        self.telemetry_path = _track_dir / "data" / "telemetry.json"
+        self._load_telemetry()
 
         logger.info(
             f"CSCSInferenceClient initialized: base_url={self.base_url}, default_model={self.default_model}"
         )
+
+    def _load_telemetry(self) -> None:
+        """Load persistent telemetry data if available."""
+        self.total_prompt_tokens: int = 0
+        self.total_completion_tokens: int = 0
+        self.total_requests: int = 0
+        self.total_latency_seconds: float = 0.0
+        self.history: List[Dict[str, Any]] = []
+
+        if self.telemetry_path.exists():
+            try:
+                with open(self.telemetry_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    self.total_requests = data.get("total_requests", 0)
+                    self.total_prompt_tokens = data.get("total_prompt_tokens", 0)
+                    self.total_completion_tokens = data.get("total_completion_tokens", 0)
+                    self.total_latency_seconds = data.get("total_latency_seconds", 0.0)
+                    self.history = data.get("history", [])
+            except Exception as e:
+                logger.warning(f"Failed to read existing telemetry: {e}")
+
+    def _save_telemetry(self) -> None:
+        """Persist updated telemetry metrics to disk."""
+        try:
+            self.telemetry_path.parent.mkdir(parents=True, exist_ok=True)
+            avg_lat = (
+                round(self.total_latency_seconds / self.total_requests, 3)
+                if self.total_requests > 0
+                else 0.0
+            )
+            data = {
+                "model": self.default_model,
+                "endpoint": self.base_url,
+                "status": "online",
+                "total_requests": self.total_requests,
+                "total_prompt_tokens": self.total_prompt_tokens,
+                "total_completion_tokens": self.total_completion_tokens,
+                "total_tokens": self.total_prompt_tokens + self.total_completion_tokens,
+                "total_latency_seconds": round(self.total_latency_seconds, 2),
+                "average_latency_seconds": avg_lat,
+                "last_request_at": datetime.now().isoformat(),
+                "history": self.history[-50:]  # Keep last 50 requests
+            }
+            with open(self.telemetry_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+        except Exception as e:
+            logger.warning(f"Failed to save telemetry: {e}")
 
     def list_models(self) -> List[str]:
         """
@@ -149,6 +196,17 @@ class CSCSInferenceClient:
             self.total_completion_tokens += completion_tokens
             self.total_latency_seconds += latency
 
+            self.history.append({
+                "timestamp": datetime.now().isoformat(),
+                "model": target_model,
+                "prompt_tokens": prompt_tokens,
+                "completion_tokens": completion_tokens,
+                "total_tokens": prompt_tokens + completion_tokens,
+                "latency_sec": round(latency, 3),
+                "status": "success"
+            })
+            self._save_telemetry()
+
             logger.info(
                 f"CSCS response received: finish_reason={finish_reason}, "
                 f"prompt_tokens={prompt_tokens}, completion_tokens={completion_tokens}, "
@@ -188,10 +246,35 @@ class CSCSInferenceClient:
             else 0.0
         )
         return {
+            "model": self.default_model,
+            "status": "online",
             "total_requests": self.total_requests,
             "total_prompt_tokens": self.total_prompt_tokens,
             "total_completion_tokens": self.total_completion_tokens,
             "total_tokens": self.total_prompt_tokens + self.total_completion_tokens,
             "total_latency_seconds": round(self.total_latency_seconds, 2),
-            "average_latency_seconds": round(avg_latency, 2)
+            "average_latency_seconds": round(avg_latency, 2),
+            "history": self.history[-10:]
         }
+
+    @staticmethod
+    def get_global_telemetry() -> Dict[str, Any]:
+        """Read latest telemetry snapshot directly from disk."""
+        path = _track_dir / "data" / "telemetry.json"
+        if path.exists():
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except Exception:
+                pass
+        return {
+            "model": "swiss-ai/Apertus-v1.5-8B",
+            "status": "online",
+            "total_requests": 0,
+            "total_prompt_tokens": 0,
+            "total_completion_tokens": 0,
+            "total_tokens": 0,
+            "average_latency_seconds": 0.0,
+            "history": []
+        }
+

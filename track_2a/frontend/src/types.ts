@@ -56,3 +56,28 @@ export interface ParsePdfResponse {
   pages: PdfPageItem[];
 }
 
+export interface TelemetryHistoryItem {
+  timestamp: string;
+  model: string;
+  prompt_tokens: number;
+  completion_tokens: number;
+  total_tokens: number;
+  latency_sec: number;
+  status: string;
+}
+
+export interface TelemetryStats {
+  model: string;
+  status: string;
+  endpoint?: string;
+  total_requests: number;
+  total_prompt_tokens: number;
+  total_completion_tokens: number;
+  total_tokens: number;
+  average_latency_seconds: number;
+  total_latency_seconds?: number;
+  last_request_at?: string;
+  history?: TelemetryHistoryItem[];
+}
+
+
