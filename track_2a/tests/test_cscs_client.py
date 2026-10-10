@@ -43,9 +43,12 @@ def test_missing_api_key_raises_error():
 def test_client_configuration_and_defaults():
     """Ensure correct default parameters conforming to Hack Apertus Rule 5."""
     orig = os.environ.get("CSCS_INFERENCE_API_KEY")
+    tmp_telemetry = ROOT_DIR / "data" / "test_isolated_telemetry.json"
+    if tmp_telemetry.exists():
+        tmp_telemetry.unlink()
     try:
         os.environ["CSCS_INFERENCE_API_KEY"] = "test-secret-key-12345"
-        client = CSCSInferenceClient()
+        client = CSCSInferenceClient(telemetry_path=tmp_telemetry)
 
         # Rule 5 assertions
         assert client.base_url == "https://api.inference.cscs.ch/v1"
@@ -56,10 +59,14 @@ def test_client_configuration_and_defaults():
         summary = client.get_telemetry_summary()
         assert summary["total_requests"] == 0
         assert summary["total_tokens"] == 0
+        assert summary["total_cached_tokens"] == 0
+        assert summary["total_cost_chf"] == 0.0
         assert summary["average_latency_seconds"] == 0.0
 
         print("PASSED: test_client_configuration_and_defaults")
     finally:
+        if tmp_telemetry.exists():
+            tmp_telemetry.unlink()
         if orig is not None:
             os.environ["CSCS_INFERENCE_API_KEY"] = orig
         else:
@@ -89,7 +96,9 @@ def test_live_cscs_inference_if_key_available():
     # Execute deterministic ping completion
     result = client.chat_completion(
         messages=[{"role": "user", "content": "Respond with the word 'OK'."}],
-        max_tokens=10
+        max_tokens=10,
+        task="CSCS Smoke Test (Ping)",
+        canton="CSCS"
     )
     print(f"CSCS response: '{result['content'].strip()}' in {result['latency_sec']:.2f}s")
     assert result["content"], "Empty response received from CSCS model!"

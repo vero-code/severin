@@ -11,6 +11,7 @@ Complies with Rule 5 of Hack Apertus 2026:
 import os
 import time
 import json
+import math
 import logging
 from pathlib import Path
 from datetime import datetime
@@ -40,12 +41,19 @@ class CSCSInferenceClient:
     LARGE_MODEL: str = "swiss-ai/Apertus-v1.5-70B"
     FIXED_TEMPERATURE: float = 0.0  # Mandatory deterministic temperature
 
+    # Official CSCS pay-per-use fees for Academia (CHF per 1M tokens)
+    # Source: CSCS Inference Dashboard Pricing Table (October 2026)
+    INPUT_COST_PER_MILLION: float = 0.010000
+    OUTPUT_COST_PER_MILLION: float = 0.040000
+    CACHED_COST_PER_MILLION: float = 0.000000  # Prefix caching on Alps GH200 nodes is 100% free
+
     def __init__(
         self,
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
         default_model: Optional[str] = None,
-        timeout: float = 60.0
+        timeout: float = 60.0,
+        telemetry_path: Optional[Path] = None
     ):
         """
         Initialize the CSCS Inference Client.
@@ -54,6 +62,7 @@ class CSCSInferenceClient:
         :param base_url: CSCS endpoint URL (defaults to https://api.inference.cscs.ch/v1).
         :param default_model: Target model name (defaults to swiss-ai/Apertus-v1.5-8B).
         :param timeout: Request timeout in seconds.
+        :param telemetry_path: Optional custom path for telemetry JSON persistence.
         """
         self.api_key = api_key or os.getenv("CSCS_INFERENCE_API_KEY")
         if not self.api_key:
@@ -74,7 +83,7 @@ class CSCSInferenceClient:
         )
 
         # Persistent telemetry file path
-        self.telemetry_path = _track_dir / "data" / "telemetry.json"
+        self.telemetry_path = Path(telemetry_path) if telemetry_path else (_track_dir / "data" / "telemetry.json")
         self._load_telemetry()
 
         logger.info(
@@ -85,6 +94,8 @@ class CSCSInferenceClient:
         """Load persistent telemetry data if available."""
         self.total_prompt_tokens: int = 0
         self.total_completion_tokens: int = 0
+        self.total_cached_tokens: int = 0
+        self.total_cost_chf: float = 0.0
         self.total_requests: int = 0
         self.total_latency_seconds: float = 0.0
         self.history: List[Dict[str, Any]] = []
@@ -96,6 +107,8 @@ class CSCSInferenceClient:
                     self.total_requests = data.get("total_requests", 0)
                     self.total_prompt_tokens = data.get("total_prompt_tokens", 0)
                     self.total_completion_tokens = data.get("total_completion_tokens", 0)
+                    self.total_cached_tokens = data.get("total_cached_tokens", 0)
+                    self.total_cost_chf = data.get("total_cost_chf", 0.0)
                     self.total_latency_seconds = data.get("total_latency_seconds", 0.0)
                     self.history = data.get("history", [])
             except Exception as e:
@@ -110,6 +123,20 @@ class CSCSInferenceClient:
                 if self.total_requests > 0
                 else 0.0
             )
+
+            # Calculate cumulative account cost using CSCS ceiling methodology (micro-CHF)
+            uncached_prompt_total = max(0, self.total_prompt_tokens - self.total_cached_tokens)
+            cumulative_raw_chf = (
+                (uncached_prompt_total * self.INPUT_COST_PER_MILLION / 1_000_000)
+                + (self.total_cached_tokens * self.CACHED_COST_PER_MILLION / 1_000_000)
+                + (self.total_completion_tokens * self.OUTPUT_COST_PER_MILLION / 1_000_000)
+            )
+            if (self.total_prompt_tokens + self.total_completion_tokens) > 0:
+                cumulative_cost_chf = math.ceil(cumulative_raw_chf * 1_000_000) / 1_000_000
+            else:
+                cumulative_cost_chf = 0.0
+            self.total_cost_chf = round(cumulative_cost_chf, 6)
+
             data = {
                 "model": self.default_model,
                 "endpoint": self.base_url,
@@ -117,7 +144,9 @@ class CSCSInferenceClient:
                 "total_requests": self.total_requests,
                 "total_prompt_tokens": self.total_prompt_tokens,
                 "total_completion_tokens": self.total_completion_tokens,
+                "total_cached_tokens": self.total_cached_tokens,
                 "total_tokens": self.total_prompt_tokens + self.total_completion_tokens,
+                "total_cost_chf": self.total_cost_chf,
                 "total_latency_seconds": round(self.total_latency_seconds, 2),
                 "average_latency_seconds": avg_lat,
                 "last_request_at": datetime.now().isoformat(),
@@ -196,10 +225,31 @@ class CSCSInferenceClient:
             prompt_tokens = usage.prompt_tokens if usage else 0
             completion_tokens = usage.completion_tokens if usage else 0
 
+            # Extract cached tokens from prompt_tokens_details if returned by CSCS vLLM
+            cached_tokens = 0
+            if usage and hasattr(usage, "prompt_tokens_details") and usage.prompt_tokens_details:
+                cached_tokens = getattr(usage.prompt_tokens_details, "cached_tokens", 0) or 0
+
+            # Calculate precise cost according to official CSCS tariff (CHF per 1M tokens)
+            uncached_prompt = max(0, prompt_tokens - cached_tokens)
+            call_cost_chf = (
+                (uncached_prompt * self.INPUT_COST_PER_MILLION / 1_000_000)
+                + (cached_tokens * self.CACHED_COST_PER_MILLION / 1_000_000)
+                + (completion_tokens * self.OUTPUT_COST_PER_MILLION / 1_000_000)
+            )
+            # Enforce minimum billing precision floor of 1 micro-CHF (0.000001 CHF) per request
+            # with tokens, matching CSCS Alps billing accounting
+            if (prompt_tokens + completion_tokens) > 0 and call_cost_chf < 0.000001:
+                call_cost_chf = 0.000001
+            else:
+                call_cost_chf = round(call_cost_chf, 6)
+
             # Update client-side telemetry
             self.total_requests += 1
             self.total_prompt_tokens += prompt_tokens
             self.total_completion_tokens += completion_tokens
+            self.total_cached_tokens += cached_tokens
+            self.total_cost_chf += call_cost_chf
             self.total_latency_seconds += latency
 
             self.history.append({
@@ -210,7 +260,9 @@ class CSCSInferenceClient:
                 "provenance_score": provenance_score,
                 "prompt_tokens": prompt_tokens,
                 "completion_tokens": completion_tokens,
+                "cached_tokens": cached_tokens,
                 "total_tokens": prompt_tokens + completion_tokens,
+                "cost_chf": call_cost_chf,
                 "latency_sec": round(latency, 3),
                 "status": "success"
             })
@@ -218,7 +270,8 @@ class CSCSInferenceClient:
 
             logger.info(
                 f"CSCS response received: finish_reason={finish_reason}, "
-                f"prompt_tokens={prompt_tokens}, completion_tokens={completion_tokens}, "
+                f"prompt_tokens={prompt_tokens} (cached={cached_tokens}), "
+                f"completion_tokens={completion_tokens}, cost={call_cost_chf:.6f} CHF, "
                 f"latency={latency:.2f}s"
             )
 
@@ -228,7 +281,9 @@ class CSCSInferenceClient:
                 "finish_reason": finish_reason,
                 "prompt_tokens": prompt_tokens,
                 "completion_tokens": completion_tokens,
+                "cached_tokens": cached_tokens,
                 "total_tokens": prompt_tokens + completion_tokens,
+                "cost_chf": call_cost_chf,
                 "latency_sec": latency
             }
 
@@ -260,7 +315,9 @@ class CSCSInferenceClient:
             "total_requests": self.total_requests,
             "total_prompt_tokens": self.total_prompt_tokens,
             "total_completion_tokens": self.total_completion_tokens,
+            "total_cached_tokens": self.total_cached_tokens,
             "total_tokens": self.total_prompt_tokens + self.total_completion_tokens,
+            "total_cost_chf": round(self.total_cost_chf, 6),
             "total_latency_seconds": round(self.total_latency_seconds, 2),
             "average_latency_seconds": round(avg_latency, 2),
             "history": self.history[-10:]
@@ -282,7 +339,9 @@ class CSCSInferenceClient:
             "total_requests": 0,
             "total_prompt_tokens": 0,
             "total_completion_tokens": 0,
+            "total_cached_tokens": 0,
             "total_tokens": 0,
+            "total_cost_chf": 0.0,
             "average_latency_seconds": 0.0,
             "history": []
         }

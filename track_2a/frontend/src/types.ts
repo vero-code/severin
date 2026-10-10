@@ -64,7 +64,9 @@ export interface TelemetryHistoryItem {
   provenance_score?: number | null;
   prompt_tokens: number;
   completion_tokens: number;
+  cached_tokens?: number;
   total_tokens: number;
+  cost_chf?: number;
   latency_sec: number;
   status: string;
 }
@@ -76,7 +78,9 @@ export interface TelemetryStats {
   total_requests: number;
   total_prompt_tokens: number;
   total_completion_tokens: number;
+  total_cached_tokens?: number;
   total_tokens: number;
+  total_cost_chf?: number;
   average_latency_seconds: number;
   total_latency_seconds?: number;
   last_request_at?: string;

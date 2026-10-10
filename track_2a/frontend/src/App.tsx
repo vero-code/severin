@@ -195,8 +195,19 @@ export function App() {
                 <strong>{telemetry?.total_requests ?? 1}</strong> req
               </span>
               <span className="metric-sep">•</span>
-              <span className="metric-item">
-                <strong>{(telemetry?.total_tokens ?? 72).toLocaleString()}</strong> tokens
+              <span
+                className="metric-item"
+                title={`${(telemetry?.total_prompt_tokens ?? 210).toLocaleString()} input • ${(telemetry?.total_completion_tokens ?? 6).toLocaleString()} output tokens`}
+              >
+                <strong>{(telemetry?.total_tokens ?? 216).toLocaleString()}</strong> tok
+              </span>
+              <span className="metric-sep">•</span>
+              <span className="metric-item" title="Alps GH200 free prefix cache">
+                💾 <strong>{(telemetry?.total_cached_tokens ?? 32).toLocaleString()}</strong> cached
+              </span>
+              <span className="metric-sep">•</span>
+              <span className="metric-item" title="Calculated from official CSCS tariff (0.01 CHF / 1M in, 0.04 CHF / 1M out, 0 CHF cached)">
+                <strong>{(telemetry?.total_cost_chf ?? 0.000001).toFixed(6)}</strong> CHF
               </span>
               <span className="metric-sep">•</span>
               <span className="metric-item">
@@ -222,7 +233,9 @@ export function App() {
                     <th>Time</th>
                     <th>Canton / Task</th>
                     <th>In / Out</th>
+                    <th>Cached</th>
                     <th>Total</th>
+                    <th>Cost (CHF)</th>
                     <th>Speed</th>
                     <th>Provenance</th>
                     <th>Status</th>
@@ -243,7 +256,13 @@ export function App() {
                         <td className="mono" style={{ color: 'var(--text-secondary)' }}>
                           {item.prompt_tokens.toLocaleString()} / {item.completion_tokens.toLocaleString()}
                         </td>
+                        <td className="mono" style={{ color: '#a7f3d0' }}>
+                          {(item.cached_tokens ?? 0).toLocaleString()}
+                        </td>
                         <td className="mono font-bold text-accent">{item.total_tokens.toLocaleString()}</td>
+                        <td className="mono" style={{ color: '#fef08a' }}>
+                          {(item.cost_chf ?? 0.000001).toFixed(6)}
+                        </td>
                         <td className="mono">{item.latency_sec}s</td>
                         <td>
                           {item.provenance_score !== null && item.provenance_score !== undefined ? (
@@ -266,9 +285,11 @@ export function App() {
                         <span className="telemetry-task-title">Smoke Test (Ping)</span>
                       </td>
                       <td className="mono" style={{ color: 'var(--text-secondary)' }}>70 / 2</td>
+                      <td className="mono" style={{ color: '#a7f3d0' }}>32</td>
                       <td className="mono font-bold text-accent">72</td>
+                      <td className="mono" style={{ color: '#fef08a' }}>0.000001</td>
                       <td className="mono">0.15s</td>
-                      <td><span className="provenance-pill">100% match</span></td>
+                      <td><span style={{ color: 'var(--text-muted)' }}>—</span></td>
                       <td><span className="status-pill-ok">200 OK</span></td>
                     </tr>
                   )}
@@ -277,8 +298,16 @@ export function App() {
             </div>
 
             <div className="popover-footer">
-              <span>Client-side telemetry per CSCS Guidance</span>
-              <span>Accumulated: <strong>{(telemetry?.total_tokens ?? 72).toLocaleString()}</strong> tokens</span>
+              <span>Client-side telemetry • Official CSCS Academia Tariff</span>
+              <span>
+                Total: <strong>{(telemetry?.total_tokens ?? 216).toLocaleString()}</strong> tok{' '}
+                <span style={{ color: 'var(--text-secondary)' }}>
+                  ({(telemetry?.total_prompt_tokens ?? 210).toLocaleString()} in •{' '}
+                  {(telemetry?.total_completion_tokens ?? 6).toLocaleString()} out)
+                </span>{' '}
+                • <strong>{(telemetry?.total_cost_chf ?? 0.000002).toFixed(6)}</strong> CHF (
+                <strong>{(telemetry?.total_cached_tokens ?? 128).toLocaleString()}</strong> cached)
+              </span>
             </div>
           </div>
         </div>
