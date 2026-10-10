@@ -1,5 +1,22 @@
 [
   {
+    "file_name": "CHE_326604_819055.pdf",
+    "affair_id": 326604,
+    "short_id": null,
+    "title": {
+      "de": "Nein zum F-35",
+      "fr": "Non aux F-35",
+      "it": "No agli F-35"
+    },
+    "body_key": "CHE",
+    "level": "federal",
+    "language": "de",
+    "doc_id": 819055,
+    "doc_name": "Unterschriftenliste",
+    "url": "https://files.openparldata.ch/doc/CHE/fb3af4817db95ff0fef1fc399368a9629128e2d0f87864c2b003eff40edc79d5",
+    "size_bytes": 78047
+  },
+  {
     "file_name": "ZH_341002_927679.pdf",
     "affair_id": 341002,
     "short_id": null,
@@ -13,21 +30,6 @@
     "doc_name": "JI - Brief RRin Fehr Änderung der Kantonalen Opferhilfeveror",
     "url": "https://files.openparldata.ch/doc/ZH/8c8ee80e93f9ebf772acaff0928cce1bcd2adfc6592cc2b70c8c0ba3ea202556",
     "size_bytes": 112720
-  },
-  {
-    "file_name": "GR_337559_920605.pdf",
-    "affair_id": 337559,
-    "short_id": null,
-    "title": {
-      "de": "Die Rekordhitze und -trockenheit"
-    },
-    "body_key": "GR",
-    "level": "cantonal",
-    "language": "de",
-    "doc_id": 920605,
-    "doc_name": "Anfrage Kreiliger betreffend die Rekordhitze und -trockenheit",
-    "url": "https://files.openparldata.ch/doc/GR/b61acc7a2dde46fd1323267a40bfd3fe8d9215362f18eec5a5ef21f1d72c1eee",
-    "size_bytes": 118241
   },
   {
     "file_name": "BE_340901_927364.pdf",
@@ -46,20 +48,365 @@
     "size_bytes": 271769
   },
   {
-    "file_name": "CHE_326604_819055.pdf",
-    "affair_id": 326604,
+    "file_name": "LU_339324_924638.pdf",
+    "affair_id": 339324,
     "short_id": null,
     "title": {
-      "de": "Nein zum F-35",
-      "fr": "Non aux F-35",
-      "it": "No agli F-35"
+      "de": "Änderung des Gesetzes über die Ergänzungsleistungen zur AHV/IV (SRL Nr. 881):  Finanzierung / Kostenteiler"
     },
-    "body_key": "CHE",
-    "level": "federal",
+    "body_key": "LU",
+    "level": "cantonal",
     "language": "de",
-    "doc_id": 819055,
-    "doc_name": "Unterschriftenliste",
-    "url": "https://files.openparldata.ch/doc/CHE/fb3af4817db95ff0fef1fc399368a9629128e2d0f87864c2b003eff40edc79d5",
-    "size_bytes": 78047
+    "doc_id": 924638,
+    "doc_name": "Zugangslink zum Onlineformular",
+    "url": "https://files.openparldata.ch/doc/LU/7486e27d646e5d61566f80b46107c8f2e3251409a7bb5952be0ad6a7dcef7af7",
+    "size_bytes": 85570
+  },
+  {
+    "file_name": "UR_340770_927101.pdf",
+    "affair_id": 340770,
+    "short_id": null,
+    "title": {
+      "de": "Staubbelastung, Kommunikation und Gefahrenprävention nach dem Felssturz am Gross Ruchen"
+    },
+    "body_key": "UR",
+    "level": "cantonal",
+    "language": "de",
+    "doc_id": 927101,
+    "doc_name": "LA.2026-0824 I. Text der Kleinen Anfrage",
+    "url": "https://files.openparldata.ch/doc/UR/28658322821f12d404f44ac567b43847b4a9f675ec511f650cc00f9d466c1578",
+    "size_bytes": 922124
+  },
+  {
+    "file_name": "SZ_341375_928464.pdf",
+    "affair_id": 341375,
+    "short_id": null,
+    "title": {
+      "de": "Strategie Winterstromversorgung: Heimfall Wägital, strategische Beteiligungen (KKW Gösgen) und Erneuerbare"
+    },
+    "body_key": "SZ",
+    "level": "cantonal",
+    "language": "de",
+    "doc_id": 928464,
+    "doc_name": "Interpellation I 13/26: Strategie Winterstromversorgung: Heimfall Wägital, strategische Beteiligungen (KKW Gösgen) und Erneuerbare",
+    "url": "https://files.openparldata.ch/doc/SZ/b9b38b48829e73fe5987f7240e27ecea7aabc5aa8d405b4922efa2c021cb25d2",
+    "size_bytes": 231676
+  },
+  {
+    "file_name": "OW_339491_925376.pdf",
+    "affair_id": 339491,
+    "short_id": null,
+    "title": {
+      "de": "Kantonsbeitrag an die Sanierung der Älggistrasse Sachseln"
+    },
+    "body_key": "OW",
+    "level": "cantonal",
+    "language": "de",
+    "doc_id": 925376,
+    "doc_name": "Situation Bauprojekt Profil 1-54",
+    "url": "https://files.openparldata.ch/doc/OW/ccb44e506e4006d5c3d6e446bbeb73b7a651eb730521e4d9a6b156fcad8dff82",
+    "size_bytes": 12761430
+  },
+  {
+    "file_name": "NW_339812_926033.pdf",
+    "affair_id": 339812,
+    "short_id": null,
+    "title": {
+      "de": "Teilrevision Einführungsgesetz zum Ausländer- und Integrationsgesetz und zum Asylgesetz"
+    },
+    "body_key": "NW",
+    "level": "cantonal",
+    "language": "de",
+    "doc_id": 926033,
+    "doc_name": "NG 122.21 Ausländerverordnung Synopse",
+    "url": "https://files.openparldata.ch/doc/NW/40df08ede2882e86bfdfa0568cd34f9ccd24f8de10b6b611e05fa9d8b1c348ba",
+    "size_bytes": 147035
+  },
+  {
+    "file_name": "GL_340560_926889.pdf",
+    "affair_id": 340560,
+    "short_id": null,
+    "title": {
+      "de": "Gewährung eines Verpflichtungskredits über maximal 1,504 Millionen Franken für einen freien Kantonsbeitrag an die Sanierung von Dach und Fassade des Freulerpalastes in Näfels"
+    },
+    "body_key": "GL",
+    "level": "cantonal",
+    "language": "de",
+    "doc_id": 926889,
+    "doc_name": "Antrag an den Landrat vom 29.9.2026",
+    "url": "https://files.openparldata.ch/doc/GL/96d0f3635921f7394c37fbd26b938cfa588d0b76d9db8c66e1ae763f33af79d5",
+    "size_bytes": 262988
+  },
+  {
+    "file_name": "ZG_339222_924381.pdf",
+    "affair_id": 339222,
+    "short_id": null,
+    "title": {
+      "de": "Anpassung kantonaler Richtplan 26/1: Teil A: Anpassungen aufgrund der Revision des Planungs- und Baugesetzes (PBG) und Teil B: Stabilisierungsstrategie aufgrund der Teilrevision des Raumplanungsgesetzes (RPG 2)"
+    },
+    "body_key": "ZG",
+    "level": "cantonal",
+    "language": "de",
+    "doc_id": 924381,
+    "doc_name": "4) Technischer Grundlagenbericht zur Stabilisierungsstrategie im Kanton Zug",
+    "url": "https://files.openparldata.ch/doc/ZG/a34b331fc2f2849759635833dd182611d5ed26d014374e9438ce64fb89600e0f",
+    "size_bytes": 600651
+  },
+  {
+    "file_name": "SO_339767_925293.pdf",
+    "affair_id": 339767,
+    "short_id": null,
+    "title": {
+      "de": "Globalbudget «Energie und Klima» für die Jahre 2027 bis 2029"
+    },
+    "body_key": "SO",
+    "level": "cantonal",
+    "language": "de",
+    "doc_id": 925293,
+    "doc_name": "01. Botschaft und Entwurf RR vom 22.09.2026 zu SGB 0247/2026 (RRB Nr. 2026/1654)",
+    "url": "https://files.openparldata.ch/doc/SO/8fe02a4012cb0778af290732ef734c72f2559960f16d8d8d36d723c946b01ccc",
+    "size_bytes": 308754
+  },
+  {
+    "file_name": "BS_341414_928868.pdf",
+    "affair_id": 341414,
+    "short_id": null,
+    "title": {
+      "de": "Auftrag, Finanzierung und Wettbewerbsgleichheit der Lehrbetriebe beider Basel (LBB)"
+    },
+    "body_key": "BS",
+    "level": "cantonal",
+    "language": "de",
+    "doc_id": 928868,
+    "doc_name": "Text Schriftliche Anfrage",
+    "url": "https://files.openparldata.ch/doc/BS/8b062c54b738a1aaed91ac5bc0a084910016d4cd035eb3607dd8fa784b0420c6",
+    "size_bytes": 11331
+  },
+  {
+    "file_name": "BL_297828_690091.pdf",
+    "affair_id": 297828,
+    "short_id": null,
+    "title": {
+      "de": "Regelung der Kompetenzen zum Erlass von Drohnenverboten"
+    },
+    "body_key": "BL",
+    "level": "cantonal",
+    "language": "de",
+    "doc_id": 690091,
+    "doc_name": "Synopse",
+    "url": "https://files.openparldata.ch/doc/BL/ff5077659b963cd302918779b81c292ba5bb94247d40d67fe0f25b954a116304",
+    "size_bytes": 136225
+  },
+  {
+    "file_name": "SH_341398_928912.pdf",
+    "affair_id": 341398,
+    "short_id": null,
+    "title": {
+      "de": "«Unternehmenssteuern nach 2030 - Wie gross ist das finanzielle Risiko für den Kanton Schaffhausen?»"
+    },
+    "body_key": "SH",
+    "level": "cantonal",
+    "language": "de",
+    "doc_id": 928912,
+    "doc_name": "Interpellation 2026_02.pdf",
+    "url": "https://files.openparldata.ch/doc/SH/948883558f14fae90373f034c0ae9d56f9dcf060eb473783ff887ebdd8acbc36",
+    "size_bytes": 2800800
+  },
+  {
+    "file_name": "AR_340850_927539.pdf",
+    "affair_id": 340850,
+    "short_id": null,
+    "title": {
+      "de": "Gesamtverkehrsstrategie (GVS)"
+    },
+    "body_key": "AR",
+    "level": "cantonal",
+    "language": "de",
+    "doc_id": 927539,
+    "doc_name": "Begleitschreiben",
+    "url": "https://files.openparldata.ch/doc/AR/0a5afa836e1b520ee26efa56ea8eb98afd9766689fb96a5d76cf5d8a2ec543e2",
+    "size_bytes": 11594
+  },
+  {
+    "file_name": "AI_339361_924870.pdf",
+    "affair_id": 339361,
+    "short_id": null,
+    "title": {
+      "de": "Gebührenerhöhungen in Verordnungen"
+    },
+    "body_key": "AI",
+    "level": "cantonal",
+    "language": "de",
+    "doc_id": 924870,
+    "doc_name": "4 Vernehmlassungsbericht Revision Gebührenverordnung.pdf",
+    "url": "https://files.openparldata.ch/doc/AI/4f3651172dd5318cc97aaf537317c35bcd61529e82f565ecfd6a0e173a627ea0",
+    "size_bytes": 636055
+  },
+  {
+    "file_name": "SG_340992_927486.pdf",
+    "affair_id": 340992,
+    "short_id": null,
+    "title": {
+      "de": "Ressource Wasser: Herausforderungen gezielt angehen"
+    },
+    "body_key": "SG",
+    "level": "cantonal",
+    "language": "de",
+    "doc_id": 927486,
+    "doc_name": "Wortlaut vom 5. Oktober 2026",
+    "url": "https://files.openparldata.ch/doc/SG/09ce16829b7b63f045175916c6b0e0c4e14c4eccac91d3445503225d6ab9bcb1",
+    "size_bytes": 218051
+  },
+  {
+    "file_name": "AG_340791_927230.pdf",
+    "affair_id": 340791,
+    "short_id": null,
+    "title": {
+      "de": "Programm Invasive Neobiota (Phase 2028–2033); Verpflichtungskredit"
+    },
+    "body_key": "AG",
+    "level": "cantonal",
+    "language": "de",
+    "doc_id": 927230,
+    "doc_name": "Adressatenliste (PDF, 3 Seiten, 101 KB)",
+    "url": "https://files.openparldata.ch/doc/AG/875102854f0db36c9ce744dbcce86fc40c7a660ac8a828858511c18b3eddbee5",
+    "size_bytes": 101186
+  },
+  {
+    "file_name": "TG_339476_925226.pdf",
+    "affair_id": 339476,
+    "short_id": null,
+    "title": {
+      "de": "Das IPV-System im Thurgau soll gerechter werden"
+    },
+    "body_key": "TG",
+    "level": "cantonal",
+    "language": "de",
+    "doc_id": 925226,
+    "doc_name": "DFS_VNL_Medienmitteilung_Das IPV-System im Thurgau soll gerechter werden.pdf",
+    "url": "https://files.openparldata.ch/doc/TG/39a4c921d467a963a2af23cb3aaeedfda2de08ff47690934b551415c4b9ba676",
+    "size_bytes": 107199
+  },
+  {
+    "file_name": "GR_337559_920605.pdf",
+    "affair_id": 337559,
+    "short_id": null,
+    "title": {
+      "de": "Die Rekordhitze und -trockenheit"
+    },
+    "body_key": "GR",
+    "level": "cantonal",
+    "language": "de",
+    "doc_id": 920605,
+    "doc_name": "Anfrage Kreiliger betreffend die Rekordhitze und -trockenheit",
+    "url": "https://files.openparldata.ch/doc/GR/b61acc7a2dde46fd1323267a40bfd3fe8d9215362f18eec5a5ef21f1d72c1eee",
+    "size_bytes": 118241
+  },
+  {
+    "file_name": "VS_338837_923791.pdf",
+    "affair_id": 338837,
+    "short_id": null,
+    "title": {
+      "de": "Lohnentwicklung und Gleichbehandlung der Mitarbeitenden des Spital Wallis",
+      "fr": "[Lohnentwicklung und Gleichbehandlung der Mitarbeitenden des Spital Wallis]"
+    },
+    "body_key": "VS",
+    "level": "cantonal",
+    "language": "fr",
+    "doc_id": 923791,
+    "doc_name": "INT_2026.09.372_EIN_Final Lohnentwicklung und Gleichbehandlung der Mitarbeitenden des Spital Wallis",
+    "url": "https://files.openparldata.ch/doc/VS/7dbeb1061470234d01e730fe4b58e806aeb2640a9f37e3698771ef3ae75f649f",
+    "size_bytes": 8921
+  },
+  {
+    "file_name": "FR_341423_928932.pdf",
+    "affair_id": 341423,
+    "short_id": null,
+    "title": {
+      "de": "[Santé mentale des jeunes : pour une prévention, une intervention précoce et un accès aux soins renforcés]",
+      "fr": "Santé mentale des jeunes : pour une prévention, une intervention précoce et un accès aux soins renforcés"
+    },
+    "body_key": "FR",
+    "level": "cantonal",
+    "language": "fr",
+    "doc_id": 928932,
+    "doc_name": "fr_DDE_2026-GC-263_Motion_Sante_mentale_jeunes",
+    "url": "https://files.openparldata.ch/doc/FR/80a9ac9cd08c8a91a3df63569d60794ae33223ab7a996dd62ec50afd58b9c9ca",
+    "size_bytes": 161941
+  },
+  {
+    "file_name": "GE_340969_927404.pdf",
+    "affair_id": 340969,
+    "short_id": null,
+    "title": {
+      "fr": "Culture institutionnelle du service de protection des mineurs : va-t-on enfin en finir avec les pratiques coercitives et punitives pour évoluer vers un soutien pédagogique aux familles ?"
+    },
+    "body_key": "GE",
+    "level": "cantonal",
+    "language": "fr",
+    "doc_id": 927404,
+    "doc_name": "Q 4165",
+    "url": "https://files.openparldata.ch/doc/GE/e811aaf3b08fabd324918190fa3b4aa1d4614e64e9d33ecd8b01980b8f0e72da",
+    "size_bytes": 179388
+  },
+  {
+    "file_name": "VD_341097_927589.pdf",
+    "affair_id": 341097,
+    "short_id": null,
+    "title": {
+      "fr": "Recours à des consultants externes et statut de la directive DRUIDE 1.5.2 question 9"
+    },
+    "body_key": "VD",
+    "level": "cantonal",
+    "language": "fr",
+    "doc_id": 927589,
+    "doc_name": "Canton de Vaud",
+    "url": "https://files.openparldata.ch/doc/VD/7e22e0d77b9afdc043e978f076c81f7007ff9a4cea6c39bb6aa3caea4a3be5ee",
+    "size_bytes": 139880
+  },
+  {
+    "file_name": "NE_340506_926970.pdf",
+    "affair_id": 340506,
+    "short_id": null,
+    "title": {
+      "fr": "Traitement de victimes étrangères : quelle est la pratique neuchâteloise ?"
+    },
+    "body_key": "NE",
+    "level": "cantonal",
+    "language": "fr",
+    "doc_id": 926970,
+    "doc_name": "Traitement de victimes étrangères : quelle est la pratique neuchâteloise ?",
+    "url": "https://files.openparldata.ch/doc/NE/9da34185a810e8604ec6c2b02be1b2f4ff1fad0970e20cd8ea015adba1fdb3e3",
+    "size_bytes": 67685
+  },
+  {
+    "file_name": "JU_340909_927538.pdf",
+    "affair_id": 340909,
+    "short_id": null,
+    "title": {
+      "fr": "Stratégie des pistes cyclables... tout roule ?"
+    },
+    "body_key": "JU",
+    "level": "cantonal",
+    "language": "fr",
+    "doc_id": 927538,
+    "doc_name": "Stratégie des pistes cyclables... tout roule ?",
+    "url": "https://files.openparldata.ch/doc/JU/66052a565ab84b103c3ee79101de7e34ad82650e123005481b3ee75d9fa567b5",
+    "size_bytes": 98632
+  },
+  {
+    "file_name": "TI_341386_928764.pdf",
+    "affair_id": 341386,
+    "short_id": null,
+    "title": {
+      "it": "Chiarezza sui versamenti ai membri del Consiglio di amministrazione di AET"
+    },
+    "body_key": "TI",
+    "level": "cantonal",
+    "language": "it",
+    "doc_id": 928764,
+    "doc_name": "Versione PDF",
+    "url": "https://files.openparldata.ch/doc/TI/682097fb4db2b1b44e44ada90112a72064aa73aa2ae703f074e77384932f216c",
+    "size_bytes": 105673
   }
 ]

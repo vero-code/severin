@@ -1,0 +1,162 @@
+<!DOCTYPE html><html lang="de"><head><meta http-equiv="Content-Security-Policy" content="base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://unpkg.com; script-src-elem 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; default-src 'none'; frame-ancestors 'none'; form-action 'self'; manifest-src 'self'; frame-src *; font-src * data:; connect-src *; worker-src * data: blob:; img-src * data: blob:; media-src *;">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>E-Mitwirkung</title>
+  <meta name="theme-color" content="#ffffff">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="msapplication-config" content="/browserconfig.xml">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="stylesheet" href="/outdated-browser.css">
+  <!-- <link rel="mask-icon" href="/assets/img/icons/safari-pinned-tab.svg" color="#c41800"> -->
+  <link rel="manifest" href="/manifest.json">
+
+  <meta http-equiv="Content-Security-Policy" content="">
+  <meta http-equiv="Cache-Control" content="no-cache">
+  <meta http-equiv="expires" content="0">
+  <meta http-equiv="pragma" content="no-cache">
+
+  <!--
+      manifest.json provides metadata used when your web app is added to the
+      homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
+    -->
+  <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+  <script type="module" crossorigin="" src="/assets/index-TT6kGyw6.js"></script>
+  <link rel="modulepreload" crossorigin="" href="/assets/jsx-runtime-DviOesU0.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/index.es-Dgub1nu5.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/react-dom-B4GiJgY1.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/chunk-62JRHF6Z-BwiPrGZR.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/i18next-C0uXAp1K.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/constants-CX5cvIUA.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/stack-Brlu6ykr.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/loading-indicator-2nw2VKed.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/typography-aZ5cnfQK.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/ref-handler-C-c51aMH.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/icon-button-B70kpS6z.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/typofallback-JdEAO8-X.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/info-box-CE6WmQLU.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/button-CP8CQExe.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/i18n-BpNBQY9k.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/lodash-DHJ6QF0B.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/dist-gVHGee7d.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/use-unique-id-0W_R0pa_.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/card--RpdHbrY.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/modal-CLTOKMGI.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/useMeasure-C4ELS7Ha.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/input-label-B9wDiIO7.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/separated-list-YBrlp7gM.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/input-wrapper-C7941Gwo.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/use-lang-y3W2KHbV.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/use-environment-shortcut-zx9IqqXe.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/identity-iBr4Jt8o.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/noop-DcUtvi0v.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/language-provider-Bk2osL04.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/language-provider-CeslvMBO.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/space-admin-routes-C4z_mFvu.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/space-routes-CmlC-a4M.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/survey-routes-Bx7V-BCV.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/legacy-function-provider-D33truJQ.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/navigation-items-context-d9Sjxae0.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/use-sentry-gUZkFlZN.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/get-axios-Dp5jOMag.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/get-axios-D7eWIIty.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/client-BDfafXAA.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/use-async-CgWZ9oFK.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/space-provider-KeEkINyr.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/user-context-Dsx6oLXs.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/user-B3WZuE7r.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/formik.esm-C3xa0lEk.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/use-toast-ULqNBfMU.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/ThemeProvider-pjopceTa.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/objectWithoutPropertiesLoose-VmT8dzcO.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/extends-Dehldq5q.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/browser-C2Pc_WY1.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/react-lifecycles-compat.es-BFKXuq_a.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/useCallbackRef-BEqQLxhS.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/Fade-C03fcN22.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/divWithClassName-Bkt9h3lZ.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/CloseButton-B3CFqhwz.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/Button-DuNJaBxB.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/Alert-Hxiuq53d.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/CardHeaderContext-C_b_ykpV.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/ImperativeTransition-C67CLC3J.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/Col-SIGIu1sY.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/warning-BwDQSJ4R.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/Form-Cf626Yku.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/hasClass-BCv1JDUQ.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/removeClass-DtOxWnFs.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/Modal-CF3TEHiV.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/NavbarContext-Bl5hk3TR.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/cjs-fuGKnXDK.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/isWithinInterval-C0ptIF9y.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/en-US-CGj8m4PH.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/isAfter-BeABYmWJ.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/isBefore-RkO-DBoe.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/utils-C0SNtada.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/survey-context-Du9fvhMl.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/survey-context-DapIr5ZJ.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/formik-field-wrapper-cLdWtQhO.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/confirmation-modal-yBLTz-Tq.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/use-confirmation-CQHuOYTO.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/use-axios-D5kAapYZ.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/hooks-B3OAnvt-.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/jsonToFormData-Bml_ttg4.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/utils-DYLrgtTw.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/create-form-data-DgL6nkuO.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/create-url-DKEqI_ie.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/url-ByNOIBmx.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/option-item-D_d5D659.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/json-validation-DEhbKZzw.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/radio-input-COsKI67D.js">
+  <link rel="modulepreload" crossorigin="" href="/assets/StorageService-BR7dtzTB.js">
+  <link rel="stylesheet" crossorigin="" href="/assets/stack-DC2doh7Y.css">
+  <link rel="stylesheet" crossorigin="" href="/assets/loading-indicator-dUM25MIh.css">
+  <link rel="stylesheet" crossorigin="" href="/assets/typography-DKQyt7lt.css">
+  <link rel="stylesheet" crossorigin="" href="/assets/icon-button-BkzL_5e8.css">
+  <link rel="stylesheet" crossorigin="" href="/assets/info-box-B_Dip75_.css">
+  <link rel="stylesheet" crossorigin="" href="/assets/button-Dcyk9tNn.css">
+  <link rel="stylesheet" crossorigin="" href="/assets/card-C9zh5WBn.css">
+  <link rel="stylesheet" crossorigin="" href="/assets/modal-BSjA-09q.css">
+  <link rel="stylesheet" crossorigin="" href="/assets/input-label-DCx9nQu1.css">
+  <link rel="stylesheet" crossorigin="" href="/assets/separated-list-BI5vDRIw.css">
+  <link rel="stylesheet" crossorigin="" href="/assets/input-wrapper-C32q2HHW.css">
+  <link rel="stylesheet" crossorigin="" href="/assets/Alert-Cg5BVaVx.css">
+  <link rel="stylesheet" crossorigin="" href="/assets/use-confirmation-QYRHffa_.css">
+  <link rel="stylesheet" crossorigin="" href="/assets/option-item-DkggP4LA.css">
+  <link rel="stylesheet" crossorigin="" href="/assets/radio-input-Du_-3Ztt.css">
+  <link rel="stylesheet" crossorigin="" href="/assets/index-YqQkxGS1.css">
+</head>
+<body>
+<script nonce="48d3e28135e4c284fe03a5fec2602590" id="custom-js"></script>
+<style id="custom-css"></style>
+<noscript>
+  Sie müssen JavaScript in Ihrem Browser aktivieren, um diese Applikation nutzen zu können.
+  <br/><br/>
+  Vous devez activer JavaScript sur votre navigateur pour pouvoir utiliser cette application.
+</noscript>
+<div id="root"></div>
+<!--
+    This HTML file is a template.
+    If you open it directly in the browser, you will see an empty page.
+
+    You can add webfonts, meta tags, or analytics to this file.
+    The build step will place the bundled scripts into the <body> tag.
+
+    To begin the development, run `npm start` or `yarn start`.
+    To create a production bundle, use `npm run build` or `yarn build`.
+  -->
+
+
+</body></html>
