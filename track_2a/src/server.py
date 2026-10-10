@@ -15,6 +15,7 @@ import requests
 from .api_client import OpenParlDataClient
 from .enums import SearchMode
 from .schema import export_json_schema
+from .pdf_parser import extract_pdf_pages
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("severin_server")
@@ -124,3 +125,39 @@ def proxy_pdf(url: str = Query(..., description="OpenParlData PDF file URL")):
     except Exception as e:
         logger.error(f"Error proxying PDF from {url}: {e}")
         raise HTTPException(status_code=502, detail=f"Failed to fetch PDF: {e}")
+
+
+@app.get("/api/parse-pdf")
+def parse_pdf(url: str = Query(..., description="OpenParlData PDF file URL")):
+    """
+    Download and parse PDF page-by-page returning text with physical page numbers.
+    """
+    if not (url.startswith("https://") or url.startswith("http://")):
+        raise HTTPException(status_code=400, detail="Invalid URL protocol")
+    try:
+        resp = requests.get(url, stream=True, timeout=30)
+        resp.raise_for_status()
+
+        import tempfile
+        from pathlib import Path
+        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+            tmp.write(resp.content)
+            tmp_path = Path(tmp.name)
+
+        try:
+            pages = extract_pdf_pages(tmp_path)
+        finally:
+            if tmp_path.exists():
+                tmp_path.unlink()
+
+        total_chars = sum(p["char_count"] for p in pages)
+        return {
+            "url": url,
+            "total_pages": len(pages),
+            "total_chars": total_chars,
+            "pages": pages
+        }
+    except Exception as e:
+        logger.error(f"Error parsing PDF from {url}: {e}")
+        raise HTTPException(status_code=502, detail=f"Failed to parse PDF: {e}")
+

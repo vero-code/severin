@@ -42,3 +42,17 @@ export interface AffairsApiResponse {
     offset?: number;
   };
 }
+
+export interface PdfPageItem {
+  page_number: number;
+  text: string;
+  char_count: number;
+}
+
+export interface ParsePdfResponse {
+  url: string;
+  total_pages: number;
+  total_chars: number;
+  pages: PdfPageItem[];
+}
+

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import severinLogo from './assets/logo.png';
-import type { ParliamentaryAffairItem, DocumentItem } from './types';
+import type { ParliamentaryAffairItem, DocumentItem, PdfPageItem, ParsePdfResponse } from './types';
 
 // Prevalent Swiss parliamentary bodies for fast selection
 const PRESET_BODIES = [
@@ -56,6 +56,39 @@ export function App() {
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  // PDF Preview vs Parsed Text View states
+  const [activeTab, setActiveTab] = useState<'pdf' | 'text'>('pdf');
+  const [parsedPages, setParsedPages] = useState<PdfPageItem[]>([]);
+  const [isParsing, setIsParsing] = useState<boolean>(false);
+  const [parseError, setParseError] = useState<string | null>(null);
+
+  const fetchParsedText = async (docUrl: string) => {
+    if (!docUrl) return;
+    setIsParsing(true);
+    setParseError(null);
+    try {
+      const resp = await fetch(`/api/parse-pdf?url=${encodeURIComponent(docUrl)}`);
+      if (!resp.ok) {
+        throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
+      }
+      const data: ParsePdfResponse = await resp.json();
+      setParsedPages(data.pages || []);
+    } catch (err: any) {
+      setParseError(err.message || 'Failed to extract text from PDF');
+    } finally {
+      setIsParsing(false);
+    }
+  };
+
+  const handleSelectDoc = (doc: DocumentItem) => {
+    setActiveDoc(doc);
+    setParsedPages([]);
+    setParseError(null);
+    if (activeTab === 'text') {
+      fetchParsedText(doc.url);
+    }
+  };
+
   const fetchAffairs = async () => {
     setLoading(true);
     setErrorMsg(null);
@@ -83,13 +116,15 @@ export function App() {
         setSelectedAffairId(firstWithDocs.id);
         const docs = getAffairDocs(firstWithDocs);
         if (docs.length > 0) {
-          setActiveDoc(docs[0]);
+          handleSelectDoc(docs[0]);
         } else {
           setActiveDoc(null);
+          setParsedPages([]);
         }
       } else {
         setSelectedAffairId(null);
         setActiveDoc(null);
+        setParsedPages([]);
       }
     } catch (err: any) {
       setErrorMsg(err.message || 'Failed to fetch affairs');
@@ -102,9 +137,10 @@ export function App() {
     setSelectedAffairId(affair.id);
     const docs = getAffairDocs(affair);
     if (docs.length > 0) {
-      setActiveDoc(docs[0]);
+      handleSelectDoc(docs[0]);
     } else {
       setActiveDoc(null);
+      setParsedPages([]);
     }
   };
 
@@ -251,7 +287,7 @@ export function App() {
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedAffairId(affair.id);
-                            setActiveDoc(doc);
+                            handleSelectDoc(doc);
                           }}
                         >
                           📄 {getText(doc.title) || `Document ${doc.id}`}
@@ -264,10 +300,29 @@ export function App() {
             })}
           </div>
 
-          {/* Right Column: PDF Preview */}
+          {/* Right Column: PDF Preview / Parsed Text */}
           <div className="preview-panel">
             <div className="preview-header">
-              <span>PDF Viewer</span>
+              <div className="preview-tabs">
+                <button
+                  className={`preview-tab-btn ${activeTab === 'pdf' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('pdf')}
+                >
+                  📄 PDF Preview
+                </button>
+                <button
+                  className={`preview-tab-btn ${activeTab === 'text' ? 'active' : ''}`}
+                  onClick={() => {
+                    setActiveTab('text');
+                    if (activeDoc?.url && parsedPages.length === 0) {
+                      fetchParsedText(activeDoc.url);
+                    }
+                  }}
+                >
+                  📝 Extracted Text {parsedPages.length > 0 ? `(${parsedPages.length} p.)` : ''}
+                </button>
+              </div>
+
               {activeDoc?.url && (
                 <a
                   href={activeDoc.url}
@@ -281,11 +336,50 @@ export function App() {
             </div>
 
             {activeDoc?.url ? (
-              <iframe
-                title="PDF Document Preview"
-                src={`/api/pdf-proxy?url=${encodeURIComponent(activeDoc.url)}`}
-                className="preview-iframe"
-              />
+              activeTab === 'pdf' ? (
+                <iframe
+                  title="PDF Document Preview"
+                  src={`/api/pdf-proxy?url=${encodeURIComponent(activeDoc.url)}`}
+                  className="preview-iframe"
+                />
+              ) : (
+                <div className="parsed-text-view">
+                  {isParsing && (
+                    <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-secondary)' }}>
+                      <p>⏳ Parsing document pages via pypdf...</p>
+                    </div>
+                  )}
+
+                  {parseError && (
+                    <div style={{ padding: '1rem', backgroundColor: 'rgba(239, 68, 68, 0.15)', border: '1px solid #ef4444', borderRadius: '8px', color: '#fca5a5', fontSize: '0.85rem' }}>
+                      ⚠️ {parseError}
+                    </div>
+                  )}
+
+                  {!isParsing && !parseError && parsedPages.length === 0 && (
+                    <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-muted)' }}>
+                      <button
+                        className="btn-primary"
+                        onClick={() => fetchParsedText(activeDoc.url)}
+                      >
+                        Extract Page Text
+                      </button>
+                    </div>
+                  )}
+
+                  {!isParsing && parsedPages.map((page) => (
+                    <div key={page.page_number} className="parsed-page-card">
+                      <div className="parsed-page-header">
+                        <span>PAGE {page.page_number}</span>
+                        <span>{page.char_count.toLocaleString()} characters</span>
+                      </div>
+                      <div className="parsed-page-content">
+                        {page.text || <em style={{ color: 'var(--text-muted)' }}>[Empty or image-only page]</em>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
             ) : (
               <div className="preview-placeholder">
                 <svg
@@ -300,7 +394,7 @@ export function App() {
                     d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
                   />
                 </svg>
-                <p>Select an affair with attached documents to view the PDF</p>
+                <p>Select an affair with attached documents to view the PDF or extracted text</p>
               </div>
             )}
           </div>
