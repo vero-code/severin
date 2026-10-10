@@ -34,17 +34,22 @@ severin/
 │   │   ├── api_client.py              # Production-grade OpenParlData REST API client
 │   │   ├── adapter.py                 # Multi-level, trilingual API-to-Schema transformer
 │   │   ├── dataset.py                 # Curated dataset downloader with 100 MB limit guard
+│   │   ├── pdf_parser.py              # Page-level PDF text extractor with offset tracking
+│   │   ├── cscs_client.py             # CSCS Apertus-v1.5-8B client (Rule 5, temperature=0.0)
 │   │   └── server.py                  # FastAPI backend with /api/schema and PDF proxy
 │   ├── tests/
 │   │   ├── test_schema.py             # Unit tests for schema validation & anti-hallucination
 │   │   ├── test_adapter.py            # Unit & live integration tests for API adapter
-│   │   └── test_dataset.py            # Automated test enforcing the 100 MB directory limit
+│   │   ├── test_dataset.py            # Automated test enforcing the 100 MB directory limit
+│   │   ├── test_pdf_parser.py         # Tests for page extraction and snippet search
+│   │   └── test_cscs_client.py        # CSCS connection and Rule 5 compliance test
 │   ├── data/sample_pdfs/              # Curated nationwide dataset (27 PDFs, ~19.7 MB)
 │   │   └── manifest.json              # Traceable metadata manifest for all samples
 │   ├── frontend/                      # Vite + React + TypeScript SPA Explorer
 │   ├── technical_report.md            # Official evaluation write-up for judges
 │   ├── Makefile                       # Execution target for jury evaluation
-│   └── requirements.txt               # Dependencies
+│   ├── requirements.txt               # Dependencies
+│   └── .env.example                   # Environment variables template for API keys
 └── README.md                          # Project documentation
 ```
 
@@ -63,9 +68,18 @@ severin/
 - Total size: **19.74 MB** — strictly respecting the hackathon's **100 MB** hard limit.
 - Verified and traceable via `manifest.json`.
 
-### 4. Live Full-Stack Workbench (`track_2a/src/server.py`, `track_2a/frontend/`)
+### 4. Page-Level PDF Parser (`track_2a/src/pdf_parser.py`)
+- Extracts text page-by-page preserving 1-indexed physical PDF page numbers.
+- Injects LLM boundary markers (`--- [PAGE X] ---`) and calculates character offsets for highlightable evidence.
+
+### 5. Deterministic CSCS Inference Client (`track_2a/src/cscs_client.py`)
+- Direct integration with `https://api.inference.cscs.ch/v1` serving `swiss-ai/Apertus-v1.5-8B`.
+- Strictly locks `temperature=0.0` for reproducible, hallucination-free output (Rule 5).
+- Client-side token and latency telemetry tracking.
+
+### 6. Live Full-Stack Workbench (`track_2a/src/server.py`, `track_2a/frontend/`)
 - **FastAPI Backend**: live OpenAPI/Swagger specification at `/docs`, unified schema at `/api/schema`, and CORS/streaming PDF proxy.
-- **React-TS SPA**: clean split-screen viewer displaying affairs and embedded original Swiss PDFs side-by-side.
+- **React-TS SPA**: clean split-screen viewer displaying affairs, embedded original Swiss PDFs, and extracted page text side-by-side.
 
 ---
 
@@ -84,6 +98,8 @@ pip install -r requirements.txt
 python tests/test_schema.py
 python tests/test_adapter.py
 python tests/test_dataset.py
+python tests/test_pdf_parser.py
+python tests/test_cscs_client.py
 ```
 
 ### 3. Launch the Backend & Interactive UI
@@ -97,6 +113,18 @@ npm install
 npm run dev
 # Open http://localhost:5173 in your browser
 ```
+
+### 4. API Key Configuration & Jury Evaluation
+During evaluation, the jury will clone the repository onto a clean environment and provide their own CSCS Inference API key via an environment variable:
+
+```bash
+export CSCS_INFERENCE_API_KEY="jury_cscs_api_key_here"
+make run
+```
+
+Our **`CSCSInferenceClient`** seamlessly accommodates both workflows:
+1. **Jury Evaluation (Automated)**: Reads `CSCS_INFERENCE_API_KEY` directly from OS / container environment variables.
+2. **Local Development**: Automatically loads keys from local `track_2a/.env` (safely ignored by Git via `.gitignore`). A template is provided in `track_2a/.env.example`.
 
 ---
 
