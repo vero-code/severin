@@ -27,7 +27,7 @@ Your task is to analyze raw, page-demarcated Swiss parliamentary documents (PDFs
 2. MANDATORY VERIFIABLE PROVENANCE:
    - For EVERY non-null extracted fact (title, rationale, author, financial credit, question, answer, event), you MUST provide a provenance object:
      * "page_number": integer (1-indexed physical PDF page number where this information appears, matching the `--- [PAGE X] ---` demarcation).
-     * "source_text_snippet": an EXACT, VERBATIM quote substring from that page text.
+     * "source_text_snippet": an EXACT, VERBATIM quote substring from that page text (concise: 1 to 3 sentences or up to 250 characters, sufficient to uniquely anchor the claim).
    - The snippet MUST be a direct quote copy-pasted from the text. Do NOT rephrase, do NOT correct spelling, do NOT translate.
    - If you cannot point to an exact verbatim quote in the text for a fact, DO NOT EXTRACT IT (set the field to null or omit it).
 
