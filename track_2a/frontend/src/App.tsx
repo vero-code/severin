@@ -304,39 +304,42 @@ export function App() {
                 </thead>
                 <tbody>
                   {(telemetry?.history && telemetry.history.length > 0) ? (
-                    telemetry.history.map((item, idx) => (
-                      <tr key={idx}>
-                        <td className="mono">#{idx + 1}</td>
-                        <td className="mono">
-                          {item.timestamp ? new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '12:47:09'}
-                        </td>
-                        <td>
-                          {item.canton && <span className="telemetry-canton-badge">{item.canton}</span>}
-                          <span className="telemetry-task-title">{item.task || 'Inference'}</span>
-                        </td>
-                        <td className="mono" style={{ color: 'var(--text-secondary)' }}>
-                          {item.prompt_tokens.toLocaleString()} / {item.completion_tokens.toLocaleString()}
-                        </td>
-                        <td className="mono" style={{ color: '#a7f3d0' }}>
-                          {(item.cached_tokens ?? 0).toLocaleString()}
-                        </td>
-                        <td className="mono font-bold text-accent">{item.total_tokens.toLocaleString()}</td>
-                        <td className="mono" style={{ color: '#fef08a' }}>
-                          {(item.cost_chf ?? 0.000001).toFixed(6)}
-                        </td>
-                        <td className="mono">{item.latency_sec}s</td>
-                        <td>
-                          {item.provenance_score !== null && item.provenance_score !== undefined ? (
-                            <span className="provenance-pill">
-                              {Math.round(item.provenance_score * 100)}% match
-                            </span>
-                          ) : (
-                            <span style={{ color: 'var(--text-muted)' }}>—</span>
-                          )}
-                        </td>
-                        <td><span className="status-pill-ok">200 OK</span></td>
-                      </tr>
-                    ))
+                    telemetry.history.slice().reverse().map((item, idx) => {
+                      const reqNum = telemetry.history!.length - idx;
+                      return (
+                        <tr key={idx}>
+                          <td className="mono">#{reqNum}</td>
+                          <td className="mono">
+                            {item.timestamp ? new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '12:47:09'}
+                          </td>
+                          <td>
+                            {item.canton && <span className="telemetry-canton-badge">{item.canton}</span>}
+                            <span className="telemetry-task-title">{item.task || 'Inference'}</span>
+                          </td>
+                          <td className="mono" style={{ color: 'var(--text-secondary)' }}>
+                            {item.prompt_tokens.toLocaleString()} / {item.completion_tokens.toLocaleString()}
+                          </td>
+                          <td className="mono" style={{ color: '#a7f3d0' }}>
+                            {(item.cached_tokens ?? 0).toLocaleString()}
+                          </td>
+                          <td className="mono font-bold text-accent">{item.total_tokens.toLocaleString()}</td>
+                          <td className="mono" style={{ color: '#fef08a' }}>
+                            {(item.cost_chf ?? 0.000001).toFixed(6)}
+                          </td>
+                          <td className="mono">{item.latency_sec}s</td>
+                          <td>
+                            {item.provenance_score !== null && item.provenance_score !== undefined ? (
+                              <span className="provenance-pill">
+                                {Math.round(item.provenance_score * 100)}% match
+                              </span>
+                            ) : (
+                              <span style={{ color: 'var(--text-muted)' }}>—</span>
+                            )}
+                          </td>
+                          <td><span className="status-pill-ok">200 OK</span></td>
+                        </tr>
+                      );
+                    })
                   ) : (
                     <tr>
                       <td className="mono">#1</td>

@@ -20,18 +20,37 @@ class BodiesResponse(BaseModel):
     count: int = Field(description="Number of bodies returned")
 
 
+class TelemetryHistoryItem(BaseModel):
+    """Single CSCS inference call log."""
+    timestamp: Optional[str] = Field(default=None, description="ISO timestamp of invocation")
+    model: Optional[str] = Field(default="swiss-ai/Apertus-v1.5-8B", description="Model identifier")
+    task: Optional[str] = Field(default=None, description="Task label (e.g. Smoke Test, Extract: ZH...)")
+    canton: Optional[str] = Field(default=None, description="Canton or jurisdiction code")
+    provenance_score: Optional[float] = Field(default=None, description="Verified provenance match score")
+    prompt_tokens: int = Field(default=0, description="Input tokens")
+    completion_tokens: int = Field(default=0, description="Output tokens")
+    cached_tokens: Optional[int] = Field(default=0, description="Prefix cache hit tokens")
+    total_tokens: int = Field(default=0, description="Sum of prompt and completion tokens")
+    cost_chf: Optional[float] = Field(default=0.0, description="Incurred inference cost in CHF")
+    latency_sec: float = Field(default=0.0, description="Latency in seconds")
+    status: str = Field(default="success", description="Status string")
+
+
 class TelemetryResponse(BaseModel):
-    """CSCS Alps GH200 inference telemetry response schema."""
-    requests_total: int = Field(default=0, description="Total inference requests dispatched")
-    requests_successful: int = Field(default=0, description="Successful requests")
-    requests_failed: int = Field(default=0, description="Failed requests")
-    prompt_tokens: int = Field(default=0, description="Total prompt tokens processed")
-    completion_tokens: int = Field(default=0, description="Total completion tokens generated")
-    cached_tokens: int = Field(default=0, description="Tokens served from CSCS prefix cache")
-    total_tokens: int = Field(default=0, description="Cumulative tokens")
-    cache_hit_rate_pct: float = Field(default=0.0, description="Cache hit rate percentage")
-    total_cost_chf: float = Field(default=0.0, description="Total GPU cost in Swiss Francs")
-    currency: str = Field(default="CHF", description="Billing currency")
+    """CSCS Alps GH200 cumulative inference telemetry schema."""
+    model: str = Field(default="swiss-ai/Apertus-v1.5-8B", description="Active model")
+    endpoint: Optional[str] = Field(default=None, description="Inference endpoint URL")
+    status: str = Field(default="online", description="Endpoint connection status")
+    total_requests: int = Field(default=0, description="Total inference requests dispatched")
+    total_prompt_tokens: int = Field(default=0, description="Cumulative prompt tokens")
+    total_completion_tokens: int = Field(default=0, description="Cumulative completion tokens")
+    total_cached_tokens: Optional[int] = Field(default=0, description="Cumulative tokens served from prefix cache")
+    total_tokens: int = Field(default=0, description="Cumulative total tokens")
+    total_cost_chf: float = Field(default=0.0, description="Cumulative inference cost in CHF")
+    total_latency_seconds: Optional[float] = Field(default=0.0, description="Cumulative latency in seconds")
+    average_latency_seconds: float = Field(default=0.0, description="Average request latency in seconds")
+    last_request_at: Optional[str] = Field(default=None, description="Timestamp of most recent request")
+    history: List[TelemetryHistoryItem] = Field(default_factory=list, description="Recent request invocation log")
 
 
 class ParsePdfPage(BaseModel):
