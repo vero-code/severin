@@ -1,0 +1,122 @@
+{
+  "affair": {
+    "affair_id": 341386,
+    "short_id": "203.26",
+    "title": "Chiarezza sui versamenti ai membri del Consiglio di amministrazione di AET",
+    "canton_or_body": "TI",
+    "level": "cantonal",
+    "affair_type": "interpellation",
+    "language": "it",
+    "submission_date": "2026-10-08",
+    "authors": [
+      {
+        "name": "Matteo Pronzini",
+        "role": "author",
+        "party_or_fraction": null,
+        "canton_or_municipality": null,
+        "provenance": {
+          "page_number": 1,
+          "source_text_snippet": "Presentata da: Matteo Pronzini e Giuseppe Sergi per MPS-Indipendenti",
+          "char_start": 177,
+          "char_end": 245,
+          "status": "extracted"
+        }
+      },
+      {
+        "name": "Giuseppe Sergi",
+        "role": "author",
+        "party_or_fraction": null,
+        "canton_or_municipality": null,
+        "provenance": {
+          "page_number": 1,
+          "source_text_snippet": "Presentata da: Matteo Pronzini e Giuseppe Sergi per MPS-Indipendenti",
+          "char_start": 177,
+          "char_end": 245,
+          "status": "extracted"
+        }
+      }
+    ],
+    "addressed_to": "Consiglio di Stato",
+    "background_and_rationale": null,
+    "questions_and_answers": [
+      {
+        "question": {
+          "number": null,
+          "text": "Con la presente interrogazione si chiede al Consiglio di Stato di comunicare i seguenti dati relativi all’anno 2025 per i membri del CdA dell’AET",
+          "provenance": {
+            "page_number": 1,
+            "source_text_snippet": "Testo:\nCon la presente interrogazione si chiede al Consiglio di Stato di comunicare i seguenti dati relativi\nall’anno 2025 per i membri del CdA dell’AET",
+            "char_start": 282,
+            "char_end": 434,
+            "status": "extracted"
+          }
+        },
+        "answer": null
+      }
+    ],
+    "financial_details": [],
+    "procedural_events": [],
+    "title_provenance": {
+      "page_number": 1,
+      "source_text_snippet": "INTERROGAZIONE (art. 98 LGC)",
+      "char_start": 71,
+      "char_end": 99,
+      "status": "extracted"
+    },
+    "rationale_provenance": {
+      "page_number": 1,
+      "source_text_snippet": "INTERROGAZIONE (art. 98 LGC)",
+      "char_start": 71,
+      "char_end": 99,
+      "status": "extracted"
+    }
+  },
+  "report": {
+    "total_citations": 5,
+    "verified_citations": 5,
+    "failed_citations": 0,
+    "provenance_score": 1.0,
+    "details": [
+      {
+        "field": "title",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "INTERROGAZIONE (art. 98 LGC)..."
+      },
+      {
+        "field": "background_and_rationale",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "INTERROGAZIONE (art. 98 LGC)..."
+      },
+      {
+        "field": "authors[0].Matteo Pronzini",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Presentata da: Matteo Pronzini e Giuseppe Sergi pe..."
+      },
+      {
+        "field": "authors[1].Giuseppe Sergi",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Presentata da: Matteo Pronzini e Giuseppe Sergi pe..."
+      },
+      {
+        "field": "questions[0]",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Testo:\nCon la presente interrogazione si chiede al..."
+      }
+    ]
+  },
+  "latency_sec": 3.395,
+  "tokens_prompt": 4539,
+  "tokens_completion": 544,
+  "tokens_cached": 4512,
+  "cost_chf": 2.2e-05
+}

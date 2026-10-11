@@ -1,0 +1,80 @@
+{
+  "affair": {
+    "affair_id": 341002,
+    "short_id": "2026-3713/SU",
+    "title": "Änderung der Kantonalen Opferhilfeverordnung (KOHV)",
+    "canton_or_body": "ZH",
+    "level": "cantonal",
+    "affair_type": "postulate",
+    "language": "de",
+    "submission_date": null,
+    "authors": [
+      {
+        "name": "Jacqueline Fehr",
+        "role": "regierungsrätin",
+        "party_or_fraction": null,
+        "canton_or_municipality": "ZH",
+        "provenance": {
+          "page_number": 1,
+          "source_text_snippet": "Jacqueline Fehr Regierungsrätin",
+          "char_start": 0,
+          "char_end": 31,
+          "status": "extracted"
+        }
+      }
+    ],
+    "addressed_to": null,
+    "background_and_rationale": "Die Unterstützungsangebote der Opferhilfe im Kanton Zürich werden immer häufiger in Anspruch genommen. Die steigenden Fallzahlen deuten auf eine Abnahme der Dunkelziffer hin, was grundsätzlich ein positives Zeichen ist. Doch die steigende Nachfrage und die zunehmenden Mehrfachbelastungen der Personen, die von Gewalt betroffen sind und Unterstützung benötigen, beanspruchen die bestehenden Strukturen. Um die Versorgung der Opfer auch in Zukunft sicherzustellen, muss die Kantonale Opferhilfeverordnung in verschiedener Hinsicht an die veränderten Rahmenbedingungen angepasst werden.",
+    "questions_and_answers": [],
+    "financial_details": [],
+    "procedural_events": [],
+    "title_provenance": {
+      "page_number": 1,
+      "source_text_snippet": "Änderung der Kantonalen Opferhilfeverordnung (KOHV)",
+      "char_start": 284,
+      "char_end": 335,
+      "status": "extracted"
+    },
+    "rationale_provenance": {
+      "page_number": 1,
+      "source_text_snippet": "Die Unterstützungsangebote der Opferhilfe im Kanton Zürich werden immer häufiger in Anspruch genommen. Die steigenden Fallzahlen deuten auf eine Abnahme der Dunkelziffer hin, was grundsätzlich ein positives Zeichen ist. Doch die steigende Nachfrage und die zunehmenden Mehrfachbelastungen der Personen, die von Gewalt betroffen sind und Unterstützung benötigen, beanspruchen die bestehenden Strukturen. Um die Versorgung der Opfer auch in Zukunft sicherzustellen, muss die Kantonale Opferhilfeverordnung in verschiedener Hinsicht an die veränderten Rahmenbedingungen angepasst werden.",
+      "char_start": 382,
+      "char_end": 966,
+      "status": "extracted"
+    }
+  },
+  "report": {
+    "total_citations": 3,
+    "verified_citations": 3,
+    "failed_citations": 0,
+    "provenance_score": 1.0,
+    "details": [
+      {
+        "field": "title",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Änderung der Kantonalen Opferhilfeverordnung (KOHV..."
+      },
+      {
+        "field": "background_and_rationale",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Die Unterstützungsangebote der Opferhilfe im Kanto..."
+      },
+      {
+        "field": "authors[0].Jacqueline Fehr",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Jacqueline Fehr Regierungsrätin..."
+      }
+    ]
+  },
+  "latency_sec": 3.303,
+  "tokens_prompt": 4819,
+  "tokens_completion": 525,
+  "tokens_cached": 4800,
+  "cost_chf": 2.1e-05
+}

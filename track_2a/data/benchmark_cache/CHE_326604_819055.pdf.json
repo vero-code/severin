@@ -1,0 +1,80 @@
+{
+  "affair": {
+    "affair_id": 326604,
+    "short_id": "Motion 12/2026",
+    "title": "Eidgenössische Volksinitiative «Nein zum F-35»",
+    "canton_or_body": "CHE",
+    "level": "federal",
+    "affair_type": "initiative",
+    "language": "de",
+    "submission_date": null,
+    "authors": [
+      {
+        "name": "Künzi Daniel",
+        "role": "author",
+        "party_or_fraction": null,
+        "canton_or_municipality": "GE",
+        "provenance": {
+          "page_number": 1,
+          "source_text_snippet": "Das Initiativkomitee, bestehend aus nachstehenden Urheberinnen und Urhebern, ist berechtigt, diese Volksinitiative mit absoluter Mehrheit seiner noch stimmberechtigten Mitglieder zurückzuziehen: Künzi Daniel, Passage Daniel Baud-Bovy 10, 1205 Gen\u000eve; Sax Jacques, Chemin de Renens 52D, 1004 Lausanne; Weil Anju\u0011ka, Goldbrunnenstrasse 131, 8055 Z\u000frich; Castellari Cli o Alba, Via Carona 33, 6912 Pazzallo; Hofer André, Sous Banbois 5, 2515 Pr\u000eles; Gilardi Paolo, Rue Jacques-Grosselin 6, 1227 Carouge; Ebel Marianne, Chemin des Grands-Pins 19, 2000 Neuchâtel ; Dolivo Jean-Michel, Avenue Alexandre-Vinet 14, 1004 Lausanne; Kiener Nellen Margareta, Dorfstrasse 32, 3065 Bolligen; Majno-Hurst Pietro, Via Naccio 2, 6614 Brissago; Sergi Giuseppe, Via Luigi Colombi 1, 6500 Bellinzona; De Battista Régis, Chemin des Esserts 3, 1213 Petit-Lancy",
+          "char_start": 1700,
+          "char_end": 2538,
+          "status": "extracted"
+        }
+      }
+    ],
+    "addressed_to": null,
+    "background_and_rationale": "Die unterzeichneten stimmberechtigten Schweizer Bürgerinnen und Bürger stellen hiermit, gestützt auf Art. 34, 136, 139 und 194 der Bundesverfassung und nach dem Bundesgesetz vom 17. Dezember 1976 über die politischen Rechte, Art. 68ff., folgendes Begehren: Die Bundesverfassung wird wie folgt geändert: Art. 197 Ziff. 17 2 17. Übergangsbestimmungen zu Art. 60 (Organisation, Ausbildung und Ausrüstung der Armee) 1 Der Bund beschafft keine Kampfflugzeuge des Typs F-35. 2 Das Armeebudget wird entsprechend angepasst. 3 Diese Bestimmungen treten am 1. Januar 2040 ausser Kraft. 1 SR 101 2 Die endgültige Ziffer dieser Übergangsbestimmung wird nach der Volksabstimmung von der Bundeskanzlei festgelegt.",
+    "questions_and_answers": [],
+    "financial_details": [],
+    "procedural_events": [],
+    "title_provenance": {
+      "page_number": 1,
+      "source_text_snippet": "Eidgenössische Volksinitiative  «Nein zum F-35» (im Bundesblatt veröffentlicht am 28. April 2026).",
+      "char_start": 71,
+      "char_end": 169,
+      "status": "extracted"
+    },
+    "rationale_provenance": {
+      "page_number": 1,
+      "source_text_snippet": "Die unterzeichneten stimmberechtigten Schweizer Bürgerinnen und Bürger stellen hiermit, gestützt auf Art. 34, 136, 139 und 194 der Bundesverfassung und nach dem Bundesgesetz vom 17. Dezember 1976 über die politischen Rechte, Art. 68ff., folgendes Begehren:",
+      "char_start": 170,
+      "char_end": 426,
+      "status": "extracted"
+    }
+  },
+  "report": {
+    "total_citations": 3,
+    "verified_citations": 3,
+    "failed_citations": 0,
+    "provenance_score": 1.0,
+    "details": [
+      {
+        "field": "title",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Eidgenössische Volksinitiative  «Nein zum F-35» (i..."
+      },
+      {
+        "field": "background_and_rationale",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Die unterzeichneten stimmberechtigten Schweizer Bü..."
+      },
+      {
+        "field": "authors[0].Künzi Daniel",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Das Initiativkomitee, bestehend aus nachstehenden ..."
+      }
+    ]
+  },
+  "latency_sec": 5.855,
+  "tokens_prompt": 5314,
+  "tokens_completion": 889,
+  "tokens_cached": 5312,
+  "cost_chf": 3.6e-05
+}
