@@ -4,6 +4,7 @@ Implements Rule 5, Zero-Hallucination Mandate, and Strict Provenance Verificatio
 Track 2A - Hack Apertus 2026.
 """
 
+import re
 import json
 import logging
 from pathlib import Path
@@ -162,41 +163,270 @@ def verify_provenance(
 # Main Extraction Pipeline
 # ============================================================================
 
+def normalize_provenance(prov: Any) -> Optional[Dict[str, Any]]:
+    """Defensively clean and validate a provenance dictionary."""
+    if not isinstance(prov, dict):
+        return None
+    snippet = prov.get("source_text_snippet") or prov.get("snippet") or prov.get("quote")
+    if not snippet or not isinstance(snippet, str) or not snippet.strip():
+        return None
+    page = prov.get("page_number") or prov.get("page") or 1
+    try:
+        page_num = max(1, int(page))
+    except (ValueError, TypeError):
+        page_num = 1
+
+    clean_prov: Dict[str, Any] = {
+        "page_number": page_num,
+        "source_text_snippet": snippet.strip(),
+    }
+    if "char_start" in prov and isinstance(prov["char_start"], int):
+        clean_prov["char_start"] = prov["char_start"]
+    if "char_end" in prov and isinstance(prov["char_end"], int):
+        clean_prov["char_end"] = prov["char_end"]
+    if "status" in prov and isinstance(prov["status"], str):
+        clean_prov["status"] = prov["status"].lower()
+    return clean_prov
+
+
 def normalize_extracted_dict(raw_dict: Any) -> Dict[str, Any]:
     """
-    Normalize raw dictionary returned by LLM:
-    - If wrapped in an outer envelope key like 'ParliamentaryAffair', 'affair', 'data', unwraps it.
-    - Strips JSON-schema meta properties ('$schema', '$id', '$defs', 'definitions').
-    - Normalizes casing for enum fields ('level', 'affair_type', 'language', 'canton_or_body').
-    - Preserves top-level metadata hints if present.
+    Defensively normalize and sanitize raw dictionary returned by Apertus LLM:
+    - Unwraps outer envelope wrappers (e.g., 'ParliamentaryAffair', 'affair', 'data').
+    - Hoists root affair fields that small LLMs occasionally dump inside authors[0].
+    - Normalizes actors (converting strings, cleaning extra fields).
+    - Normalizes questions_and_answers (flattened questions, string questions, etc.).
+    - Normalizes financial details and procedural events.
+    - Cleans provenance fields (dropping empty snippets, ensuring page_number >= 1).
+    - Maps and standardizes enums (level, affair_type, language, canton_or_body).
+    - Strips JSON Schema meta properties ($schema, $defs, etc.).
     """
     if not isinstance(raw_dict, dict):
         return raw_dict
 
-    # 1. Check for outer envelope wrapper
+    # 1. Outer envelope unwrap
     for wrapper in ("ParliamentaryAffair", "parliamentary_affair", "affair", "data", "result", "record"):
         if wrapper in raw_dict and isinstance(raw_dict[wrapper], dict):
             inner = raw_dict.pop(wrapper)
-            # Carry over any other valid fields from top-level
             for k, v in raw_dict.items():
                 if not k.startswith("$") and k not in inner:
                     inner[k] = v
             raw_dict = inner
             break
 
-    # 2. Strip metadata keys that violate extra='forbid'
-    for meta_key in ("$schema", "$id", "$defs", "definitions", "_comment"):
+    # 2. Strip schema meta keys that violate extra='forbid'
+    for meta_key in ("$schema", "$id", "$defs", "definitions", "_comment", "properties"):
         raw_dict.pop(meta_key, None)
 
-    # 3. Defensive casing normalization
-    if isinstance(raw_dict.get("level"), str):
-        raw_dict["level"] = raw_dict["level"].strip().lower()
-    if isinstance(raw_dict.get("affair_type"), str):
-        raw_dict["affair_type"] = raw_dict["affair_type"].strip().lower()
-    if isinstance(raw_dict.get("language"), str):
-        raw_dict["language"] = raw_dict["language"].strip().lower()
-    if isinstance(raw_dict.get("canton_or_body"), str):
-        raw_dict["canton_or_body"] = raw_dict["canton_or_body"].strip().upper()
+    # 3. Hoist root affair fields that small LLMs occasionally dump inside authors[0]
+    root_affair_keys = {
+        "background_and_rationale",
+        "rationale_provenance",
+        "questions_and_answers",
+        "financial_details",
+        "procedural_events",
+        "title_provenance",
+        "title",
+        "short_id",
+        "submission_date",
+        "addressed_to",
+        "affair_type",
+        "level",
+        "language",
+        "canton_or_body",
+    }
+    authors = raw_dict.get("authors")
+    if isinstance(authors, list):
+        for author in authors:
+            if isinstance(author, dict):
+                for k in root_affair_keys:
+                    if k in author:
+                        val = author.pop(k)
+                        if k not in raw_dict or raw_dict[k] is None or (isinstance(raw_dict[k], list) and len(raw_dict[k]) == 0):
+                            raw_dict[k] = val
+
+    # 4. Clean authors
+    cleaned_authors = []
+    if isinstance(raw_dict.get("authors"), list):
+        for item in raw_dict["authors"]:
+            if isinstance(item, str) and item.strip():
+                cleaned_authors.append({"name": item.strip(), "role": "author"})
+            elif isinstance(item, dict):
+                name = item.get("name") or item.get("author_name") or item.get("full_name") or ""
+                if not name and item.get("role"):
+                    name = item.get("role")
+                if name:
+                    author_dict = {
+                        "name": str(name).strip(),
+                        "role": str(item.get("role", "author") or "author").strip().lower(),
+                        "party_or_fraction": item.get("party_or_fraction") or item.get("party"),
+                        "canton_or_municipality": item.get("canton_or_municipality") or item.get("canton"),
+                        "provenance": normalize_provenance(item.get("provenance"))
+                    }
+                    cleaned_authors.append(author_dict)
+    raw_dict["authors"] = cleaned_authors
+
+    # 5. Clean questions_and_answers
+    qa_list = raw_dict.get("questions_and_answers")
+    cleaned_qa = []
+    if isinstance(qa_list, list):
+        for item in qa_list:
+            if isinstance(item, str) and item.strip():
+                q_text = item.strip()
+                num_match = re.match(r"^(?:Frage\s+|Question\s+|Domanda\s+)?(\d+[a-z]?)[.:)\s]", q_text, re.IGNORECASE)
+                cleaned_qa.append({
+                    "question": {
+                        "number": num_match.group(1) if num_match else None,
+                        "text": q_text,
+                        "provenance": None
+                    },
+                    "answer": None
+                })
+            elif isinstance(item, dict):
+                q_val = item.get("question")
+                q_dict = None
+                if isinstance(q_val, str) and q_val.strip():
+                    q_text = q_val.strip()
+                    num_match = re.match(r"^(?:Frage\s+|Question\s+|Domanda\s+)?(\d+[a-z]?)[.:)\s]", q_text, re.IGNORECASE)
+                    q_dict = {
+                        "number": num_match.group(1) if num_match else None,
+                        "text": q_text,
+                        "provenance": normalize_provenance(item.get("provenance") or item.get("question_provenance"))
+                    }
+                elif isinstance(q_val, dict):
+                    q_dict = {
+                        "number": str(q_val.get("number") or q_val.get("question_reference")) if (q_val.get("number") or q_val.get("question_reference")) is not None else None,
+                        "text": str(q_val.get("text") or q_val.get("question_text") or "").strip(),
+                        "provenance": normalize_provenance(q_val.get("provenance"))
+                    }
+                else:
+                    # Flattened question inside QA pair (observed in Italian TI)
+                    text = item.get("text") or item.get("question_text") or ""
+                    if text:
+                        num = item.get("number") or item.get("question_reference")
+                        prov = normalize_provenance(item.get("provenance"))
+                        q_dict = {
+                            "number": str(num) if num is not None else None,
+                            "text": str(text).strip(),
+                            "provenance": prov
+                        }
+
+                if q_dict and q_dict["text"]:
+                    ans_val = item.get("answer")
+                    ans_dict = None
+                    if isinstance(ans_val, str) and ans_val.strip():
+                        ans_dict = {
+                            "question_reference": q_dict.get("number"),
+                            "text": ans_val.strip(),
+                            "provenance": None
+                        }
+                    elif isinstance(ans_val, dict) and (ans_val.get("text") or ans_val.get("answer_text")):
+                        ans_dict = {
+                            "question_reference": str(ans_val.get("question_reference") or q_dict.get("number")) if (ans_val.get("question_reference") or q_dict.get("number")) is not None else None,
+                            "text": str(ans_val.get("text") or ans_val.get("answer_text")).strip(),
+                            "provenance": normalize_provenance(ans_val.get("provenance"))
+                        }
+                    cleaned_qa.append({
+                        "question": q_dict,
+                        "answer": ans_dict
+                    })
+    raw_dict["questions_and_answers"] = cleaned_qa
+
+    # 6. Clean financial details
+    fin_list = raw_dict.get("financial_details")
+    cleaned_fin = []
+    if isinstance(fin_list, list):
+        for item in fin_list:
+            if isinstance(item, dict) and item.get("purpose"):
+                amt = item.get("amount_chf") or item.get("amount")
+                if amt is not None:
+                    try:
+                        if isinstance(amt, str):
+                            amt = float(re.sub(r"[^\d.]", "", amt))
+                        else:
+                            amt = float(amt)
+                    except (ValueError, TypeError):
+                        amt = None
+                cleaned_fin.append({
+                    "amount_chf": amt,
+                    "purpose": str(item["purpose"]).strip(),
+                    "credit_type": item.get("credit_type"),
+                    "fiscal_year": int(item["fiscal_year"]) if isinstance(item.get("fiscal_year"), (int, str)) and str(item.get("fiscal_year")).isdigit() else None,
+                    "provenance": normalize_provenance(item.get("provenance"))
+                })
+    raw_dict["financial_details"] = cleaned_fin
+
+    # 7. Clean procedural events
+    ev_list = raw_dict.get("procedural_events")
+    cleaned_ev = []
+    if isinstance(ev_list, list):
+        for item in ev_list:
+            if isinstance(item, dict) and (item.get("event_type") or item.get("decision")):
+                cleaned_ev.append({
+                    "date": item.get("date"),
+                    "event_type": str(item.get("event_type") or "milestone").strip().lower(),
+                    "decision": item.get("decision"),
+                    "provenance": normalize_provenance(item.get("provenance"))
+                })
+    raw_dict["procedural_events"] = cleaned_ev
+
+    # 8. Clean document-level provenances
+    raw_dict["title_provenance"] = normalize_provenance(raw_dict.get("title_provenance"))
+    raw_dict["rationale_provenance"] = normalize_provenance(raw_dict.get("rationale_provenance"))
+
+    # 9. Enums normalization
+    lvl = raw_dict.get("level")
+    if isinstance(lvl, str):
+        lvl_s = lvl.strip().lower()
+        if "fed" in lvl_s or "nat" in lvl_s:
+            raw_dict["level"] = "federal"
+        elif "cant" in lvl_s:
+            raw_dict["level"] = "cantonal"
+        elif "mun" in lvl_s or "com" in lvl_s or "gem" in lvl_s:
+            raw_dict["level"] = "municipal"
+        else:
+            raw_dict["level"] = "cantonal"
+    else:
+        raw_dict["level"] = "cantonal"
+
+    aft = raw_dict.get("affair_type")
+    if isinstance(aft, str):
+        aft_s = aft.strip().lower()
+        if "motion" in aft_s:
+            raw_dict["affair_type"] = "motion"
+        elif "postulat" in aft_s:
+            raw_dict["affair_type"] = "postulate"
+        elif "interpell" in aft_s:
+            raw_dict["affair_type"] = "interpellation"
+        elif "initiativ" in aft_s:
+            raw_dict["affair_type"] = "initiative"
+        elif "anfrag" in aft_s or "quest" in aft_s or "interrog" in aft_s:
+            raw_dict["affair_type"] = "question"
+        elif "petit" in aft_s:
+            raw_dict["affair_type"] = "petition"
+        elif "geschäft" in aft_s or "antrag" in aft_s or "vorlage" in aft_s or "gov" in aft_s:
+            raw_dict["affair_type"] = "government_affair"
+        else:
+            valid_types = {"motion", "postulate", "interpellation", "question", "initiative", "government_affair", "petition", "other"}
+            raw_dict["affair_type"] = aft_s if aft_s in valid_types else "other"
+    else:
+        raw_dict["affair_type"] = "question"
+
+    lang = raw_dict.get("language")
+    if isinstance(lang, str):
+        lang_s = lang.strip().lower()[:2]
+        raw_dict["language"] = lang_s if lang_s in {"de", "fr", "it", "rm", "en"} else "de"
+    else:
+        raw_dict["language"] = "de"
+
+    cb = raw_dict.get("canton_or_body")
+    if isinstance(cb, str):
+        raw_dict["canton_or_body"] = cb.strip().upper()
+    else:
+        raw_dict["canton_or_body"] = "CHE"
+
+    if not raw_dict.get("title"):
+        raw_dict["title"] = "Untitled Parliamentary Affair"
 
     return raw_dict
 
