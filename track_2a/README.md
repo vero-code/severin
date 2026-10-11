@@ -26,13 +26,16 @@ From the root of the project:
 
 ```bash
 make run
+# Open http://localhost:8000 in your browser
 ```
 
-Fill in the [Makefile](Makefile) so that it works on a clean checkout. It is
-expected to run the project in a Docker container, since that is how the judges
-will run it, without relying on anything already installed on your machine.
+The [Makefile](Makefile) executes an automated multi-stage Docker build that runs the cross-cantonal verification benchmark and serves the interactive SEVERIN web platform on port `8000`.
 
-Requirements: `runtime, hardware, API keys, model weights`
+### Requirements Specification:
+- **Runtime**: Docker & Docker Compose (multi-stage container bundles Python 3.11-slim & Node 20-slim).
+- **Hardware**: Standard CPU, 4 GB RAM. Inference executes remotely on CSCS Alps (NVIDIA GH200).
+- **API Keys**: `CSCS_INFERENCE_API_KEY` (if omitted, automatically executes in 100% offline dry-run mode).
+- **Model Weights**: `swiss-ai/Apertus-v1.5-8B` (remotely hosted on CSCS vLLM endpoint, no local download required).
 
 ## Data
 The `data/` directory must not exceed 100 MB.
