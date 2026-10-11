@@ -7,18 +7,25 @@ Track 2A - Hack Apertus 2026.
 import io
 import logging
 from pathlib import Path
-from typing import Optional
-from pydantic import BaseModel
+from typing import Optional, List
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse, JSONResponse
+from fastapi.responses import StreamingResponse
 import requests
 
 from .api_client import OpenParlDataClient
-from .enums import SearchMode
 from .schema import export_json_schema
 from .pdf_parser import extract_pdf_pages
 from .cscs_client import CSCSInferenceClient
+from .api_models import (
+    HealthResponse,
+    BodiesResponse,
+    TelemetryResponse,
+    ParsePdfResponse,
+    ExtractRequest,
+    ExtractResponse,
+    SamplePdfItem,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("severin_server")
@@ -41,9 +48,9 @@ app.add_middleware(
 client = OpenParlDataClient(timeout=30)
 
 
-@app.get("/api/health")
+@app.get("/api/health", response_model=HealthResponse)
 def health_check():
-    """Health check endpoint."""
+    """Health check endpoint returning system status and version."""
     return {"status": "ok", "app": "SEVERIN", "version": "1.0.0"}
 
 
@@ -60,7 +67,7 @@ def get_unified_schema():
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/api/bodies")
+@app.get("/api/bodies", response_model=BodiesResponse)
 def list_bodies():
     """Get list of indexed Swiss parliamentary bodies (cantons, federal, cities)."""
     try:
@@ -130,7 +137,7 @@ def proxy_pdf(url: str = Query(..., description="OpenParlData PDF file URL")):
         raise HTTPException(status_code=502, detail=f"Failed to fetch PDF: {e}")
 
 
-@app.get("/api/parse-pdf")
+@app.get("/api/parse-pdf", response_model=ParsePdfResponse)
 def parse_pdf(url: str = Query(..., description="OpenParlData PDF file URL")):
     """
     Download and parse PDF page-by-page returning text with physical page numbers.
@@ -165,7 +172,7 @@ def parse_pdf(url: str = Query(..., description="OpenParlData PDF file URL")):
         raise HTTPException(status_code=502, detail=f"Failed to parse PDF: {e}")
 
 
-@app.get("/api/telemetry")
+@app.get("/api/telemetry", response_model=TelemetryResponse)
 def get_telemetry():
     """Retrieve cumulative LLM inference telemetry from CSCS (Rule 5 compliance)."""
     try:
@@ -175,14 +182,8 @@ def get_telemetry():
         raise HTTPException(status_code=500, detail=str(e))
 
 
-class ExtractRequest(BaseModel):
-    url: Optional[str] = None
-    sample_file: Optional[str] = None
-    canton_hint: Optional[str] = None
-    affair_id_hint: Optional[int] = None
 
-
-@app.post("/api/extract")
+@app.post("/api/extract", response_model=ExtractResponse)
 def extract_document(req: ExtractRequest):
     """
     Execute conservative extraction using Swiss-AI Apertus 1.5-8B on CSCS Alps.
@@ -241,7 +242,7 @@ def extract_document(req: ExtractRequest):
                 pass
 
 
-@app.get("/api/sample-pdfs")
+@app.get("/api/sample-pdfs", response_model=List[SamplePdfItem])
 def list_sample_pdfs():
     """List curated nationwide Swiss cantonal sample PDFs from data/sample_pdfs/manifest.json."""
     from pathlib import Path

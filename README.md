@@ -44,6 +44,31 @@ Once started:
 
 ---
 
+## 📖 API Documentation (Swagger & OpenAPI)
+
+When the SEVERIN platform is running, interactive OpenAPI/Swagger documentation is served directly by FastAPI:
+
+| Documentation Interface | URL | Description |
+|---|---|---|
+| **Interactive Swagger UI** | **[http://localhost:8000/docs](http://localhost:8000/docs)** | Test endpoints directly in browser with schema validation & try-it-out |
+| **ReDoc Specification** | **[http://localhost:8000/redoc](http://localhost:8000/redoc)** | Clean, hierarchical technical API documentation |
+| **OpenAPI 3.1 Schema** | **[http://localhost:8000/openapi.json](http://localhost:8000/openapi.json)** | Machine-readable OpenAPI 3.1 JSON schema |
+| **Unified Pydantic Model** | **[http://localhost:8000/api/schema](http://localhost:8000/api/schema)** | Exported JSON Schema for the unified `ParliamentaryAffair` model |
+
+### Key API Endpoints
+
+- `POST /api/extract` — Conservative extraction using Swiss-AI Apertus 1.5-8B on CSCS Alps GH200 with mathematical provenance verification against source PDF.
+- `GET /api/sample-pdfs` — List 27 curated nationwide Swiss cantonal sample PDFs from manifest.
+- `GET /api/bodies` — List indexed Swiss parliamentary bodies (cantons, federal assembly, cities).
+- `GET /api/affairs` — Search OpenParlData parliamentary affairs with filters and pagination.
+- `GET /api/affairs/{affair_id}` — Retrieve full detail and document attachments for a single parliamentary affair.
+- `GET /api/parse-pdf?url=...` — Download remote PDF and return page-by-page text with physical page offsets.
+- `GET /api/pdf-proxy?url=...` — Stream remote PDF to bypass browser iframe CORS restrictions.
+- `GET /api/telemetry` — Live cumulative CSCS inference telemetry (prompt/completion tokens, cache hit rates, micro-CHF cost counters).
+- `GET /api/health` — Service health check.
+
+---
+
 ## 📊 Cross-Cantonal Benchmark Results (CSCS Alps GH200)
 
 Evaluated across all Swiss linguistic regions on real-world cantonal and federal PDFs:
