@@ -232,3 +232,35 @@ sequenceDiagram
     UI-->>User: Display Affair Card, Citation Chips & updated Telemetry Bar
 ```
 
+---
+
+### 3.3 Continuous Sovereign Telemetry & Frontend Synchronization (`telemetry.json`)
+
+To guarantee strict scientific integrity and financial transparency, SEVERIN maintains a unified persistent telemetry ledger connecting terminal benchmark executions, live API extractions, and the civic web interface:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant CLI as Startup Benchmark (CLI)
+    participant Disk as Persistent Ledger (data/telemetry.json)
+    participant API as FastAPI Backend (/api/telemetry)
+    participant UI as React Header (CSCS Telemetry Widget)
+
+    Note over CLI: make run executes 5 multilingual benchmarks
+    CLI->>Disk: Record prompt, completion, cache tokens, latency & provenance
+    CLI->>Disk: Append calls [CHE], [ZH], [GE], [TI], [GR] to history
+    Note over Disk: Persisted via Docker Volume mount
+    UI->>API: GET /api/telemetry (Startup & 10s background polling)
+    API->>Disk: Read get_global_telemetry()
+    Disk-->>API: Cumulative stats (tokens, CHF, cache hits, 51+ calls)
+    API-->>UI: Return TelemetryResponse
+    Note over UI: Header displays total tokens, cache & CHF<br/>Hover popover lists newest calls [#51...#47] with canton badges
+```
+
+1. **Terminal-to-Web Handover**: The 5 benchmark documents processed during container launch (`make run`) are recorded directly in `data/telemetry.json`. When the web UI boots, these identical 5 calls appear at the top of the Telemetry popover table with their exact latencies, token consumption, and provenance scores.
+2. **Unified Single Source of Truth**: `CSCSInferenceClient.get_global_telemetry()` serves as the unified ledger across both CLI tools and HTTP workers, ensuring zero drift between terminal output and UI state.
+3. **Honest Scientific Accounting**:
+   - In **LIVE mode** (with `CSCS_INFERENCE_API_KEY`): Every call dispatches to CSCS Alps GH200, updates token tallies, and calculates exact Swiss Franc tariffs.
+   - In **OFFLINE DRY-RUN mode** (without API key): Pre-computed model completions are verified against physical PDF pages locally. Telemetry is not artificially inflated (0 requests, 0 CHF additional cost), preserving academic integrity.
+
+
