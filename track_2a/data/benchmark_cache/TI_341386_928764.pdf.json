@@ -1,13 +1,13 @@
 {
   "affair": {
     "affair_id": 341386,
-    "short_id": "203.26",
+    "short_id": null,
     "title": "Chiarezza sui versamenti ai membri del Consiglio di amministrazione di AET",
     "canton_or_body": "TI",
     "level": "cantonal",
     "affair_type": "interpellation",
     "language": "it",
-    "submission_date": "2026-10-08",
+    "submission_date": null,
     "authors": [
       {
         "name": "Matteo Pronzini",
@@ -36,7 +36,7 @@
         }
       }
     ],
-    "addressed_to": "Consiglio di Stato",
+    "addressed_to": null,
     "background_and_rationale": null,
     "questions_and_answers": [
       {
@@ -114,9 +114,9 @@
       }
     ]
   },
-  "latency_sec": 3.395,
-  "tokens_prompt": 4539,
-  "tokens_completion": 544,
-  "tokens_cached": 4512,
-  "cost_chf": 2.2e-05
+  "latency_sec": 3.111,
+  "tokens_prompt": 4564,
+  "tokens_completion": 487,
+  "tokens_cached": 4224,
+  "cost_chf": 2.3e-05
 }

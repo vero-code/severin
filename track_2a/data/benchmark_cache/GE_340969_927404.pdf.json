@@ -16,7 +16,7 @@
         "canton_or_municipality": null,
         "provenance": {
           "page_number": 1,
-          "source_text_snippet": "Signataire : Marc Falquet\nDate de dépôt : 1er octobre 2026\nQuestion écrite\nCulture institutionnelle du service de protection des mineurs :\nva-t-on enfin en finir avec les pratiques coercitives et punitives\npour évoluer vers un soutien pédagogique aux familles ?",
+          "source_text_snippet": "Signataire : Marc Falquet\nDate de dépôt : 1er octobre 2026\nQuestion écrite\nCulture institutionnelle du service de protection des mineurs : va-t-on enfin en finir avec les pratiques coercitives et punitives pour évoluer vers un soutien pédagogique aux familles ?",
           "char_start": 58,
           "char_end": 319,
           "status": "extracted"
@@ -28,13 +28,13 @@
     "questions_and_answers": [
       {
         "question": {
-          "number": "1",
-          "text": "Le Conseil d’État dispose-t-il de statistiques permettant de comparer, sur les dix dernières années, la part des situations traitées par le SPMi ayant fait l’objet d’un accompagnement socio-éducatif à domicile plutôt que d’un retrait de garde ou d’un placement ? Cette proportion a-t-elle évolué ?",
+          "number": "3",
+          "text": "Les enseignements tirés du scandale du foyer de Mancy ont-ils conduit à un audit plus large des pratiques d’évaluation et de décision au sein du dispositif de protection des mineurs, au-delà du seul établissement concerné ?",
           "provenance": {
             "page_number": 2,
-            "source_text_snippet": "Au vu de ce qui précède, il est demandé au Conseil d’ État de répondre aux questions suivantes :\n1. Le Conseil d’État dispose-t-il de statistiques permettant de comparer, sur les dix dernières années, la part des situations traitées par le SPMi ayant fait l’objet d’un accompagnement socio-éducatif à domicile plutôt que d’un retrait de garde ou d’un placement ? Cette proportion a-t-elle évolué ?",
-            "char_start": 527,
-            "char_end": 924,
+            "source_text_snippet": "3. Les enseignements tirés du scandale du foyer de Mancy ont-ils conduit à un audit plus large des pratiques d’évaluation et de décision au sein du dispositif de protection des mineurs, au-delà du seul établissement concerné ?",
+            "char_start": 0,
+            "char_end": 226,
             "status": "extracted"
           }
         },
@@ -43,41 +43,15 @@
     ],
     "financial_details": [],
     "procedural_events": [],
-    "title_provenance": {
-      "page_number": 1,
-      "source_text_snippet": "GRAND CONSEIL\nde la République et canton de Genève\nQ 4165\nSignataire : Marc Falquet\nDate de dépôt : 1er octobre 2026\nQuestion écrite\nCulture institutionnelle du service de protection des mineurs :\nva-t-on enfin en finir avec les pratiques coercitives et punitives\npour évoluer vers un soutien pédagogique aux familles ?",
-      "char_start": 0,
-      "char_end": 319,
-      "status": "extracted"
-    },
-    "rationale_provenance": {
-      "page_number": 1,
-      "source_text_snippet": "Déjà en 2013, lors des débats budgétaires consacrés au service de protection des mineurs (SPMi), un député du parti UDC alertait notre Grand Conseil en ces termes : « Cela fait trente ans que j’entends parler des dysfonctionnements de ce service [ …]. Le problème, à mon avis, dans ce service, c’est plutôt son état d’esprit. On doit en finir avec ce système punitif ! Le SPMi a un esprit tendant vers la punition au lieu de tenter de régler les problèmes des familles. On ne peut pas opposer les familles aux enfants, on ne peut pas protéger les enfants et dissocier la famille. » Plus de dix ans plus tard, ce constat continue de résonner. En septembre 2024, une pétition munie de 184 signatures (P 2221) a été déposée devant ce Grand Conseil, demandant « une enquête et des contrôles sur les pratiques du service de protection des mineurs », évoquant expressément des « dysfonctionnements et abus » rapportés par de nombreux témoignages. En décembre 2025, le rapport RD 1649 sur le suivi de la motion 2671 « pour une réforme du système de protection de l’enfance garantissant les droits fondamentaux » reconnaissait lui-même, par la voix de la rédactrice de ce rapport, que « si le processus de réforme au sein du SPMi a été entamé, il est loin d’être terminé » – et ce alors que plus de 7000 enfants sont aujourd’hui encadrés par ce service. Entre-temps, un député socialiste relevait également que « le SPMi peut être trop facilement instrumentalisé » et le jugeait « trop radical dans le placement des enfants ou le retrait du droit de garde » lors de séparations conflictuelles. Le scandale du foyer spécialisé de Mancy, révélant de graves dysfonctionnements ayant conduit à une dénonciation pénale, a par ailleurs rappelé que les alertes des familles peinent parfois à être entendues à temps par l’institution. Ce faisceau de constats, formulés sur plusieurs décennies par des élu-e-s de sensibilités politiques différentes, et aujourd’hui relayés par plusieurs pétitions citoyennes et objets parlementaires, suggère qu’un problème de fond – davantage culturel qu’organisationnel – persiste au sein du dispositif genevois de protection des mineurs.",
-      "char_start": 320,
-      "char_end": 1979,
-      "status": "extracted"
-    }
+    "title_provenance": null,
+    "rationale_provenance": null
   },
   "report": {
-    "total_citations": 4,
-    "verified_citations": 4,
+    "total_citations": 2,
+    "verified_citations": 2,
     "failed_citations": 0,
     "provenance_score": 1.0,
     "details": [
-      {
-        "field": "title",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "GRAND CONSEIL\nde la République et canton de Genève..."
-      },
-      {
-        "field": "background_and_rationale",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Déjà en 2013, lors des débats budgétaires consacré..."
-      },
       {
         "field": "authors[0].Marc Falquet",
         "page": 1,
@@ -90,13 +64,13 @@
         "page": 2,
         "status": "extracted",
         "verified": true,
-        "snippet_preview": "Au vu de ce qui précède, il est demandé au Conseil..."
+        "snippet_preview": "3. Les enseignements tirés du scandale du foyer de..."
       }
     ]
   },
-  "latency_sec": 10.372,
-  "tokens_prompt": 5185,
-  "tokens_completion": 1690,
-  "tokens_cached": 5184,
-  "cost_chf": 6.8e-05
+  "latency_sec": 8.085,
+  "tokens_prompt": 5210,
+  "tokens_completion": 1263,
+  "tokens_cached": 4224,
+  "cost_chf": 6e-05
 }

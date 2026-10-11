@@ -131,7 +131,7 @@ def run_benchmark_target(
     t_start = time.perf_counter()
 
     if not is_dry_run:
-        # Live extraction via CSCS Apertus 1.5-8B on Alps
+        # Live extraction strictly via CSCS Apertus 1.5-8B on Alps
         cscs = client or CSCSInferenceClient()
         affair, report = extract_affair_from_pdf(
             pdf_path=pdf_path,
@@ -163,36 +163,21 @@ def run_benchmark_target(
             }, f, indent=2, ensure_ascii=False)
 
     else:
-        # Offline dry-run mode: verify using local cache and physically ground citations
-        if cache_path.exists():
-            with open(cache_path, "r", encoding="utf-8") as f:
-                cached_data = json.load(f)
-            raw_affair_dict = normalize_extracted_dict(cached_data.get("affair", {}))
-            affair = ParliamentaryAffair.model_validate(raw_affair_dict)
-            latency_sec = cached_data.get("latency_sec", round(time.perf_counter() - t_start, 3))
-            tokens_prompt = cached_data.get("tokens_prompt", total_chars // 4)
-            tokens_completion = cached_data.get("tokens_completion", 450)
-            tokens_cached = cached_data.get("tokens_cached", 0)
-            cost_chf = cached_data.get("cost_chf", 0.00005)
-        else:
-            # Fallback mock affair grounded in the physical PDF for zero-network validation
-            logger.warning(f"Cache not found for {target['file_name']}, constructing grounded baseline from PDF...")
-            first_page_snippet = pages[0]["text"][:120].strip()
-            affair = ParliamentaryAffair(
-                affair_id=target["affair_id"],
-                title=target["description"],
-                canton_or_body=target["canton"],
-                level=ParliamentLevel.CANTONAL if target["canton"] != "CHE" else ParliamentLevel.FEDERAL,
-                affair_type=AffairType(target["affair_type"]),
-                language=LanguageCode(target["language"]),
-                background_and_rationale=pages[0]["text"][:300].strip(),
-                title_provenance={
-                    "page_number": 1,
-                    "source_text_snippet": first_page_snippet[:60],
-                    "status": "extracted"
-                }
+        # Offline dry-run mode: strictly verify authentic cached extractions against physical PDFs
+        if not cache_path.exists():
+            raise FileNotFoundError(
+                f"Benchmark cache file not found: {cache_path}. "
+                f"Dry-run mode requires pre-computed model extractions in data/benchmark_cache/."
             )
-            latency_sec = round(time.perf_counter() - t_start, 3)
+        with open(cache_path, "r", encoding="utf-8") as f:
+            cached_data = json.load(f)
+        raw_affair_dict = normalize_extracted_dict(cached_data.get("affair", {}))
+        affair = ParliamentaryAffair.model_validate(raw_affair_dict)
+        latency_sec = cached_data.get("latency_sec", 0.0)
+        tokens_prompt = cached_data.get("tokens_prompt", 0)
+        tokens_completion = cached_data.get("tokens_completion", 0)
+        tokens_cached = cached_data.get("tokens_cached", 0)
+        cost_chf = cached_data.get("cost_chf", 0.0)
 
         # Re-verify provenance deterministically against local physical pages
         report = verify_provenance(affair, pages)
@@ -228,18 +213,25 @@ def run_benchmark_target(
 def format_markdown_table(results: List[Dict[str, Any]]) -> str:
     """
     Generate standard Markdown table for Section 5 of technical_report.md.
+    Transparently displays both successful and failed target evaluations.
     """
     lines = [
         "| Canton / Body | Region & Language | Document Type | Provenance Match | Verified Citations | Latency (s) | Total Tokens | Cached (Alps) | Cost (CHF) |",
         "|---|---|---|---|---|---|---|---|---|"
     ]
     for r in results:
-        lines.append(
-            f"| **{r['canton']}** | {r['region']} ({r['language'].upper()}) | `{r['affair_type']}` | "
-            f"**{r['provenance_percent']}** | {r['verified_citations']}/{r['total_citations']} | "
-            f"{r['latency_sec']}s | {r['total_tokens']:,} | {r['tokens_cached']:,} | "
-            f"`{r['cost_chf']:.6f} CHF` |"
-        )
+        if "error" in r:
+            lines.append(
+                f"| **{r['canton']}** | {r['region']} ({r['language'].upper()}) | `{r.get('affair_type', 'N/A')}` | "
+                f"**FAILED** | 0/0 | N/A | N/A | N/A | `0.00 CHF` |"
+            )
+        else:
+            lines.append(
+                f"| **{r['canton']}** | {r['region']} ({r['language'].upper()}) | `{r['affair_type']}` | "
+                f"**{r['provenance_percent']}** | {r['verified_citations']}/{r['total_citations']} | "
+                f"{r['latency_sec']}s | {r['total_tokens']:,} | {r['tokens_cached']:,} | "
+                f"`{r['cost_chf']:.6f} CHF` |"
+            )
     return "\n".join(lines)
 
 
@@ -333,7 +325,7 @@ def run_cross_cantonal_benchmark(
         "results": results
     }
 
-    md_table = format_markdown_table(valid_results)
+    md_table = format_markdown_table(results)
 
     print("\n" + "=" * 80)
     print("📊 BENCHMARK EVALUATION RESULTS (Ready for technical_report.md Section 5)")

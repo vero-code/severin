@@ -1,7 +1,7 @@
 {
   "affair": {
     "affair_id": 341002,
-    "short_id": "2026-3713/SU",
+    "short_id": null,
     "title": "Änderung der Kantonalen Opferhilfeverordnung (KOHV)",
     "canton_or_body": "ZH",
     "level": "cantonal",
@@ -16,9 +16,9 @@
         "canton_or_municipality": "ZH",
         "provenance": {
           "page_number": 1,
-          "source_text_snippet": "Jacqueline Fehr Regierungsrätin",
+          "source_text_snippet": "Jacqueline Fehr Regierungsrätin Neumühlequai 10 Postfach 8090 Zürich",
           "char_start": 0,
-          "char_end": 31,
+          "char_end": 68,
           "status": "extracted"
         }
       }
@@ -68,13 +68,13 @@
         "page": 1,
         "status": "extracted",
         "verified": true,
-        "snippet_preview": "Jacqueline Fehr Regierungsrätin..."
+        "snippet_preview": "Jacqueline Fehr Regierungsrätin Neumühlequai 10 Po..."
       }
     ]
   },
-  "latency_sec": 3.303,
-  "tokens_prompt": 4819,
-  "tokens_completion": 525,
-  "tokens_cached": 4800,
-  "cost_chf": 2.1e-05
+  "latency_sec": 3.43,
+  "tokens_prompt": 4844,
+  "tokens_completion": 509,
+  "tokens_cached": 4224,
+  "cost_chf": 2.7e-05
 }

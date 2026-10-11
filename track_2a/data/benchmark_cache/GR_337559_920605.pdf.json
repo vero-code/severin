@@ -1,7 +1,7 @@
 {
   "affair": {
     "affair_id": 337559,
-    "short_id": "Anfrage Kreiliger betreffend die Rekordhitze und -trockenheit",
+    "short_id": null,
     "title": "Anfrage Kreiliger betreffend die Rekordhitze und -trockenheit",
     "canton_or_body": "GR",
     "level": "cantonal",
@@ -16,9 +16,9 @@
         "canton_or_municipality": "GR",
         "provenance": {
           "page_number": 1,
-          "source_text_snippet": "Kreiliger, Messmer, Spagnolatti, Bardill, Bieler, Bischof, Bisculm Jörg, Brüesch, Cahenzli-Philipp, Danuser, Dietrich, Ehrler, Huber, Kaiser, Kleeb, Mazzetta, Müller, Nicolay, Perl, Preisig, Rageth, Rusch Nigg, Schläpfer, Sunthar, Thöny, Tobler, Vassella, von Ballmoos, von Moos, Zogg",
-          "char_start": 1638,
-          "char_end": 1922,
+          "source_text_snippet": "Chur, 29. August 2026\nKreiliger, Messmer, Spagnolatti, Bardill, Bieler, Bischof, Bisculm Jörg, Brüesch, Cahenzli-Philipp, Danuser, Dietrich, Ehrler, Huber, Kaiser, Kleeb, Mazzetta, Müller, Nicolay, Perl, Preisig, Rageth, Rusch Nigg, Schläpfer, Sunthar, Thöny, Tobler, Vassella, von Ballmoos, von Moos, Zogg",
+          "char_start": 0,
+          "char_end": 306,
           "status": "extracted"
         }
       }
@@ -93,13 +93,13 @@
         "page": 1,
         "status": "extracted",
         "verified": true,
-        "snippet_preview": "Kreiliger, Messmer, Spagnolatti, Bardill, Bieler, ..."
+        "snippet_preview": "Chur, 29. August 2026\nKreiliger, Messmer, Spagnola..."
       }
     ]
   },
-  "latency_sec": 6.234,
-  "tokens_prompt": 4808,
-  "tokens_completion": 1011,
-  "tokens_cached": 4800,
-  "cost_chf": 4.1e-05
+  "latency_sec": 6.236,
+  "tokens_prompt": 4833,
+  "tokens_completion": 987,
+  "tokens_cached": 4224,
+  "cost_chf": 4.6e-05
 }
