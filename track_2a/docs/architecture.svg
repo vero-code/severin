@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1120"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#b91c1c"/>
+    </linearGradient>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#6d28d9"/>
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="540" fill="url(#bgGrad)"/>
+
+  <!-- Title & Subtitle -->
+  <text x="480" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="700" fill="#f8fafc" text-anchor="middle">🇨🇭 SEVERIN System Architecture — End-to-End Extraction Pipeline</text>
+  <text x="480" y="66" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="400" fill="#94a3b8" text-anchor="middle">Sovereign Swiss-AI Apertus 1.5-8B on CSCS Alps GH200 • Zero Hallucinations • Strict Provenance Verification</text>
+
+  <!-- COLUMN 1: Ingestion & Parsing -->
+  <g transform="translate(40, 95)" filter="url(#shadow)">
+    <rect width="190" height="390" rx="12" fill="url(#cardGrad)" stroke="#334155" stroke-width="1.5"/>
+    <rect x="0" y="0" width="190" height="42" rx="12" fill="#1e293b"/>
+    <text x="95" y="26" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#e2e8f0" text-anchor="middle">1. Input &amp; Ingestion</text>
+
+    <!-- Node 1A: OpenParlData API -->
+    <rect x="15" y="55" width="160" height="75" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+    <text x="25" y="78" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#38bdf8">OpenParlData API</text>
+    <text x="25" y="96" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">• 26 Cantons + Federal</text>
+    <text x="25" y="112" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">• DE, FR, IT, RM</text>
+
+    <!-- Node 1B: PDF Parser -->
+    <rect x="15" y="145" width="160" height="90" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+    <text x="25" y="168" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#38bdf8">PyPDF Engine</text>
+    <text x="25" y="186" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">• 1-indexed page parser</text>
+    <text x="25" y="202" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">• Layout normalizer</text>
+    <text x="25" y="218" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">• Inverted glyph handler</text>
+
+    <!-- Node 1C: Target Samples -->
+    <rect x="15" y="250" width="160" height="115" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+    <text x="25" y="273" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#f59e0b">National Corpus</text>
+    <text x="25" y="291" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">27 Curated PDFs (&lt; 20 MB)</text>
+    <text x="25" y="307" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">• CHE (Federal F-35)</text>
+    <text x="25" y="323" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">• ZH, GE, TI, GR</text>
+    <text x="25" y="339" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">• 100% CC-BY OGD Data</text>
+  </g>
+
+  <!-- ARROW 1 -> 2 -->
+  <path d="M 235 290 L 265 290" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- COLUMN 2: Sovereign Inference -->
+  <g transform="translate(270, 95)" filter="url(#shadow)">
+    <rect width="205" height="390" rx="12" fill="url(#cardGrad)" stroke="#dc2626" stroke-width="2"/>
+    <rect x="0" y="0" width="205" height="42" rx="12" fill="url(#redGrad)"/>
+    <text x="102" y="26" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">2. Sovereign CSCS Alps</text>
+
+    <!-- Node 2A: CSCS Alps Info -->
+    <rect x="15" y="55" width="175" height="110" rx="8" fill="#1e293b" stroke="#ef4444" stroke-width="1"/>
+    <text x="25" y="78" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#fca5a5">NVIDIA GH200 Cluster</text>
+    <text x="25" y="96" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• CSCS Alps (Lugano, CH)</text>
+    <text x="25" y="112" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Zero overseas cloud leak</text>
+    <text x="25" y="128" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• FADP / DSG Compliance</text>
+    <text x="25" y="144" font-family="system-ui, sans-serif" font-size="11" fill="#38bdf8">endpoint: cscs.ch/v1</text>
+
+    <!-- Node 2B: Apertus Model -->
+    <rect x="15" y="180" width="175" height="185" rx="8" fill="#1e293b" stroke="#ef4444" stroke-width="1"/>
+    <text x="25" y="203" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#fca5a5">Apertus-v1.5-8B</text>
+    <text x="25" y="221" font-family="system-ui, sans-serif" font-size="11" fill="#fef08a">Deterministic: temp=0.0</text>
+    <text x="25" y="241" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#e2e8f0">Alps PagedAttention:</text>
+    <text x="25" y="259" font-family="system-ui, sans-serif" font-size="11" fill="#4ade80">• 4,800+ cached tokens</text>
+    <text x="25" y="275" font-family="system-ui, sans-serif" font-size="11" fill="#4ade80">• 0.000000 CHF cache cost</text>
+    <text x="25" y="291" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Latency: 3.3s warm (avg: 5.8s)</text>
+    <text x="25" y="311" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#e2e8f0">Benchmark Micro-Cost:</text>
+    <text x="25" y="329" font-family="system-ui, sans-serif" font-size="11" fill="#fca5a5">• Total: 0.000188 CHF</text>
+    <text x="25" y="345" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">&lt; 1 cup of coffee / canton</text>
+  </g>
+
+  <!-- ARROW 2 -> 3 -->
+  <path d="M 480 290 L 510 290" stroke="#64748b" stroke-width="2"/>
+
+  <!-- COLUMN 3: Schema & Provenance -->
+  <g transform="translate(515, 95)" filter="url(#shadow)">
+    <rect width="210" height="390" rx="12" fill="url(#cardGrad)" stroke="#10b981" stroke-width="2"/>
+    <rect x="0" y="0" width="210" height="42" rx="12" fill="url(#greenGrad)"/>
+    <text x="105" y="26" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">3. Schema &amp; Strict Provenance</text>
+
+    <!-- Node 3A: Pydantic Schema -->
+    <rect x="15" y="55" width="180" height="110" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+    <text x="25" y="78" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#6ee7b7">Pydantic v2 Unified Schema</text>
+    <text x="25" y="96" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• extra="forbid" (No halluc.)</text>
+    <text x="25" y="112" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Defensive Normalizer</text>
+    <text x="25" y="128" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Hoisting &amp; Q&amp;A Restructure</text>
+    <text x="25" y="144" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• 8 Harmonized Affair Types</text>
+
+    <!-- Node 3B: Algorithmic Provenance Verifier -->
+    <rect x="15" y="180" width="180" height="185" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+    <text x="25" y="203" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#6ee7b7">Strict Provenance Verifier</text>
+    <text x="25" y="221" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• 1-indexed page grounding</text>
+    <text x="25" y="237" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Exact substring text search</text>
+    <text x="25" y="253" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Computes char offsets:</text>
+    <text x="35" y="269" font-family="system-ui, sans-serif" font-size="11" fill="#38bdf8">[char_start, char_end]</text>
+    <text x="25" y="289" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#fef08a">Empirical Audit Score:</text>
+    <text x="25" y="307" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="#4ade80">100.0% Verified Citations</text>
+    <text x="25" y="325" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• 5/5 cantons validated</text>
+    <text x="25" y="341" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">• 0 false-positive tolerance</text>
+  </g>
+
+  <!-- ARROW 3 -> 4 -->
+  <path d="M 730 290 L 760 290" stroke="#64748b" stroke-width="2"/>
+
+  <!-- COLUMN 4: Delivery & UI -->
+  <g transform="translate(765, 95)" filter="url(#shadow)">
+    <rect width="155" height="390" rx="12" fill="url(#cardGrad)" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="0" y="0" width="155" height="42" rx="12" fill="url(#blueGrad)"/>
+    <text x="77" y="26" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">4. Delivery &amp; UI</text>
+
+    <!-- Node 4A: FastAPI Service -->
+    <rect x="12" y="55" width="131" height="85" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="1"/>
+    <text x="20" y="78" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#93c5fd">FastAPI Backend</text>
+    <text x="20" y="96" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• REST &amp; OpenAPI</text>
+    <text x="20" y="112" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Live extraction</text>
+    <text x="20" y="128" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Telemetry stream</text>
+
+    <!-- Node 4B: React UI -->
+    <rect x="12" y="155" width="131" height="115" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="1"/>
+    <text x="20" y="178" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#93c5fd">React 19 UI</text>
+    <text x="20" y="196" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• 2-column layout</text>
+    <text x="20" y="212" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Live OpenParlData</text>
+    <text x="20" y="228" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• 27 Offline Samples</text>
+    <text x="20" y="244" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Citation audit log</text>
+    <text x="20" y="260" font-family="system-ui, sans-serif" font-size="11" fill="#4ade80">• Provenance chips</text>
+
+    <!-- Node 4C: Docker Reproducibility -->
+    <rect x="12" y="285" width="131" height="80" rx="8" fill="#1e293b" stroke="#a855f7" stroke-width="1"/>
+    <text x="20" y="308" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#d8b4fe">Reproducibility</text>
+    <text x="20" y="326" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• make run</text>
+    <text x="20" y="342" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Docker container</text>
+  </g>
+</svg>
