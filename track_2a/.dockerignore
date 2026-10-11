@@ -1,0 +1,34 @@
+# Python virtual environments & bytecode
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node dependencies and build artifacts (Stage 1 compiles fresh dist)
+node_modules/
+frontend/node_modules/
+frontend/.vite/
+frontend/dist/
+dist/
+.npm/
+
+# Version control & IDE
+.git/
+.gitignore
+.gitattributes
+.vscode/
+.idea/
+
+# Environment variables
+.env
+.env.local
+
+# Temporary files and logs
+*.log
+scratch/

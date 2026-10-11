@@ -1,0 +1,14 @@
+services:
+  severin:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: severin_track_2a
+    ports:
+      - "8000:8000"
+    environment:
+      - CSCS_INFERENCE_API_KEY=${CSCS_INFERENCE_API_KEY:-}
+      - PYTHONUNBUFFERED=1
+      - PYTHONIOENCODING=utf-8
+    volumes:
+      - ./data:/app/data
