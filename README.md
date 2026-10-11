@@ -85,6 +85,19 @@ Evaluated across all Swiss linguistic regions on real-world cantonal and federal
 - **Average Round-Trip Latency**: **6.0s**
 - **Economic Feasibility**: **~0.00005 CHF per affair** (Alps GH200 PagedAttention prefix cache serves ~4,200 prompt tokens for free, projecting to **<20 CHF** for the entire 300,000 OpenParlData corpus).
 
+### 📂 Dataset Structure & Runtime Artifacts
+
+The repository bundles all necessary data offline under `track_2a/data/` (**19.78 MB**, well below the competition's 100 MB ceiling):
+
+- **`data/sample_pdfs/` (19.4 MB)**: **27 curated nationwide PDF samples** covering all 26 Swiss cantons plus the Federal Assembly (`CHE`) across all 4 national languages (DE, FR, IT, RM). These documents are bundled offline so no external downloads are required during evaluation. All 27 documents are interactively browsable and extractable in the web UI.
+- **`data/benchmark_cache/` (<1 MB)**: Authentic model extraction responses for the 5 core cross-cantonal targets (CHE, ZH, GE, TI, GR). These JSON files enable transparent **offline dry-run verification** on machines without CSCS API access.
+- **Runtime Benchmark Outputs (`make run`)**:
+  When `make run` executes with a valid `CSCS_INFERENCE_API_KEY`, it dispatches 5 live requests to the CSCS Alps GH200 supercomputer and persists the latest evaluation metrics directly to `track_2a/data/`:
+  - `data/benchmark_results.json`: Detailed machine-readable metrics (latency, token counts, exact citation matches).
+  - `data/benchmark_summary.md`: Auto-generated summary table with verification percentages.
+  - `data/telemetry.json`: Persistent audit log of CSCS inference requests and micro-CHF expenditure.
+  - `data/benchmark_cache/*.pdf.json`: Fresh model completion cache updated with the latest inference run.
+
 ---
 
 ## 🏗️ Core Architecture & Pipeline Components

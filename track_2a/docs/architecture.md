@@ -80,3 +80,155 @@ flowchart LR
   - **TI**: Cantonal Interpellation (Italian)
   - **GR**: Cantonal Inquiry (Trilingual German/Italian/Romansh)
 - Supports both **Live CSCS Alps mode** and **Offline Dry-Run mode** (using physical PDFs and validated cache for zero-network jury evaluation).
+
+---
+
+## 3. End-to-End Execution Workflows
+
+### 3.1 Workflow A: Automated Jury Benchmark (`make run`)
+
+When the jury initiates `make run` from the project root, the container mounts `./data:/app/data` and runs the benchmark before starting the web server:
+
+```
+[ Jury / Terminal: make run ]
+              │
+              ▼
+[ Docker initializes multi-stage container: severin_track_2a ]
+              │
+              ▼
+[ benchmark.py selects 5 benchmark targets from BENCHMARK_TARGETS ]
+  (CHE - Federal, ZH - Zürich, GE - Genève, TI - Ticino, GR - Graubünden)
+              │
+              ▼
+[ pdf_parser.py parses local PDFs from disk: data/sample_pdfs/*.pdf ]
+  (Extracts 1-indexed page text: "--- PAGE 1 --- ...")
+              │
+              ▼
+[ prompts.py constructs zero-hallucination prompt ]
+  (Strict absence constraint + Pydantic JSON Schema + PDF text)
+              │
+              ▼  (Secure HTTPS POST API call)
+════════════════════════════════════════════════════════════════════════════
+ 🇨🇭 CSCS ALPS SUPERCOMPUTER (Lugano, Switzerland • NVIDIA GH200)
+     │
+     ▼
+  [ Model: swiss-ai/Apertus-v1.5-8B (temperature=0.0) ]
+     │ Extracts authors, questions, dates, and verbatim quote snippets
+     ▼
+  [ Returns structured completion JSON ]
+════════════════════════════════════════════════════════════════════════════
+              │
+              ▼  (HTTP 200 OK received locally)
+[ extractor.py: verify_provenance() ]
+  (Performs exact substring matching against physical PDF pages:
+   computes char_start, char_end, and certifies 100% ground truth)
+              │
+              ▼
+[ Persists evaluation artifacts via Docker Volume mount to data/ ]
+  ├── data/benchmark_summary.md       (Summary markdown table: 98.6% match)
+  ├── data/benchmark_results.json     (Per-canton latency, tokens, citations)
+  ├── data/telemetry.json             (CSCS GPU token & micro-CHF cost counters)
+  └── data/benchmark_cache/*.pdf.json (Cached model completions for dry-run)
+              │
+              ▼
+[ Launches FastAPI backend: uvicorn src.server:app on port 8000 ]
+  ➔ SEVERIN platform ready at http://localhost:8000 & Swagger at /docs
+```
+
+#### Sequence Diagram (Benchmark Execution):
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Jury as Jury / User (Terminal)
+    participant Docker as Docker Container
+    participant Bench as benchmark.py
+    participant Parser as pdf_parser.py
+    participant Disk as Local Data (data/)
+    participant CSCS as CSCS Alps GH200 (Lugano)
+    participant Verifier as verify_provenance()
+    participant Server as FastAPI Server (Uvicorn)
+
+    Jury->>Docker: make run
+    Docker->>Bench: python src/benchmark.py --mode auto
+    Note over Bench: Reads 5 targets: CHE, ZH, GE, TI, GR
+    loop For each canton target
+        Bench->>Parser: extract_pdf_pages(file_name)
+        Parser->>Disk: Read PDF from data/sample_pdfs/
+        Disk-->>Parser: Binary PDF stream
+        Parser-->>Bench: 1-indexed page text chunks
+        Bench->>CSCS: HTTPS POST /chat/completions (Apertus 1.5-8B, temp=0.0)
+        Note over CSCS: NVIDIA GH200 inference<br/>PagedAttention GPU prefix-cache
+        CSCS-->>Bench: Structured JSON (Affair + Citation Snippets)
+        Bench->>Verifier: verify_provenance(affair, pages)
+        Verifier->>Disk: Locate exact substrings in physical pages
+        Verifier-->>Bench: Provenance report (char_start, char_end, % score)
+    end
+    Bench->>Disk: Write benchmark_results.json & benchmark_summary.md
+    Bench->>Disk: Write telemetry.json & benchmark_cache/*.pdf.json
+    Bench-->>Docker: Benchmark successfully completed
+    Docker->>Server: uvicorn src.server:app --port 8000
+    Server-->>Jury: Ready on http://localhost:8000
+```
+
+---
+
+### 3.2 Workflow B: Interactive Web Application (`http://localhost:8000`)
+
+When exploring affairs interactively in the civic web explorer:
+
+```
+[ User in browser: http://localhost:8000 ]
+              │
+              ▼
+[ Selects any canton from 27 curated nationwide sample PDFs ]
+  (e.g., Zürich, Vaud, Bern, Uri, Geneva, Graubünden)
+              │
+              ▼
+[ Clicks "Extract Affair (CSCS Live)" ]
+              │
+              ▼  (HTTP POST /api/extract)
+[ FastAPI server reads selected sample PDF and extracts page text ]
+              │
+              ▼  (HTTPS POST to https://api.inference.cscs.ch/v1)
+[ CSCS Alps (Apertus 1.5-8B) extracts entities and verbatim snippets ]
+              │
+              ▼
+[ Algorithmic verifier validates provenance offsets against physical pages ]
+              │
+              ▼
+[ React 19 UI renders verified extraction ]:
+  ├── Structured Affair Card (title, authors, summary, dates)
+  ├── Question & Answer list with green badges: [VERIFIED: Page 2]
+  ├── Embedded PDF Viewer displaying original document side-by-side
+  └── CSCS Telemetry Bar updates token count and micro-CHF expenditure
+```
+
+#### Sequence Diagram (Interactive Extraction):
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as User / Jury (Browser)
+    participant UI as React 19 Frontend
+    participant API as FastAPI Backend (/api)
+    participant Parser as pdf_parser.py
+    participant Disk as Local Data (data/)
+    participant CSCS as CSCS Alps GH200 (Lugano)
+    participant Verifier as verify_provenance()
+
+    User->>UI: Select canton from 27 sample PDFs
+    UI->>Disk: Stream PDF via /api/pdf-proxy
+    Disk-->>UI: Render PDF side-by-side in viewer
+    User->>UI: Click "Extract Affair (CSCS Live)"
+    UI->>API: POST /api/extract { sample_file: "..." }
+    API->>Parser: extract_pdf_pages(sample_path)
+    Parser-->>API: 1-indexed page text
+    API->>CSCS: HTTPS POST /chat/completions (Apertus 1.5-8B, temp=0.0)
+    CSCS-->>API: Raw JSON response with citations
+    API->>Verifier: verify_provenance(affair, pages)
+    Verifier-->>API: Grounded offsets (char_start, char_end)
+    API-->>UI: Return ExtractResponse (Affair + Provenance + Telemetry)
+    UI-->>User: Display Affair Card, Citation Chips & updated Telemetry Bar
+```
+
