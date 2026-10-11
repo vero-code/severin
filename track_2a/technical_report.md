@@ -10,7 +10,7 @@
 
 ## 1. Summary
 
-In Switzerland's federalist democracy, substantive parliamentary activity—inquiries, committee debates, multi-million-franc credit requests, and binding executive responses—remains locked inside heterogeneous PDF documents issued by 26 distinct cantonal parliaments and the Federal Assembly across four national languages. Existing aggregators only index superficial metadata, leaving the substance of legislative oversight fragmented. **SEVERIN** solves this challenge by delivering an end-to-end, zero-hallucination extraction and normalization pipeline powered by Swiss-AI's sovereign **Apertus-v1.5-8B** foundation model executing on the **CSCS Alps Supercomputer** (Lugano). Using a unified Pydantic v2 schema with strict JSON constraints (`extra="forbid"`), deterministic inference (`temperature=0.0`), and an algorithmic provenance verification engine, SEVERIN achieves **100.0% verifiable citation accuracy** across all four Swiss linguistic regions (CHE Federal, Zürich, Geneva, Ticino, Graubünden). Furthermore, by leveraging Alps' vLLM PagedAttention prefix caching, SEVERIN reduces incremental inference latency to **3.27s** and total cross-cantonal evaluation cost to **0.000188 CHF** (less than 2 ten-thousandths of a Franc), proving nationwide automated legislative harmonization is commercially and operationally feasible for Swiss public administrations.
+In Switzerland's federalist democracy, substantive parliamentary activity—inquiries, committee debates, multi-million-franc credit requests, and binding executive responses—remains locked inside heterogeneous PDF documents issued by 26 distinct cantonal parliaments and the Federal Assembly across four national languages. Existing aggregators only index superficial metadata, leaving the substance of legislative oversight fragmented. **SEVERIN** solves this challenge by delivering an end-to-end, zero-hallucination extraction and normalization pipeline powered by Swiss-AI's sovereign **Apertus-v1.5-8B** foundation model executing on the **CSCS Alps Supercomputer** (Lugano). Using a unified Pydantic v2 schema with strict JSON constraints (`extra="forbid"`), deterministic inference (`temperature=0.0`), and an algorithmic provenance verification engine, SEVERIN achieves **98.6% verifiable citation accuracy** nationwide (100.0% across all cantonal parliaments, and 92.9% on federal popular initiatives where embedded font anomalies were discovered and audited). Furthermore, by leveraging Alps' vLLM PagedAttention prefix caching, SEVERIN reduces incremental inference latency to **3.03s** and total cross-cantonal evaluation cost to **0.000194 CHF** (less than 2 ten-thousandths of a Franc), proving nationwide automated legislative harmonization is commercially and operationally feasible for Swiss public administrations.
 
 ---
 
@@ -33,6 +33,16 @@ SEVERIN is engineered as a modular, decoupled pipeline connecting civic data ing
 ### 2.3 Unified Schema & Defensive Normalizer (`src/schema.py`, `src/extractor.py`)
 - Implements a unified Pydantic v2 data model (`ParliamentaryAffair`) harmonizing eight affair types (`motion`, `postulate`, `interpellation`, `question`, `initiative`, `government_affair`, `petition`, `other`).
 - Includes a **Defensive Normalizer (`normalize_extracted_dict`)** that repairs multilingual JSON generation idiosyncrasies (e.g. hoisting root fields accidentally nested in author blocks by small LLMs, wrapping flattened questions into formal pairs, and normalizing cantonal identifier variants) without introducing hallucinations.
+
+#### 2.3.1 Standards Alignment Matrix (JATS for Parliaments)
+To bridge the format gap identified by OpenParlData, SEVERIN positions `ParliamentaryAffair` as an intermediate semantic representation layer, conceptualized as a "JATS for Swiss parliaments" that maps directly to established international standards:
+
+| Standard / Framework | SEVERIN Representation | Domain Mapping & Semantic Bridge |
+|---|---|---|
+| **Akoma Ntoso (OASIS LegalDocML)** | `affair_type`, `ProceduralEvent`, `lifecycle_status` | Maps hierarchical procedural lifecycles, legislative events (`date`, `event_type`), and formal adoption statuses without heavy XML verbosity. |
+| **Popolo Project (Open Civic Data)** | `Actor`, `Person`, `organization`, `role` | Standardizes elected representatives, co-signatories, and cantonal political parties (`party`), preserving parliamentary mandate roles. |
+| **Parla-CLARIN (TEI Corpus)** | `QuestionAnswerPair`, `rationale`, `language` | Encapsulates multilingual parliamentary dialogue, separating petitioner inquiries from executive answers with language identification (`de`, `fr`, `it`, `rm`). |
+| **Docling (IBM) / Apache PDFBox** | `Provenance`, `page_number`, `char_start`, `char_end` | Anchors abstract semantic data into the underlying physical document layer, preserving exact character spans and physical page numbers. |
 
 ### 2.4 Algorithmic Provenance Verifier (`src/extractor.py`)
 - Every extracted semantic entity (title, rationale, author, question, executive answer, financial credit) is bound to a mandatory `Provenance` block specifying its 1-indexed physical page number and exact quote.
@@ -119,7 +129,7 @@ We evaluated SEVERIN across five Swiss legislative jurisdictions representing al
 |---|---|---|---|---|---|
 | Standard LLM Prompting (Baseline) | ~55% – 70% | High (paraphrased quotes, invented co-signatories) | None (unanchored strings) | ~8 – 15s | ~0.002 CHF |
 | Raw Apertus 8B without Verifier | ~80% – 85% | Low-to-Moderate (layout and font artifacts) | None | ~10s | ~0.00012 CHF |
-| **SEVERIN (Apertus 8B + Verifier + Alps)** | **100.0%** | **0.0% (Zero Hallucinations)** | **Full exact character offset grounding** | **5.83s** | **0.000038 CHF** |
+| **SEVERIN (Apertus 8B + Verifier + Alps)** | **98.6%** | **0.0% (Zero Hallucinations)** | **Full exact character offset grounding** | **6.01s** (3.03s warm) | **0.000039 CHF** |
 
 ### 5.3 Official Live Cross-Cantonal Benchmark Results (CSCS Alps GH200)
 
@@ -127,15 +137,48 @@ The following table reflects the results generated by `benchmark.py` running aga
 
 | Canton / Body | Region & Language | Document Type | Provenance Match | Verified Citations | Latency (s) | Total Tokens | Cached (Alps) | Cost (CHF) |
 |---|---|---|---|---|---|---|---|---|
-| **CHE** | Federal / National (DE) | `initiative` | **100.0%** | 3/3 | 5.855s | 6,203 | 5,312 | `0.000036 CHF` |
-| **ZH** | German (Deutschschweiz) (DE) | `postulate` | **100.0%** | 3/3 | 3.303s | 5,344 | 4,800 | `0.000021 CHF` |
-| **GE** | French (Suisse romande) (FR) | `question` | **100.0%** | 4/4 | 10.372s | 6,875 | 5,184 | `0.000068 CHF` |
-| **TI** | Italian (Svizzera italiana) (IT) | `interpellation` | **100.0%** | 5/5 | 3.395s | 5,083 | 4,512 | `0.000022 CHF` |
-| **GR** | Trilingual (de/it/rm) (DE) | `question` | **100.0%** | 3/3 | 6.234s | 5,819 | 4,800 | `0.000041 CHF` |
+| **CHE** | Federal / National (DE) | `initiative` | **92.9%** | 13/14 | 10.051s | 6,944 | 5,312 | `0.000064 CHF` |
+| **ZH** | German (Deutschschweiz) (DE) | `postulate` | **100.0%** | 3/3 | 3.221s | 5,353 | 4,832 | `0.000020 CHF` |
+| **GE** | French (Suisse romande) (FR) | `question` | **100.0%** | 2/2 | 7.698s | 6,467 | 5,184 | `0.000051 CHF` |
+| **TI** | Italian (Svizzera italiana) (IT) | `interpellation` | **100.0%** | 5/5 | 3.029s | 5,051 | 4,544 | `0.000020 CHF` |
+| **GR** | Trilingual (de/it/rm) (DE) | `question` | **100.0%** | 3/3 | 6.030s | 5,820 | 4,832 | `0.000039 CHF` |
 
-- **Average Verifiable Provenance Match:** **100.0%**
-- **Average Round-Trip Latency:** **5.83s** (down to **3.30s** on cached cantonal inquiries)
-- **Total Cross-Cantonal Benchmark Cost:** **0.000188 CHF** (24,608 tokens served free from GPU cache)
+- **Average Verifiable Provenance Match:** **98.6%** (100.0% across all four cantonal parliaments)
+- **Average Round-Trip Latency:** **6.01s** (down to **3.03s** on prefix-cached inquiries)
+- **Total Cross-Cantonal Benchmark Cost:** **0.000194 CHF** (24,704 tokens served free from GPU cache)
+
+### 5.4 Demonstration of Value: Answering a Cross-Parliamentary Query Across Linguistic Borders
+A primary deliverable of Track 2A is demonstrating tangible civic value by answering a cross-parliamentary question that is currently impossible to answer reliably across cantons.
+
+**The Cross-Parliamentary Question:**
+> *"How do cantonal parliaments hold executive authorities accountable regarding public crisis management and institutional governance across distinct Swiss language regions?"*
+
+**Why It Was Previously Impossible:**
+In current open data repositories (such as OpenParlData), cross-cantonal search is limited to surface-level metadata (affair titles and filing dates). The actual substantive inquiries, parliamentary questions, and executive commitments are buried inside unstructured PDFs written in three different official languages (*Anfrage* in German, *Question écrite* in French, *Interpellanza* in Italian). A comparative analyst cannot programmatically filter, extract, or contrast what demands were placed upon governments without weeks of manual reading.
+
+**How SEVERIN Answers It:**
+Through SEVERIN's unified Pydantic schema and conservative extraction pipeline, a federated query across normalized `ParliamentaryAffair` instances immediately extracts the core substance across linguistic borders with mathematical provenance:
+
+1. **Graubünden (GR - German / Romansh, Alpine Region)**:
+   - *Document:* `GR_337559_920605.pdf` — *Anfrage Kreiliger betreffend die Rekordhitze und -trockenheit*.
+   - *Harmonized Entity:* `affair_type = "question"`, `canton_or_body = "GR"`.
+   - *Extracted Substance:* The inquiry formulates 3 distinct oversight questions demanding whether the Cantonal Government (*Regierung*) will fund emergency water transport for alpine pastures, grant emergency financial aid to prevent distressed cattle slaughter, and deploy cantonal crisis coordinators.
+   - *Provenance:* Page 1, verbatim quotation confirmed (`3/3 verified, 100% match`).
+
+2. **Geneva (GE - French, Suisse Romande)**:
+   - *Document:* `GE_340969_927404.pdf` — *Question écrite: Culture institutionnelle du service de protection des mineurs*.
+   - *Harmonized Entity:* `affair_type = "question"`, `canton_or_body = "GE"`.
+   - *Extracted Substance:* Investigates institutional administrative crisis within child protective services, questioning whether the State Council (*Conseil d'État*) is ending coercive separation practices in favor of family pedagogical support.
+   - *Provenance:* Page 2, verbatim quotation confirmed (`2/2 verified, 100% match`).
+
+3. **Ticino (TI - Italian, Svizzera Italiana)**:
+   - *Document:* `TI_341386_928764.pdf` — *Interpellanza: Chiarezza sui versamenti ai membri del Consiglio di amministrazione di AET*.
+   - *Harmonized Entity:* `affair_type = "interpellation"`, `canton_or_body = "TI"`.
+   - *Extracted Substance:* Demands immediate executive transparency from the Council of State (*Consiglio di Stato*) regarding excessive compensation and bonuses paid to the board of cantonal electricity utility AET during price instability.
+   - *Provenance:* Page 1, verbatim quotation confirmed (`5/5 verified, 100% match`).
+
+**Civic Impact:**
+SEVERIN unifies multi-lingual executive oversight into a single querying interface. Civic watchdogs, journalists, and parliamentarians can now execute cross-cantonal queries—such as comparing crisis responses or board compensation oversight—in seconds, backed by verifiable citations directly linked to official parliamentary gazette pages.
 
 ---
 
@@ -172,6 +215,22 @@ Our algorithmic verifier honestly flagged the unnormalized citation as unverifie
 
 #### Case Study C: Multilingual JSON Nesting Idiosyncrasies in 8B Models
 During live French (`GE`) and Italian (`TI`) extraction, the 8B model occasionally placed top-level affair fields inside the first author dictionary (`authors[0]`) or flattened question items. Rather than weakening Pydantic's `extra="forbid"` rule (which would allow hallucinations to pass undetected), SEVERIN implements a deterministic **Defensive Normalizer** that hoists misplaced keys and structures question pairs prior to validation. This retains strict schema enforcement without discarding valid model outputs.
+
+### 6.3 Technical Limitations & Production Boundaries
+To ensure scientific integrity and provide OpenParlData with an honest deployment roadmap, we document three fundamental technical boundaries:
+
+1. **Format Boundaries (Tabular & Multi-Modal Data)**:
+   - *Flat PDF Text Extraction*: Text parsing via `pypdf` streams characters sequentially. While discrete appropriations (`amount_chf`) are extracted when mentioned inline, complex multi-column budgetary balance sheets are flattened. In industrial production, pairing SEVERIN with a table-structure parser (such as Docling or pdfplumber) is recommended for complex fiscal annexes.
+   - *Non-Textual Annexes*: Maps, engineering schematics, and embedded figures in annexes are omitted from the current text-only schema.
+   - *Relational Graph Links*: Historical affair references (*Vorstössen*) are captured inside rationale text rather than as first-class relational foreign keys.
+
+2. **Extraction Boundaries (Raster Scans & Ingestion Scale)**:
+   - *The OCR Prerequisite*: SEVERIN operates on PDFs containing a digital text layer (born-digital or pre-processed via Apache Tika/PDFBox in OpenParlData). Pure pixel scans lacking an embedded font layer yield `char_count: 0` and require an upstream OCR engine (e.g. Tesseract).
+   - *Batch Orchestration*: While the inference cost is negligible (~0.00004 CHF per affair, projecting to <20 CHF for all 300,000 Swiss affairs), processing the full archive requires an asynchronous distributed pipeline (e.g. Apache Hop or Celery).
+
+3. **Verification Boundaries (Precision vs. Recall & Cohort Size)**:
+   - *Precision vs. Recall Asymmetry*: Our algorithmic verifier provides mathematical guarantees on **Precision** (proving zero hallucinations for every extracted field). However, detecting **Recall** (e.g., whether an inquiry contained 5 questions but the model only extracted 4) currently requires manual gold-standard comparison.
+   - *Benchmark Cohort Size*: Our benchmark suite rigorously evaluates 5 multi-lingual anchor documents (1 per linguistic and federal tier). While sufficient for architectural proof-of-concept, production calibration should expand the benchmark cohort to 50+ annotated documents.
 
 ---
 
@@ -236,3 +295,6 @@ This project is licensed under the **Creative Commons Attribution 4.0 Internatio
 3. **CSCS Alps**: *The Alps Infrastructure for High-Performance Computing and AI*, Swiss National Supercomputing Centre, Lugano.
 4. **vLLM PagedAttention**: Woosuk Kwon et al., *Efficient Memory Management for Large Language Model Serving with PagedAttention*, SOSP 2023.
 5. **Parla-CLARIN**: *TEI-based Linguistic Harmonization of Parliamentary Proceedings*, CLARIN Research Infrastructure.
+6. **Akoma Ntoso (OASIS LegalDocML)**: *XML Standard for Parliamentary, Legislative and Judiciary Documents*, OASIS Open Standard.
+7. **Popolo Project**: *International Open Government Data Specification for Parliamentary Actors and Organizations*, `popoloproject.com`.
+8. **IBM Docling**: *Document AI for Multi-Modal Parsing and Document Layout Analysis*, 2024.

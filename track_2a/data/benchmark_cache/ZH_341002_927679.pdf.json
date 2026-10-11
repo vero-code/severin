@@ -72,9 +72,9 @@
       }
     ]
   },
-  "latency_sec": 3.43,
+  "latency_sec": 3.221,
   "tokens_prompt": 4844,
   "tokens_completion": 509,
-  "tokens_cached": 4224,
-  "cost_chf": 2.7e-05
+  "tokens_cached": 4832,
+  "cost_chf": 2e-05
 }

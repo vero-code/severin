@@ -1,15 +1,15 @@
 {
-  "benchmark_timestamp": "2026-10-11T11:51:54Z",
+  "benchmark_timestamp": "2026-10-11T16:16:13Z",
   "mode": "live",
   "model": "swiss-ai/Apertus-v1.5-8B",
   "hardware": "CSCS Alps (NVIDIA GH200)",
   "jurisdictions_evaluated": 5,
   "average_provenance_score": 0.986,
   "average_provenance_percent": "98.6%",
-  "total_tokens": 29641,
-  "total_cached_tokens": 21120,
-  "total_cost_chf": 0.000231,
-  "average_latency_sec": 6.29,
+  "total_tokens": 29635,
+  "total_cached_tokens": 24704,
+  "total_cost_chf": 0.000194,
+  "average_latency_sec": 6.01,
   "results": [
     {
       "canton": "CHE",
@@ -31,10 +31,10 @@
       "provenance_percent": "92.9%",
       "tokens_prompt": 5339,
       "tokens_completion": 1605,
-      "tokens_cached": 4224,
+      "tokens_cached": 5312,
       "total_tokens": 6944,
-      "cost_chf": 7.5e-05,
-      "latency_sec": 10.587,
+      "cost_chf": 6.4e-05,
+      "latency_sec": 10.051,
       "mode": "live"
     },
     {
@@ -57,10 +57,10 @@
       "provenance_percent": "100.0%",
       "tokens_prompt": 4844,
       "tokens_completion": 509,
-      "tokens_cached": 4224,
+      "tokens_cached": 4832,
       "total_tokens": 5353,
-      "cost_chf": 2.7e-05,
-      "latency_sec": 3.43,
+      "cost_chf": 2e-05,
+      "latency_sec": 3.221,
       "mode": "live"
     },
     {
@@ -82,11 +82,11 @@
       "provenance_score": 1.0,
       "provenance_percent": "100.0%",
       "tokens_prompt": 5210,
-      "tokens_completion": 1263,
-      "tokens_cached": 4224,
-      "total_tokens": 6473,
-      "cost_chf": 6e-05,
-      "latency_sec": 8.085,
+      "tokens_completion": 1257,
+      "tokens_cached": 5184,
+      "total_tokens": 6467,
+      "cost_chf": 5.1e-05,
+      "latency_sec": 7.698,
       "mode": "live"
     },
     {
@@ -109,10 +109,10 @@
       "provenance_percent": "100.0%",
       "tokens_prompt": 4564,
       "tokens_completion": 487,
-      "tokens_cached": 4224,
+      "tokens_cached": 4544,
       "total_tokens": 5051,
-      "cost_chf": 2.3e-05,
-      "latency_sec": 3.111,
+      "cost_chf": 2e-05,
+      "latency_sec": 3.029,
       "mode": "live"
     },
     {
@@ -135,10 +135,10 @@
       "provenance_percent": "100.0%",
       "tokens_prompt": 4833,
       "tokens_completion": 987,
-      "tokens_cached": 4224,
+      "tokens_cached": 4832,
       "total_tokens": 5820,
-      "cost_chf": 4.6e-05,
-      "latency_sec": 6.236,
+      "cost_chf": 3.9e-05,
+      "latency_sec": 6.03,
       "mode": "live"
     }
   ]
