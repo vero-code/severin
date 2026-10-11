@@ -6,6 +6,7 @@ Track 2A - Hack Apertus 2026.
 
 import io
 import logging
+from pathlib import Path
 from typing import Optional
 from pydantic import BaseModel
 from fastapi import FastAPI, Query, HTTPException
@@ -254,5 +255,12 @@ def list_sample_pdfs():
             logger.error(f"Error reading manifest: {e}")
             raise HTTPException(status_code=500, detail=str(e))
     return []
+
+
+# Mount pre-built React frontend SPA if present
+frontend_dist = Path(__file__).resolve().parent.parent / "frontend" / "dist"
+if frontend_dist.exists():
+    from fastapi.staticfiles import StaticFiles
+    app.mount("/", StaticFiles(directory=str(frontend_dist), html=True), name="frontend")
 
 
