@@ -19,7 +19,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.85rem;
+  font-size: var(--font-size-base);
   font-weight: 600;
 }
 
@@ -50,32 +50,42 @@
 }
 
 .preview-tabs {
-  display: flex;
-  gap: 0.4rem;
+  display: inline-flex;
+  align-items: center;
+  background-color: rgba(18, 22, 31, 0.75);
+  border: 1px solid var(--border-panel);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 3px;
 }
 
 .preview-tab-btn {
   background: transparent;
-  border: 1px solid var(--border-color);
+  border: 1px solid transparent;
   color: var(--text-secondary);
-  padding: 0.25rem 0.7rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.78rem;
+  padding: 0.32rem 0.75rem;
+  border-radius: 6px;
+  font-size: var(--font-size-sm);
   font-weight: 500;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
-.preview-tab-btn:hover {
+.preview-tab-btn:hover:not(.active) {
   color: var(--text-primary);
-  border-color: #475569;
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 .preview-tab-btn.active {
-  background-color: var(--accent-red);
-  border-color: var(--accent-red);
+  background-color: var(--btn-bg);
+  border: 1px solid var(--btn-border);
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.35);
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 
 .parsed-text-view {
@@ -98,7 +108,7 @@
 .parsed-page-header {
   background-color: var(--bg-panel);
   padding: 0.4rem 0.8rem;
-  font-size: 0.75rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   color: var(--badge-text);
   border-bottom: 1px solid var(--border-color);
@@ -111,7 +121,7 @@
 .parsed-page-content {
   padding: 0.8rem 1rem;
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: var(--font-size-sm);
   line-height: 1.5;
   color: var(--text-primary);
   white-space: pre-wrap;

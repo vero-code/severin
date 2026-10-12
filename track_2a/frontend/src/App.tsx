@@ -349,7 +349,7 @@ export function App() {
             borderRadius: '8px',
             color: '#fca5a5',
             marginBottom: '1rem',
-            fontSize: '0.85rem'
+            fontSize: 'var(--font-size-base)'
           }}>
             ⚠️ {errorMsg}
           </div>
@@ -383,7 +383,7 @@ export function App() {
                 color: 'var(--text-muted)'
               }}>
                 <p>No live API affairs queried yet.</p>
-                <p style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                <p style={{ fontSize: 'var(--font-size-sm)', marginTop: '0.5rem' }}>
                   Pick a <strong>curated test sample</strong> above or click <strong>Fetch Affairs</strong>.
                 </p>
               </div>
@@ -483,7 +483,7 @@ export function App() {
                     href={activeDoc.url}
                     target="_blank"
                     rel="noreferrer"
-                    style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '0.8rem' }}
+                    style={{ color: '#38bdf8', textDecoration: 'none', fontSize: 'var(--font-size-sm)' }}
                   >
                     ↗ Open PDF
                   </a>
@@ -508,7 +508,7 @@ export function App() {
                   )}
 
                   {parseError && (
-                    <div style={{ padding: '1rem', backgroundColor: 'rgba(239, 68, 68, 0.15)', border: '1px solid #ef4444', borderRadius: '8px', color: '#fca5a5', fontSize: '0.85rem' }}>
+                    <div style={{ padding: '1rem', backgroundColor: 'rgba(239, 68, 68, 0.15)', border: '1px solid #ef4444', borderRadius: '8px', color: '#fca5a5', fontSize: 'var(--font-size-sm)' }}>
                       ⚠️ {parseError}
                     </div>
                   )}
@@ -542,10 +542,10 @@ export function App() {
                   {isExtracting && (
                     <div className="extract-loading-box">
                       <div className="spinner-supercomputer" />
-                      <h3 style={{ color: '#ffffff', fontSize: '1.05rem', marginBottom: '0.4rem' }}>
+                      <h3 style={{ color: '#ffffff', fontSize: 'var(--font-size-md)', marginBottom: '0.4rem' }}>
                         Apertus 1.5-8B Extraction in Progress
                       </h3>
-                      <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', maxWidth: '440px' }}>
+                      <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-size-sm)', maxWidth: '440px' }}>
                         Running inference on CSCS Alps supercomputer GH200 nodes.
                         Validating strict schema and algorithmic provenance against physical PDF pages (temperature=0.0)...
                       </p>
@@ -555,10 +555,10 @@ export function App() {
                   {extractError && (
                     <div style={{ padding: '1.25rem', backgroundColor: 'rgba(239, 68, 68, 0.15)', border: '1px solid #ef4444', borderRadius: '8px', color: '#fca5a5' }}>
                       <h4>⚠️ Extraction Failed</h4>
-                      <p style={{ marginTop: '0.4rem', fontSize: '0.85rem' }}>{extractError}</p>
+                      <p style={{ marginTop: '0.4rem', fontSize: 'var(--font-size-sm)' }}>{extractError}</p>
                       <button
                         className="btn-primary"
-                        style={{ marginTop: '0.75rem', fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
+                        style={{ marginTop: '0.75rem', fontSize: 'var(--font-size-sm)', padding: '0.4rem 0.8rem' }}
                         onClick={handleExtract}
                       >
                         Retry Extraction
@@ -568,10 +568,10 @@ export function App() {
 
                   {!isExtracting && !extractError && !extractedAffair && (
                     <div style={{ textAlign: 'center', padding: '3.5rem 1.5rem', color: 'var(--text-muted)' }}>
-                      <p style={{ fontSize: '1rem', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
+                      <p style={{ fontSize: 'var(--font-size-base)', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
                         Ready for Conservative Extraction
                       </p>
-                      <p style={{ fontSize: '0.85rem', maxWidth: '400px', margin: '0 auto 1.25rem auto' }}>
+                      <p style={{ fontSize: 'var(--font-size-sm)', maxWidth: '400px', margin: '0 auto 1.25rem auto' }}>
                         Extract this document using Swiss-AI Apertus 1.5-8B into the unified Swiss parliamentary schema with 100% verified citations.
                       </p>
                       <button className="btn-extract" onClick={handleExtract}>
@@ -618,7 +618,7 @@ export function App() {
                             <span className="citation-chip">{extractedAffair.affair_type}</span>
                           </div>
                         </div>
-                        <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#ffffff', marginBottom: '0.4rem' }}>
+                        <div style={{ fontSize: 'var(--font-size-md)', fontWeight: 600, color: '#ffffff', marginBottom: '0.4rem' }}>
                           {extractedAffair.title}
                         </div>
                         {extractedAffair.title_provenance && (
@@ -626,7 +626,7 @@ export function App() {
                             <strong>Page {extractedAffair.title_provenance.page_number}:</strong> "{extractedAffair.title_provenance.source_text_snippet}"
                           </div>
                         )}
-                        <div style={{ display: 'flex', gap: '1.25rem', marginTop: '0.75rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                        <div style={{ display: 'flex', gap: '1.25rem', marginTop: '0.75rem', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}>
                           {extractedAffair.submission_date && (
                             <span>📅 Submitted: <strong>{extractedAffair.submission_date}</strong></span>
                           )}
@@ -649,10 +649,10 @@ export function App() {
                                 <strong>{author.name}</strong>
                                 <span className="author-role">{author.role}</span>
                                 {author.party_or_fraction && (
-                                  <span style={{ color: '#94a3b8', fontSize: '0.72rem' }}>({author.party_or_fraction})</span>
+                                  <span style={{ color: '#94a3b8', fontSize: 'var(--font-size-sm)' }}>({author.party_or_fraction})</span>
                                 )}
                                 {author.provenance && (
-                                  <span className="citation-chip" style={{ fontSize: '0.65rem' }}>
+                                  <span className="citation-chip">
                                     p. {author.provenance.page_number}
                                   </span>
                                 )}
@@ -660,7 +660,7 @@ export function App() {
                             ))}
                           </div>
                         ) : (
-                          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                          <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)' }}>
                             No individual authors specified (e.g. collective governmental submission).
                           </p>
                         )}
@@ -677,7 +677,7 @@ export function App() {
                               </span>
                             )}
                           </div>
-                          <p style={{ fontSize: '0.85rem', color: '#cbd5e1', lineHeight: '1.6' }}>
+                          <p style={{ fontSize: 'var(--font-size-base)', color: '#cbd5e1', lineHeight: '1.6' }}>
                             {extractedAffair.background_and_rationale}
                           </p>
                           {extractedAffair.rationale_provenance && (
@@ -714,14 +714,14 @@ export function App() {
                                   )}
                                 </div>
                               ) : (
-                                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
+                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
                                   [Pending executive answer]
                                 </div>
                               )}
                             </div>
                           ))
                         ) : (
-                          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                          <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)' }}>
                             No formal question items present in document (conservative extraction).
                           </p>
                         )}
@@ -741,7 +741,7 @@ export function App() {
                                 </div>
                                 <div className="financial-purpose">{fin.purpose}</div>
                                 {fin.credit_type && (
-                                  <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '0.2rem' }}>
+                                  <div style={{ fontSize: 'var(--font-size-sm)', color: '#94a3b8', marginTop: '0.2rem' }}>
                                     Type: {fin.credit_type}
                                   </div>
                                 )}
@@ -754,7 +754,7 @@ export function App() {
                             ))}
                           </div>
                         ) : (
-                          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                          <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)' }}>
                             No financial expenditures or credits requested in this affair.
                           </p>
                         )}
@@ -788,7 +788,7 @@ export function App() {
                                       {d.status.toUpperCase()}
                                     </span>
                                   </td>
-                                  <td style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
+                                  <td style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}>
                                     {d.snippet_preview}
                                   </td>
                                 </tr>

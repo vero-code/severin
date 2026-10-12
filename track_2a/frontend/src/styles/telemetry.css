@@ -15,7 +15,7 @@
   border: 1px solid var(--border-panel);
   border-radius: 9999px;
   padding: 0.4rem 1.1rem;
-  font-size: 0.8rem;
+  font-size: var(--font-size-sm);
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
   transition: all 0.2s ease;
@@ -79,7 +79,7 @@
 
 .metric-sep {
   color: #475569;
-  font-size: 0.7rem;
+  font-size: var(--font-size-sm);
 }
 
 /* Hover Popover Table */
@@ -129,7 +129,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.88rem;
+  font-size: var(--font-size-md);
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -138,7 +138,7 @@
   background: var(--badge-bg);
   border: 1px solid var(--badge-border);
   color: var(--badge-text);
-  font-size: 0.7rem;
+  font-size: var(--font-size-sm);
   font-family: var(--font-mono);
   padding: 0.15rem 0.5rem;
   border-radius: 4px;
@@ -146,7 +146,7 @@
 }
 
 .popover-sub {
-  font-size: 0.72rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
   margin-top: 0.3rem;
 }
@@ -160,7 +160,7 @@
 .telemetry-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.75rem;
+  font-size: var(--font-size-sm);
 }
 
 .telemetry-table th {
@@ -171,7 +171,7 @@
   border-bottom: 1px solid rgba(51, 65, 85, 0.6);
   font-family: var(--font-mono);
   text-transform: uppercase;
-  font-size: 0.68rem;
+  font-size: var(--font-size-sm);
   letter-spacing: 0.04em;
 }
 
@@ -202,7 +202,7 @@
   border: 1px solid var(--badge-border);
   color: var(--badge-text);
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: var(--font-size-sm);
   font-weight: 700;
   padding: 0.1rem 0.35rem;
   border-radius: 4px;
@@ -221,7 +221,7 @@
   color: var(--accent-green-bright);
   padding: 0.15rem 0.45rem;
   border-radius: 9999px;
-  font-size: 0.66rem;
+  font-size: var(--font-size-sm);
   font-family: var(--font-mono);
   font-weight: 700;
 }
@@ -233,7 +233,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.7rem;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
 }
 

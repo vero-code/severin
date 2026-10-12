@@ -8,12 +8,15 @@ export function TelemetryBar({ telemetry }: TelemetryBarProps) {
   return (
     <div className="telemetry-wrapper">
       <div className="telemetry-bar">
+        
         <div className="telemetry-status">
           <span className="telemetry-dot online" />
           <span className="telemetry-model">Apertus 1.5-8B</span>
+          
         </div>
         <div className="telemetry-metrics">
-          <span className="metric-sep">•</span>
+          <span className="metric-item">Telemetry:</span>
+          
           <span className="metric-item">
             <strong>{telemetry?.total_requests ?? 1}</strong> req
           </span>

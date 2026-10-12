@@ -1,8 +1,6 @@
 /* ============================================================================
    SEVERIN Design Tokens, Colors, Fonts and Reset
    ============================================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-
 :root {
   /* 1. Backgrounds & Neutral Framework */
   --bg-primary: #1A1C27; /* Background */
@@ -14,7 +12,7 @@
 
   /* Borders & Dividers */
   --border-color: #2D3748;
-  --border-panel: #4A151D;
+  --border-panel: #964E59;
   --border-focus: #E53E3E;
 
   /* 2. Swiss Red & Coral Accents */
@@ -22,12 +20,24 @@
   --accent-red-hover: #E53E3E;
   --accent-coral-highlight: rgba(229, 62, 62, 0.22);
 
+  /* Button Tokens (Exclusively for action buttons) */
+  --btn-bg: #911C25;
+  --btn-bg-hover: #A3202B;
+  --btn-border: #91313D;
+  --btn-border-hover: #A53744;
+  --btn-text: #FFFFFF;
+
   /* Badge Pills [Page 2] [Text Span] */
   --badge-bg: #3B1419;
   --badge-border: #4C1D24;
   --badge-text: #FC8181;
 
-  /* 3. Typography */
+  /* 3. Typography & Sizing Scale */
+  --font-size-sm: 14px;   /* Smallest text: badges, pills, tabs, metadata tags */
+  --font-size-base: 16px; /* Regular body text: paragraphs, inputs, buttons, tables */
+  --font-size-md: 18px;   /* Subheadings: card titles, section headers, h2, h3 */
+  --font-size-lg: 24px;   /* Main titles */
+
   --text-primary: #F7FAFC;
   --text-secondary: #CBD5E0;
   --text-muted: #A0AEC0;
@@ -43,7 +53,7 @@
   --mac-yellow: #FFBD2E;
   --mac-green: #27C93F;
 
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
   --radius-sm: 6px;
@@ -57,8 +67,14 @@
   padding: 0;
 }
 
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
 body {
   font-family: var(--font-sans);
+  font-size: var(--font-size-base);
   background-color: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.5;

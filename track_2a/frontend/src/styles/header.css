@@ -25,14 +25,14 @@
 }
 
 .brand-titles h1 {
-  font-size: 1.35rem;
+  font-size: var(--font-size-lg);
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--text-primary);
 }
 
 .brand-titles p {
-  font-size: 0.82rem;
+  font-size: var(--font-size-sm);
   color: var(--text-secondary);
 }
 
@@ -42,7 +42,7 @@
   border: 1px solid var(--badge-border);
   padding: 0.25rem 0.65rem;
   border-radius: 9999px;
-  font-size: 0.75rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
 }
 
