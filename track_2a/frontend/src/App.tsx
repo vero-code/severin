@@ -271,6 +271,12 @@ export function App() {
     }
   };
 
+  // Computed safe PDF filename and proxy URL for current document
+  const rawTitle = activeDoc ? getText(activeDoc.title) || `doc_${activeDoc.id}` : 'document';
+  const cleanTitle = rawTitle.replace(/[^a-zA-Z0-9_\u00C0-\u017F\u0400-\u04FF\s.-]/g, '_').trim().replace(/\s+/g, '_');
+  const safePdfFilename = `${bodyKey ? `${bodyKey}_` : ''}${cleanTitle.toLowerCase().endsWith('.pdf') ? cleanTitle : `${cleanTitle}.pdf`}`;
+  const pdfProxyUrl = `/api/pdf-proxy/${encodeURIComponent(safePdfFilename)}?url=${encodeURIComponent(activeDoc?.url || '')}${selectedSampleFile ? `&sample=${encodeURIComponent(selectedSampleFile)}` : ''}`;
+
   return (
     <div className="app-container">
       {/* Header */}
@@ -315,14 +321,11 @@ export function App() {
           <div className="studio-selector-panel">
             <div className="studio-panel-header">
               <div className="panel-header-title">
-                <span>🇨🇭 Sources & Samples</span>
+                <span>🇨🇭 Sources</span>
               </div>
-              {controlMode === 'samples' && (
-                <span className="doc-info-badge">{samplePdfs.length} Curated</span>
-              )}
-              {controlMode === 'api' && affairs.length > 0 && (
-                <span className="doc-info-badge">[{bodyKey}] {affairs.length} Loaded</span>
-              )}
+              {/* <span className="doc-info-badge" style={{ textAlign: 'right' }}>
+                {controlMode === 'samples' ? `${samplePdfs.length} Curated` : affairs.length > 0 ? `[${bodyKey}] ${affairs.length}` : ''}
+              </span> */}
             </div>
 
             {/* Sidebar Mode Switch: Samples vs Live API */}
@@ -495,7 +498,7 @@ export function App() {
                   className={`preview-tab-btn ${docTab === 'pdf' ? 'active' : ''}`}
                   onClick={() => setDocTab('pdf')}
                 >
-                  📄 PDF Document
+                  📄 PDF
                 </button>
                 <button
                   className={`preview-tab-btn ${docTab === 'text' ? 'active' : ''}`}
@@ -506,7 +509,7 @@ export function App() {
                     }
                   }}
                 >
-                  📝 Raw Text {parsedPages.length > 0 ? `(${parsedPages.length} p.)` : ''}
+                  📝 Text {parsedPages.length > 0 ? `(${parsedPages.length}p)` : ''}
                 </button>
               </div>
 
@@ -521,11 +524,11 @@ export function App() {
                 )}
                 {activeDoc?.url && (
                   <a
-                    href={activeDoc.url}
+                    href={pdfProxyUrl}
                     target="_blank"
                     rel="noreferrer"
                     className="open-pdf-link"
-                    title="Open original document in new browser tab"
+                    title={`Open ${safePdfFilename} in new browser tab`}
                   >
                     ↗ Open PDF
                   </a>
@@ -538,7 +541,7 @@ export function App() {
               activeDoc?.url || selectedSampleFile ? (
                 <iframe
                   title="PDF Document Preview"
-                  src={`/api/pdf-proxy?url=${encodeURIComponent(activeDoc?.url || '')}`}
+                  src={`${pdfProxyUrl}#view=FitH`}
                   className="preview-iframe"
                 />
               ) : (
@@ -610,10 +613,10 @@ export function App() {
           <div className="studio-extraction-panel">
             <div className="studio-panel-header">
               <div className="panel-header-title">
-                <span>✨ Apertus 1.5-8B Studio</span>
+                <span>✨ Apertus Studio</span>
                 {provenanceReport && (
                   <span className="provenance-pill">
-                    {Math.round(provenanceReport.provenance_score * 100)}% match
+                    {Math.round(provenanceReport.provenance_score * 100)}%
                   </span>
                 )}
               </div>
@@ -625,15 +628,15 @@ export function App() {
                   disabled={isExtracting || (!activeDoc?.url && !selectedSampleFile)}
                   title="Run conservative extraction with Swiss-AI Apertus 1.5-8B on CSCS Alps Supercomputer"
                 >
-                  {isExtracting ? '⏳ Extracting on Alps...' : '⚡ Extract with Apertus 1.5-8B'}
+                  {isExtracting ? '⏳ Extracting...' : '⚡ Extract with Apertus'}
                 </button>
                 {extractedAffair && (
                   <button
                     className="doc-btn"
                     onClick={() => setShowRawJson(!showRawJson)}
-                    style={{ whiteSpace: 'nowrap' }}
+                    style={{ whiteSpace: 'nowrap', padding: '0.3rem 0.6rem', fontSize: 'var(--font-size-sm)' }}
                   >
-                    {showRawJson ? 'Hide JSON' : 'Raw JSON'}
+                    {showRawJson ? 'Hide JSON' : 'JSON'}
                   </button>
                 )}
               </div>

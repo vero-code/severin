@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Optional, List
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, FileResponse
 import requests
 
 from .api_client import OpenParlDataClient
@@ -46,6 +46,19 @@ app.add_middleware(
 )
 
 client = OpenParlDataClient(timeout=30)
+
+SAMPLE_DIR = Path(__file__).resolve().parent.parent / "data" / "sample_pdfs"
+MANIFEST_PATH = SAMPLE_DIR / "manifest.json"
+URL_TO_SAMPLE_MAP = {}
+if MANIFEST_PATH.exists():
+    try:
+        import json
+        with open(MANIFEST_PATH, "r", encoding="utf-8") as _mf:
+            for _item in json.load(_mf):
+                if "url" in _item and "file_name" in _item:
+                    URL_TO_SAMPLE_MAP[_item["url"].strip()] = _item["file_name"]
+    except Exception as _e:
+        logger.warning(f"Could not initialize sample manifest map: {_e}")
 
 
 @app.get("/api/health", response_model=HealthResponse)
@@ -115,20 +128,59 @@ def get_affair(affair_id: int):
 
 
 @app.get("/api/pdf-proxy")
-def proxy_pdf(url: str = Query(..., description="OpenParlData PDF file URL")):
+@app.get("/api/pdf-proxy/{filename}")
+def proxy_pdf(
+    filename: Optional[str] = "document.pdf",
+    url: Optional[str] = Query(None, description="OpenParlData PDF file URL"),
+    sample: Optional[str] = Query(None, description="Local sample PDF file name")
+):
     """
-    Proxy remote PDF to bypass browser iframe CORS / X-Frame-Options restrictions.
+    Proxy or serve PDF with an explicit .pdf extension, correct Content-Type and inline disposition.
+    Supports local sample documents and remote OpenParlData document streaming.
     """
+    safe_filename = filename or "document.pdf"
+    if not safe_filename.lower().endswith(".pdf"):
+        safe_filename += ".pdf"
+    import re
+    safe_filename = re.sub(r'[^\w\s\.-]', '_', safe_filename).strip()
+
+    # 1. If explicit sample is given
+    if sample:
+        sample_path = SAMPLE_DIR / sample
+        if sample_path.exists():
+            return FileResponse(
+                sample_path,
+                media_type="application/pdf",
+                filename=safe_filename,
+                content_disposition_type="inline"
+            )
+
+    # 2. If URL matches a local sample document in manifest
+    if url and url.strip() in URL_TO_SAMPLE_MAP:
+        local_sample = SAMPLE_DIR / URL_TO_SAMPLE_MAP[url.strip()]
+        if local_sample.exists():
+            return FileResponse(
+                local_sample,
+                media_type="application/pdf",
+                filename=safe_filename,
+                content_disposition_type="inline"
+            )
+
+    # 3. Otherwise fetch from remote URL
+    if not url:
+        raise HTTPException(status_code=400, detail="Must provide 'url' or 'sample'")
     if not (url.startswith("https://") or url.startswith("http://")):
         raise HTTPException(status_code=400, detail="Invalid URL protocol")
+
     try:
         resp = requests.get(url, stream=True, timeout=30)
         resp.raise_for_status()
+
         return StreamingResponse(
             io.BytesIO(resp.content),
             media_type="application/pdf",
             headers={
-                "Content-Disposition": 'inline; filename="document.pdf"',
+                "Content-Disposition": f'inline; filename="{safe_filename}"',
                 "Content-Type": "application/pdf"
             }
         )
