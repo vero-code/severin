@@ -6,11 +6,13 @@
   --bg-primary: #1A1C27; /* Background */
   --bg-secondary: #222B35; /* Header */
   --bg-panel: #181D26;
+  --bg-panel-header: #1D1D25; /* Studio Panel Headers */
   --bg-card: #181D26;
   --bg-card-hover: #1F2633;
   --bg-pdf: #FFFFFF;
 
   /* Borders & Dividers */
+  --border-width: 2px;
   --border-color: #2D3748;
   --border-panel: #964E59;
   --border-focus: #E53E3E;
@@ -21,6 +23,7 @@
   --accent-coral-highlight: rgba(229, 62, 62, 0.22);
 
   /* Button Tokens (Exclusively for action buttons) */
+  --btn-border-width: 2px;
   --btn-bg: #911C25;
   --btn-bg-hover: #A3202B;
   --btn-border: #91313D;

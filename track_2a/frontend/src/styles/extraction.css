@@ -5,7 +5,7 @@
 .btn-extract {
   background-color: var(--btn-bg);
   color: var(--btn-text);
-  border: 3px solid var(--btn-border);
+  border: var(--btn-border-width) solid var(--btn-border);
   border-radius: var(--radius-md);
   padding: 0.55rem 1.15rem;
   font-size: var(--font-size-base);
