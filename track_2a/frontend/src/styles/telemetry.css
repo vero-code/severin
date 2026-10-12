@@ -4,7 +4,6 @@
 
 .telemetry-wrapper {
   position: relative;
-  cursor: pointer;
 }
 
 .telemetry-bar {
@@ -12,16 +11,21 @@
   align-items: center;
   gap: 0.85rem;
   background: rgba(18, 22, 31, 0.95);
-  border: 1px solid var(--border-panel);
+  border: var(--btn-border-width) solid var(--border-panel);
   border-radius: 9999px;
   padding: 0.4rem 1.1rem;
   font-size: var(--font-size-sm);
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
   transition: all 0.2s ease;
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+  color: inherit;
 }
 
-.telemetry-wrapper:hover .telemetry-bar {
+.telemetry-wrapper:hover .telemetry-bar,
+.telemetry-wrapper.open .telemetry-bar {
   border-color: var(--accent-red);
   background: rgba(24, 29, 38, 0.98);
   box-shadow: 0 0 16px rgba(217, 38, 46, 0.3);
@@ -82,67 +86,97 @@
   font-size: var(--font-size-sm);
 }
 
-/* Hover Popover Table */
+.metric-chevron {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-left: 2px;
+  transition: transform 0.15s ease;
+}
+
+/* Click Popover Table Modal */
 .telemetry-popover {
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-  min-width: 820px;
-  background: rgba(18, 22, 31, 0.98);
-  border: 1px solid var(--border-panel);
-  border-radius: var(--radius-md);
+  min-width: 860px;
+  max-width: 92vw;
+  background: var(--bg-panel);
+  border: var(--border-width) solid var(--border-panel);
+  border-radius: var(--radius-lg);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(74, 21, 29, 0.25);
   backdrop-filter: blur(16px);
-  z-index: 100;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transform: translateY(8px);
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1000;
   overflow: hidden;
+  animation: popoverFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: default;
 }
 
-/* Invisible bridge to prevent losing hover when moving mouse down */
-.telemetry-wrapper::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  height: 12px;
-}
-
-.telemetry-wrapper:hover .telemetry-popover {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transform: translateY(0);
+@keyframes popoverFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .popover-header {
-  padding: 0.85rem 1.1rem;
-  background: linear-gradient(180deg, #24161D 0%, #12161F 100%);
-  border-bottom: 1px solid var(--border-color);
+  padding: 0.65rem 1rem;
+  background-color: var(--bg-panel-header);
+  border-bottom: var(--border-width) solid var(--border-color);
 }
 
 .popover-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-base);
   font-weight: 700;
   color: var(--text-primary);
 }
 
+.popover-title-text {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.popover-close-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.15s ease;
+  line-height: 1;
+}
+
+.popover-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
 .popover-model-badge {
-  background: var(--badge-bg);
-  border: 1px solid var(--badge-border);
-  color: var(--badge-text);
-  font-size: var(--font-size-sm);
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  color: #38bdf8;
+  font-size: 13px;
   font-family: var(--font-mono);
-  padding: 0.15rem 0.5rem;
-  border-radius: 4px;
-  font-weight: 600;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .popover-sub {
@@ -152,41 +186,82 @@
 }
 
 .popover-table-container {
-  max-height: 280px;
+  max-height: min(500px, calc(100vh - 200px));
   overflow-y: auto;
-  padding: 0.5rem 0.8rem;
+  padding: 0;
 }
 
 .telemetry-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: var(--font-size-sm);
+  cursor: default;
 }
 
 .telemetry-table th {
+  position: sticky;
+  top: 0;
+  background-color: var(--bg-panel);
+  z-index: 10;
+  box-shadow: 0 1px 0 rgba(51, 65, 85, 0.7);
   text-align: left;
-  padding: 0.45rem 0.6rem;
-  color: #64748b;
-  font-weight: 600;
-  border-bottom: 1px solid rgba(51, 65, 85, 0.6);
+  padding: 0.65rem 0.8rem;
+  color: #94A3B8;
+  font-weight: 700;
   font-family: var(--font-mono);
   text-transform: uppercase;
-  font-size: var(--font-size-sm);
-  letter-spacing: 0.04em;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.telemetry-table th:first-child,
+.telemetry-table td:first-child {
+  padding-left: 1.1rem;
+}
+
+.telemetry-table th:last-child,
+.telemetry-table td:last-child {
+  padding-right: 1.1rem;
 }
 
 .telemetry-table td {
-  padding: 0.5rem 0.6rem;
+  padding: 0.55rem 0.8rem;
   border-bottom: 1px solid rgba(51, 65, 85, 0.25);
   color: var(--text-primary);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.telemetry-table td.cell-task {
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .telemetry-table tr:hover td {
-  background: rgba(30, 41, 59, 0.5);
+  background: rgba(30, 41, 59, 0.55);
 }
 
 .telemetry-table .mono {
   font-family: var(--font-mono);
+}
+
+.telemetry-date {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-right: 0.45rem;
+}
+
+.telemetry-time {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.telemetry-table .text-nowrap {
+  white-space: nowrap !important;
 }
 
 .telemetry-table .font-bold {
@@ -204,10 +279,11 @@
   font-family: var(--font-mono);
   font-size: var(--font-size-sm);
   font-weight: 700;
-  padding: 0.1rem 0.35rem;
+  padding: 0.15rem 0.4rem;
   border-radius: 4px;
   margin-right: 0.45rem;
   display: inline-block;
+  line-height: 1.1;
 }
 
 .telemetry-task-title {
@@ -219,25 +295,87 @@
   background: var(--accent-green-subtle);
   border: 1px solid var(--accent-green);
   color: var(--accent-green-bright);
-  padding: 0.15rem 0.45rem;
+  padding: 0.2rem 0.6rem;
   border-radius: 9999px;
-  font-size: var(--font-size-sm);
+  font-size: 13px;
   font-family: var(--font-mono);
   font-weight: 700;
+  white-space: nowrap !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.provenance-pill {
+  white-space: nowrap !important;
+  display: inline-flex;
+  align-items: center;
 }
 
 .popover-footer {
-  padding: 0.55rem 1.1rem;
-  background: #12161F;
-  border-top: 1px solid var(--border-color);
+  padding: 0.65rem 1.1rem;
+  background: var(--bg-card);
+  border-top: var(--border-width) solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: var(--font-size-sm);
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.footer-meta {
+  display: flex;
+  align-items: center;
+}
+
+.footer-tag {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer-metrics {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.metric-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 13px;
+  font-family: var(--font-mono);
+}
+
+.chip-label {
   color: var(--text-muted);
 }
 
-.popover-footer strong {
-  color: var(--badge-text);
-  font-family: var(--font-mono);
+.chip-val {
+  font-weight: 700;
+}
+
+.chip-val.font-accent {
+  color: var(--text-primary);
+}
+
+.chip-val.font-green {
+  color: #a7f3d0;
+}
+
+.chip-val.font-yellow {
+  color: #fef08a;
+}
+
+.chip-sub {
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-left: 2px;
 }

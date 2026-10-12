@@ -287,9 +287,9 @@
 }
 
 .sample-item-card.selected {
-  border-color: var(--accent-red);
+  border-color: var(--border-panel);
   background: linear-gradient(135deg, rgba(74, 21, 29, 0.55) 0%, #1F2633 100%);
-  box-shadow: 0 0 0 1px var(--accent-red), 0 4px 14px rgba(217, 38, 46, 0.25);
+  /* box-shadow: 0 0 0 1px var(--accent-red), 0 4px 14px rgba(217, 38, 46, 0.25); */
 }
 
 .sample-item-header {
