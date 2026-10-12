@@ -11,8 +11,8 @@
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  background: rgba(18, 22, 31, 0.95);
+  border: 1px solid var(--border-panel);
   border-radius: 9999px;
   padding: 0.4rem 1.1rem;
   font-size: 0.8rem;
@@ -22,9 +22,9 @@
 }
 
 .telemetry-wrapper:hover .telemetry-bar {
-  border-color: #38bdf8;
-  background: rgba(15, 23, 42, 0.98);
-  box-shadow: 0 0 16px rgba(56, 189, 248, 0.3);
+  border-color: var(--accent-red);
+  background: rgba(24, 29, 38, 0.98);
+  box-shadow: 0 0 16px rgba(217, 38, 46, 0.3);
 }
 
 .telemetry-status {
@@ -32,15 +32,15 @@
   align-items: center;
   gap: 0.5rem;
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--text-primary);
 }
 
 .telemetry-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: #10b981;
-  box-shadow: 0 0 8px #10b981;
+  background-color: var(--accent-green);
+  box-shadow: 0 0 8px var(--accent-green-bright);
   display: inline-block;
   animation: pulse-dot 2s infinite ease-in-out;
 }
@@ -49,12 +49,12 @@
   0%, 100% {
     opacity: 1;
     transform: scale(1);
-    box-shadow: 0 0 8px #10b981;
+    box-shadow: 0 0 8px var(--accent-green);
   }
   50% {
     opacity: 0.45;
     transform: scale(0.8);
-    box-shadow: 0 0 2px #10b981;
+    box-shadow: 0 0 2px var(--accent-green);
   }
 }
 
@@ -73,7 +73,7 @@
 }
 
 .metric-item strong {
-  color: #38bdf8;
+  color: var(--accent-red-light);
   font-weight: 700;
 }
 
@@ -88,10 +88,10 @@
   top: calc(100% + 10px);
   right: 0;
   min-width: 820px;
-  background: rgba(15, 23, 42, 0.96);
-  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: rgba(18, 22, 31, 0.98);
+  border: 1px solid var(--border-panel);
   border-radius: var(--radius-md);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.15);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(74, 21, 29, 0.25);
   backdrop-filter: blur(16px);
   z-index: 100;
   opacity: 0;
@@ -121,7 +121,7 @@
 
 .popover-header {
   padding: 0.85rem 1.1rem;
-  background: linear-gradient(180deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.4) 100%);
+  background: linear-gradient(180deg, #24161D 0%, #12161F 100%);
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -131,13 +131,13 @@
   align-items: center;
   font-size: 0.88rem;
   font-weight: 700;
-  color: #f8fafc;
+  color: var(--text-primary);
 }
 
 .popover-model-badge {
-  background: rgba(56, 189, 248, 0.15);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  color: #38bdf8;
+  background: var(--badge-bg);
+  border: 1px solid var(--badge-border);
+  color: var(--badge-text);
   font-size: 0.7rem;
   font-family: var(--font-mono);
   padding: 0.15rem 0.5rem;
@@ -194,13 +194,13 @@
 }
 
 .telemetry-table .text-accent {
-  color: #38bdf8;
+  color: var(--accent-red-light);
 }
 
 .telemetry-canton-badge {
-  background: rgba(56, 189, 248, 0.18);
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  color: #38bdf8;
+  background: var(--badge-bg);
+  border: 1px solid var(--badge-border);
+  color: var(--badge-text);
   font-family: var(--font-mono);
   font-size: 0.65rem;
   font-weight: 700;
@@ -216,9 +216,9 @@
 }
 
 .status-pill-ok {
-  background: rgba(16, 185, 129, 0.18);
-  border: 1px solid rgba(16, 185, 129, 0.4);
-  color: #34d399;
+  background: var(--accent-green-subtle);
+  border: 1px solid var(--accent-green);
+  color: var(--accent-green-bright);
   padding: 0.15rem 0.45rem;
   border-radius: 9999px;
   font-size: 0.66rem;
@@ -228,7 +228,7 @@
 
 .popover-footer {
   padding: 0.55rem 1.1rem;
-  background: rgba(10, 15, 29, 0.8);
+  background: #12161F;
   border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
@@ -238,6 +238,6 @@
 }
 
 .popover-footer strong {
-  color: #38bdf8;
+  color: var(--badge-text);
   font-family: var(--font-mono);
 }

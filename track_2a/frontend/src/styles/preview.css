@@ -3,8 +3,8 @@
    ============================================================================ */
 
 .preview-panel {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-panel);
   border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
@@ -72,9 +72,10 @@
 }
 
 .preview-tab-btn.active {
-  background-color: var(--accent-blue);
-  border-color: var(--accent-blue);
+  background-color: var(--accent-red);
+  border-color: var(--accent-red);
   color: #ffffff;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.35);
 }
 
 .parsed-text-view {
@@ -95,11 +96,11 @@
 }
 
 .parsed-page-header {
-  background-color: #162032;
+  background-color: var(--bg-panel);
   padding: 0.4rem 0.8rem;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #38bdf8;
+  color: var(--badge-text);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
