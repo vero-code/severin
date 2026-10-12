@@ -49,7 +49,63 @@
   gap: 1.25rem;
   padding: 1.25rem;
   overflow-y: auto;
-  max-height: calc(100vh - 280px);
+  flex: 1;
+}
+
+.studio-idle-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3.5rem 2rem;
+  margin: auto;
+  max-width: 520px;
+}
+
+.studio-hero-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(145, 28, 37, 0.25) 0%, rgba(24, 29, 38, 0.8) 100%);
+  border: 1px solid var(--border-panel);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.studio-hero-title {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.6rem;
+}
+
+.studio-hero-desc {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.studio-hero-features {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.studio-feature-pill {
+  font-size: 13px;
+  padding: 0.25rem 0.65rem;
+  background: rgba(18, 22, 31, 0.8);
+  border: 1px solid var(--border-color);
+  border-radius: 9999px;
+  color: var(--text-muted);
 }
 
 .provenance-score-banner {

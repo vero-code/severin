@@ -66,8 +66,10 @@ export function App() {
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Tab states: PDF Preview | Parsed Text | Apertus Extracted Affair
-  const [activeTab, setActiveTab] = useState<'pdf' | 'text' | 'extracted'>('pdf');
+  // Control mode: 'samples' (Curated Test Samples) vs 'api' (Live OpenParlData Query)
+  const [controlMode, setControlMode] = useState<'samples' | 'api'>('samples');
+  // Document panel tab: 'pdf' | 'text'
+  const [docTab, setDocTab] = useState<'pdf' | 'text'>('pdf');
   const [parsedPages, setParsedPages] = useState<PdfPageItem[]>([]);
   const [isParsing, setIsParsing] = useState<boolean>(false);
   const [parseError, setParseError] = useState<string | null>(null);
@@ -107,9 +109,45 @@ export function App() {
   useEffect(() => {
     fetch('/api/sample-pdfs')
       .then((r) => (r.ok ? r.json() : []))
-      .then((data: SamplePdfItem[]) => setSamplePdfs(data))
+      .then((data: SamplePdfItem[]) => {
+        setSamplePdfs(data);
+        if (data && data.length > 0 && !selectedSampleFile) {
+          const sample = data[0];
+          setSelectedSampleFile(sample.file_name);
+          setBodyKey(sample.body_key);
+          setActiveDoc({
+            id: sample.doc_id,
+            title: getText(sample.title) || sample.doc_name,
+            url: sample.url,
+            type: 'pdf',
+          });
+          setSelectedAffairId(sample.affair_id);
+        }
+      })
       .catch(() => {});
   }, []);
+
+  const handleSelectSample = (filename: string) => {
+    setSelectedSampleFile(filename);
+    if (filename) {
+      const sample = samplePdfs.find((s) => s.file_name === filename);
+      if (sample) {
+        setBodyKey(sample.body_key);
+        setActiveDoc({
+          id: sample.doc_id,
+          title: getText(sample.title) || sample.doc_name,
+          url: sample.url,
+          type: 'pdf',
+        });
+        setSelectedAffairId(sample.affair_id);
+        setExtractedAffair(null);
+        setProvenanceReport(null);
+        setParsedPages([]);
+        setExtractError(null);
+        setDocTab('pdf');
+      }
+    }
+  };
 
   const fetchParsedText = async (docUrl: string) => {
     if (!docUrl) return;
@@ -133,7 +171,6 @@ export function App() {
     if (!activeDoc?.url && !selectedSampleFile) return;
     setIsExtracting(true);
     setExtractError(null);
-    setActiveTab('extracted');
     try {
       const payload = selectedSampleFile
         ? { sample_file: selectedSampleFile, canton_hint: bodyKey, affair_id_hint: selectedAffairId }
@@ -172,11 +209,10 @@ export function App() {
     setExtractedAffair(null);
     setProvenanceReport(null);
     setExtractError(null);
-    if (activeTab === 'text') {
+    if (docTab === 'text') {
       fetchParsedText(doc.url);
     }
   };
-
 
   const fetchAffairs = async () => {
     setLoading(true);
@@ -200,12 +236,12 @@ export function App() {
       const dataList = result.data || [];
       setAffairs(dataList);
       if (dataList.length > 0) {
-        // Find first affair with documents
         const firstWithDocs = dataList.find((a: any) => getAffairDocs(a).length > 0) || dataList[0];
         setSelectedAffairId(firstWithDocs.id);
         const docs = getAffairDocs(firstWithDocs);
         if (docs.length > 0) {
           handleSelectDoc(docs[0]);
+          setDocTab('pdf');
         } else {
           setActiveDoc(null);
           setParsedPages([]);
@@ -224,9 +260,11 @@ export function App() {
 
   const handleSelectAffair = (affair: ParliamentaryAffairItem) => {
     setSelectedAffairId(affair.id);
+    setSelectedSampleFile('');
     const docs = getAffairDocs(affair);
     if (docs.length > 0) {
       handleSelectDoc(docs[0]);
+      setDocTab('pdf');
     } else {
       setActiveDoc(null);
       setParsedPages([]);
@@ -251,239 +289,243 @@ export function App() {
 
       {/* Main Content */}
       <main className="app-main">
-        {/* Top 2-Column Action Bar: Live Query & Curated Nationwide Sample PDFs */}
-        <div className="top-actions-grid">
-          {/* Column 1: Live OpenParlData API Search */}
-          <section className="query-card">
-            <h2>🌐 Query OpenParlData API</h2>
-            <div className="query-form">
-              <select
-                className="form-control"
-                value={bodyKey}
-                onChange={(e) => setBodyKey(e.target.value)}
-              >
-                {PRESET_BODIES.map((b) => (
-                  <option key={b.key} value={b.key}>
-                    {b.label}
-                  </option>
-                ))}
-              </select>
-
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Search keyword (e.g. Klima, Spital)..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && fetchAffairs()}
-              />
-
-              <select
-                className="form-control"
-                value={searchMode}
-                onChange={(e) => setSearchMode(e.target.value)}
-              >
-                <option value="partial">Partial</option>
-                <option value="exact">Exact</option>
-                <option value="natural">Natural</option>
-                <option value="boolean">Boolean</option>
-              </select>
-
-              <button
-                className="btn-primary"
-                onClick={fetchAffairs}
-                disabled={loading}
-              >
-                {loading ? 'Fetching...' : 'Fetch Affairs'}
-              </button>
-            </div>
-          </section>
-
-          {/* Column 2: Curated Nationwide Sample PDFs */}
-          <section className="query-card">
-            <h2>🇨🇭 Curated Nationwide Sample PDFs</h2>
-            <div className="sample-card-form">
-              <select
-                className="form-control"
-                style={{ width: '100%', padding: '0.65rem 0.9rem' }}
-                value={selectedSampleFile}
-                onChange={(e) => {
-                  const filename = e.target.value;
-                  setSelectedSampleFile(filename);
-                  if (filename) {
-                    const sample = samplePdfs.find((s) => s.file_name === filename);
-                    if (sample) {
-                      setBodyKey(sample.body_key);
-                      setActiveDoc({
-                        id: sample.doc_id,
-                        title: getText(sample.title) || sample.doc_name,
-                        url: sample.url,
-                        type: 'pdf',
-                      });
-                      setSelectedAffairId(sample.affair_id);
-                      setExtractedAffair(null);
-                      setProvenanceReport(null);
-                      setParsedPages([]);
-                      setExtractError(null);
-                    }
-                  }
-                }}
-              >
-                <option value="">-- Pick from 27 Swiss cantonal test PDFs (e.g. ZH, GR, BE, Bund) --</option>
-                {samplePdfs.map((s) => (
-                  <option key={s.file_name} value={s.file_name}>
-                    [{s.body_key}] {getText(s.title) || s.doc_name} ({s.file_name})
-                  </option>
-                ))}
-              </select>
-            </div>
-          </section>
-        </div>
-
         {/* Error Alert */}
         {errorMsg && (
-          <div style={{
-            padding: '0.85rem 1rem',
-            backgroundColor: 'rgba(239, 68, 68, 0.15)',
-            border: '1px solid #ef4444',
-            borderRadius: '8px',
-            color: '#fca5a5',
-            marginBottom: '1rem',
-            fontSize: 'var(--font-size-base)'
-          }}>
+          <div
+            style={{
+              padding: '0.85rem 1rem',
+              backgroundColor: 'rgba(239, 68, 68, 0.15)',
+              border: '1px solid #ef4444',
+              borderRadius: '8px',
+              color: '#fca5a5',
+              marginBottom: '1rem',
+              fontSize: 'var(--font-size-base)',
+            }}
+          >
             ⚠️ {errorMsg}
           </div>
         )}
 
-        {/* Status Bar */}
-        <div className="status-bar">
-          <span>
-            {affairs.length > 0
-              ? `Showing ${affairs.length} parliamentary affairs for [${bodyKey}]`
-              : 'Select a canton or curated sample PDF to view and extract affairs'}
-          </span>
-          {activeDoc && (
-            <span>
-              Viewing document: <strong>{getText(activeDoc.title) || `Doc #${activeDoc.id}`}</strong>
-            </span>
-          )}
-        </div>
-
-        {/* Split View: List on Left, PDF on Right */}
+        {/* 3-Column Studio Layout:
+            Column 1: Source Selector (27 Cantonal Samples & Live OpenParlData API)
+            Column 2: Source Document Studio (PDF Viewer & Raw Text)
+            Column 3: Apertus 1.5-8B Studio (Grounded Extraction & Provenance) */}
         <div className="content-grid">
-          {/* Left Column: Affairs List */}
-          <div className="affairs-list">
-            {affairs.length === 0 && !loading && (
-              <div style={{
-                padding: '3rem 1.5rem',
-                textAlign: 'center',
-                backgroundColor: 'var(--bg-card)',
-                borderRadius: '10px',
-                border: '1px dashed var(--border-color)',
-                color: 'var(--text-muted)'
-              }}>
-                <p>No live API affairs queried yet.</p>
-                <p style={{ fontSize: 'var(--font-size-sm)', marginTop: '0.5rem' }}>
-                  Pick a <strong>curated test sample</strong> above or click <strong>Fetch Affairs</strong>.
-                </p>
+          {/* Column 1: Source Selector Panel */}
+          <div className="studio-selector-panel">
+            <div className="studio-panel-header">
+              <div className="panel-header-title">
+                <span>🇨🇭 Sources & Samples</span>
+              </div>
+              {controlMode === 'samples' && (
+                <span className="doc-info-badge">{samplePdfs.length} Curated</span>
+              )}
+              {controlMode === 'api' && affairs.length > 0 && (
+                <span className="doc-info-badge">[{bodyKey}] {affairs.length} Loaded</span>
+              )}
+            </div>
+
+            {/* Sidebar Mode Switch: Samples vs Live API */}
+            <div className="sidebar-mode-switch">
+              <button
+                className={`mode-btn ${controlMode === 'samples' ? 'active' : ''}`}
+                onClick={() => setControlMode('samples')}
+              >
+                🇨🇭 27 Cantonal Test Samples
+              </button>
+              <button
+                className={`mode-btn ${controlMode === 'api' ? 'active' : ''}`}
+                onClick={() => setControlMode('api')}
+              >
+                🌐 Live OpenParlData API
+              </button>
+            </div>
+
+            {/* Mode 1: Curated Test Samples */}
+            {controlMode === 'samples' && (
+              <div className="sidebar-sample-section">
+                <div className="sidebar-sample-label-row">
+                  <span className="sidebar-field-label">Curated Documents:</span>
+                  <span className="sample-counter-badge">{samplePdfs.length} files</span>
+                </div>
+
+                <div className="sidebar-sample-list">
+                  {samplePdfs.map((s) => {
+                    const isSelected = s.file_name === selectedSampleFile;
+                    return (
+                      <div
+                        key={s.file_name}
+                        className={`sample-item-card ${isSelected ? 'selected' : ''}`}
+                        onClick={() => handleSelectSample(s.file_name)}
+                      >
+                        <div className="sample-item-header">
+                          <span className="badge-body">{s.body_key}</span>
+                          <span className="sample-item-level">{s.level || 'cantonal'}</span>
+                        </div>
+                        <div className="sample-item-title">
+                          {getText(s.title) || s.doc_name}
+                        </div>
+                        <div className="sample-item-meta">
+                          📄 {s.file_name}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
 
-            {affairs.map((affair) => {
-              const isSelected = affair.id === selectedAffairId;
-              const docsList = getAffairDocs(affair);
-              return (
-                <div
-                  key={affair.id}
-                  className={`affair-card ${isSelected ? 'selected' : ''}`}
-                  onClick={() => handleSelectAffair(affair)}
-                >
-                  <div className="affair-header">
-                    <span className="badge-body">{affair.body_key}</span>
-                    <span className="affair-short-id">
-                      {affair.short_id || `#${affair.id}`}
-                    </span>
-                  </div>
-                  <h3 className="affair-title">{getText(affair.title)}</h3>
-                  <div className="affair-meta">
-                    {affair.begin_date && <span>📅 {affair.begin_date}</span>}
-                    {affair.state && <span>Status: {getText(affair.state)}</span>}
-                    {docsList.length > 0 && <span>📄 {docsList.length} docs</span>}
+            {/* Mode 2: Live OpenParlData API */}
+            {controlMode === 'api' && (
+              <div className="sidebar-api-section">
+                <div className="sidebar-api-form">
+                  <div className="sidebar-field-group">
+                    <label className="sidebar-field-label">Parliamentary Body:</label>
+                    <select
+                      className="form-control"
+                      value={bodyKey}
+                      onChange={(e) => setBodyKey(e.target.value)}
+                    >
+                      {PRESET_BODIES.map((b) => (
+                        <option key={b.key} value={b.key}>
+                          {b.label}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
-                  {/* Documents list */}
-                  {docsList.length > 0 && (
-                    <div className="docs-tag-list">
-                      {docsList.map((doc) => (
-                        <button
-                          key={doc.id}
-                          className="doc-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedAffairId(affair.id);
-                            handleSelectDoc(doc);
-                          }}
-                        >
-                          📄 {getText(doc.title) || `Document ${doc.id}`}
-                        </button>
-                      ))}
+                  <div className="sidebar-field-group">
+                    <label className="sidebar-field-label">Search Query:</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="e.g. Klima, Spital, Finanzen..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && fetchAffairs()}
+                    />
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', alignItems: 'flex-end' }}>
+                    <div className="sidebar-field-group">
+                      <label className="sidebar-field-label">Mode:</label>
+                      <select
+                        className="form-control"
+                        value={searchMode}
+                        onChange={(e) => setSearchMode(e.target.value)}
+                      >
+                        <option value="partial">Partial</option>
+                        <option value="exact">Exact</option>
+                        <option value="natural">Natural</option>
+                        <option value="boolean">Boolean</option>
+                      </select>
+                    </div>
+                    <button
+                      className="btn-primary"
+                      style={{ padding: '0.65rem 0.5rem', fontSize: 'var(--font-size-sm)' }}
+                      onClick={fetchAffairs}
+                      disabled={loading}
+                    >
+                      {loading ? 'Fetching...' : 'Fetch'}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="sidebar-affairs-list">
+                  {affairs.length === 0 && !loading && (
+                    <div className="sidebar-empty-hint">
+                      <p>No live API affairs queried yet.</p>
+                      <p style={{ fontSize: 'var(--font-size-sm)', marginTop: '0.35rem' }}>
+                        Select a body and click <strong>Fetch</strong>.
+                      </p>
                     </div>
                   )}
+                  {affairs.map((affair) => {
+                    const isSelected = affair.id === selectedAffairId;
+                    const docsList = getAffairDocs(affair);
+                    return (
+                      <div
+                        key={affair.id}
+                        className={`affair-card ${isSelected ? 'selected' : ''}`}
+                        onClick={() => handleSelectAffair(affair)}
+                      >
+                        <div className="affair-header">
+                          <span className="badge-body">{affair.body_key}</span>
+                          <span className="affair-short-id">
+                            {affair.short_id || `#${affair.id}`}
+                          </span>
+                        </div>
+                        <h4 className="affair-title" style={{ fontSize: 'var(--font-size-sm)' }}>
+                          {getText(affair.title)}
+                        </h4>
+                        <div className="affair-meta">
+                          {affair.begin_date && <span>📅 {affair.begin_date}</span>}
+                          {docsList.length > 0 && <span>📄 {docsList.length} docs</span>}
+                        </div>
+                        {docsList.length > 0 && (
+                          <div className="docs-tag-list" style={{ marginTop: '0.4rem' }}>
+                            {docsList.map((doc) => (
+                              <button
+                                key={doc.id}
+                                className="doc-btn"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedAffairId(affair.id);
+                                  handleSelectDoc(doc);
+                                }}
+                              >
+                                📄 {getText(doc.title) || `Doc ${doc.id}`}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
+              </div>
+            )}
           </div>
 
-          {/* Right Column: PDF Preview / Parsed Text / Extracted Affair */}
-          <div className="preview-panel">
-            <div className="preview-header">
+          {/* Column 2: Source Document Studio */}
+          <div className="studio-doc-panel">
+            <div className="studio-panel-header">
               <div className="preview-tabs">
                 <button
-                  className={`preview-tab-btn ${activeTab === 'pdf' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('pdf')}
+                  className={`preview-tab-btn ${docTab === 'pdf' ? 'active' : ''}`}
+                  onClick={() => setDocTab('pdf')}
                 >
-                  📄 PDF Preview
+                  📄 PDF Document
                 </button>
                 <button
-                  className={`preview-tab-btn ${activeTab === 'text' ? 'active' : ''}`}
+                  className={`preview-tab-btn ${docTab === 'text' ? 'active' : ''}`}
                   onClick={() => {
-                    setActiveTab('text');
+                    setDocTab('text');
                     if (activeDoc?.url && parsedPages.length === 0) {
                       fetchParsedText(activeDoc.url);
                     }
                   }}
                 >
-                  📝 Extracted Text {parsedPages.length > 0 ? `(${parsedPages.length} p.)` : ''}
-                </button>
-                <button
-                  className={`preview-tab-btn ${activeTab === 'extracted' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('extracted')}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
-                >
-                  ✨ Apertus Extracted Affair
-                  {provenanceReport && (
-                    <span className="provenance-pill">
-                      {Math.round(provenanceReport.provenance_score * 100)}% match
-                    </span>
-                  )}
+                  📝 Raw Text {parsedPages.length > 0 ? `(${parsedPages.length} p.)` : ''}
                 </button>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                <button
-                  className={`btn-extract ${isExtracting ? 'btn-extract-loading' : ''}`}
-                  onClick={handleExtract}
-                  disabled={isExtracting || (!activeDoc?.url && !selectedSampleFile)}
-                  title="Run conservative extraction with Swiss-AI Apertus 1.5-8B on CSCS Alps Supercomputer"
-                >
-                  {isExtracting ? '⏳ Extracting on Alps...' : '⚡ Extract with Apertus 1.5-8B'}
-                </button>
+              <div className="panel-header-actions">
+                {activeDoc && (
+                  <span
+                    className="doc-info-badge"
+                    title={getText(activeDoc.title) || `Doc #${activeDoc.id}`}
+                  >
+                    [{bodyKey}] {getText(activeDoc.title) || `Doc #${activeDoc.id}`}
+                  </span>
+                )}
                 {activeDoc?.url && (
                   <a
                     href={activeDoc.url}
                     target="_blank"
                     rel="noreferrer"
-                    style={{ color: '#38bdf8', textDecoration: 'none', fontSize: 'var(--font-size-sm)' }}
+                    className="open-pdf-link"
+                    title="Open original document in new browser tab"
                   >
                     ↗ Open PDF
                   </a>
@@ -491,40 +533,65 @@ export function App() {
               </div>
             </div>
 
-            {/* Content Area */}
-            {activeDoc?.url || selectedSampleFile ? (
-              activeTab === 'pdf' ? (
+            {/* Document Content Area */}
+            {docTab === 'pdf' && (
+              activeDoc?.url || selectedSampleFile ? (
                 <iframe
                   title="PDF Document Preview"
                   src={`/api/pdf-proxy?url=${encodeURIComponent(activeDoc?.url || '')}`}
                   className="preview-iframe"
                 />
-              ) : activeTab === 'text' ? (
-                <div className="parsed-text-view">
-                  {isParsing && (
-                    <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-secondary)' }}>
-                      <p>⏳ Parsing document pages via pypdf...</p>
-                    </div>
-                  )}
+              ) : (
+                <div className="preview-placeholder">
+                  <svg fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                    />
+                  </svg>
+                  <p>Select a canton sample or query OpenParlData to preview document</p>
+                </div>
+              )
+            )}
 
-                  {parseError && (
-                    <div style={{ padding: '1rem', backgroundColor: 'rgba(239, 68, 68, 0.15)', border: '1px solid #ef4444', borderRadius: '8px', color: '#fca5a5', fontSize: 'var(--font-size-sm)' }}>
-                      ⚠️ {parseError}
-                    </div>
-                  )}
+            {docTab === 'text' && (
+              <div className="parsed-text-view">
+                {isParsing && (
+                  <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-secondary)' }}>
+                    <p>⏳ Parsing document pages via pypdf...</p>
+                  </div>
+                )}
 
-                  {!isParsing && !parseError && parsedPages.length === 0 && (
-                    <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-muted)' }}>
-                      <button
-                        className="btn-primary"
-                        onClick={() => activeDoc?.url && fetchParsedText(activeDoc.url)}
-                      >
-                        Extract Page Text
-                      </button>
-                    </div>
-                  )}
+                {parseError && (
+                  <div
+                    style={{
+                      padding: '1rem',
+                      backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                      border: '1px solid #ef4444',
+                      borderRadius: '8px',
+                      color: '#fca5a5',
+                      fontSize: 'var(--font-size-sm)',
+                    }}
+                  >
+                    ⚠️ {parseError}
+                  </div>
+                )}
 
-                  {!isParsing && parsedPages.map((page) => (
+                {!isParsing && !parseError && parsedPages.length === 0 && (
+                  <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-muted)' }}>
+                    <p style={{ marginBottom: '1rem' }}>Text has not been extracted for this document yet.</p>
+                    <button
+                      className="btn-primary"
+                      onClick={() => activeDoc?.url && fetchParsedText(activeDoc.url)}
+                    >
+                      Extract Page Text
+                    </button>
+                  </div>
+                )}
+
+                {!isParsing &&
+                  parsedPages.map((page) => (
                     <div key={page.page_number} className="parsed-page-card">
                       <div className="parsed-page-header">
                         <span>PAGE {page.page_number}</span>
@@ -535,307 +602,337 @@ export function App() {
                       </div>
                     </div>
                   ))}
+              </div>
+            )}
+          </div>
+
+          {/* Right Column: Apertus Extraction Studio */}
+          <div className="studio-extraction-panel">
+            <div className="studio-panel-header">
+              <div className="panel-header-title">
+                <span>✨ Apertus 1.5-8B Studio</span>
+                {provenanceReport && (
+                  <span className="provenance-pill">
+                    {Math.round(provenanceReport.provenance_score * 100)}% match
+                  </span>
+                )}
+              </div>
+
+              <div className="panel-header-actions">
+                <button
+                  className={`btn-extract ${isExtracting ? 'btn-extract-loading' : ''}`}
+                  onClick={handleExtract}
+                  disabled={isExtracting || (!activeDoc?.url && !selectedSampleFile)}
+                  title="Run conservative extraction with Swiss-AI Apertus 1.5-8B on CSCS Alps Supercomputer"
+                >
+                  {isExtracting ? '⏳ Extracting on Alps...' : '⚡ Extract with Apertus 1.5-8B'}
+                </button>
+                {extractedAffair && (
+                  <button
+                    className="doc-btn"
+                    onClick={() => setShowRawJson(!showRawJson)}
+                    style={{ whiteSpace: 'nowrap' }}
+                  >
+                    {showRawJson ? 'Hide JSON' : 'Raw JSON'}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Extraction Content Area */}
+            <div className="extracted-view-container">
+              {isExtracting && (
+                <div className="extract-loading-box">
+                  <div className="spinner-supercomputer" />
+                  <h3 style={{ color: '#ffffff', fontSize: 'var(--font-size-md)', marginBottom: '0.4rem' }}>
+                    Apertus 1.5-8B Extraction in Progress
+                  </h3>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-size-sm)', maxWidth: '440px' }}>
+                    Running inference on CSCS Alps supercomputer GH200 nodes.
+                    Validating strict schema and algorithmic provenance against physical PDF pages (temperature=0.0)...
+                  </p>
                 </div>
-              ) : (
-                /* Tab 3: Apertus Extracted Affair View */
-                <div className="extracted-view-container">
-                  {isExtracting && (
-                    <div className="extract-loading-box">
-                      <div className="spinner-supercomputer" />
-                      <h3 style={{ color: '#ffffff', fontSize: 'var(--font-size-md)', marginBottom: '0.4rem' }}>
-                        Apertus 1.5-8B Extraction in Progress
-                      </h3>
-                      <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-size-sm)', maxWidth: '440px' }}>
-                        Running inference on CSCS Alps supercomputer GH200 nodes.
-                        Validating strict schema and algorithmic provenance against physical PDF pages (temperature=0.0)...
-                      </p>
-                    </div>
-                  )}
+              )}
 
-                  {extractError && (
-                    <div style={{ padding: '1.25rem', backgroundColor: 'rgba(239, 68, 68, 0.15)', border: '1px solid #ef4444', borderRadius: '8px', color: '#fca5a5' }}>
-                      <h4>⚠️ Extraction Failed</h4>
-                      <p style={{ marginTop: '0.4rem', fontSize: 'var(--font-size-sm)' }}>{extractError}</p>
-                      <button
-                        className="btn-primary"
-                        style={{ marginTop: '0.75rem', fontSize: 'var(--font-size-sm)', padding: '0.4rem 0.8rem' }}
-                        onClick={handleExtract}
-                      >
-                        Retry Extraction
-                      </button>
-                    </div>
-                  )}
+              {extractError && (
+                <div
+                  style={{
+                    padding: '1.25rem',
+                    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                    border: '1px solid #ef4444',
+                    borderRadius: '8px',
+                    color: '#fca5a5',
+                  }}
+                >
+                  <h4>⚠️ Extraction Failed</h4>
+                  <p style={{ marginTop: '0.4rem', fontSize: 'var(--font-size-sm)' }}>{extractError}</p>
+                  <button
+                    className="btn-primary"
+                    style={{ marginTop: '0.75rem', fontSize: 'var(--font-size-sm)', padding: '0.4rem 0.8rem' }}
+                    onClick={handleExtract}
+                  >
+                    Retry Extraction
+                  </button>
+                </div>
+              )}
 
-                  {!isExtracting && !extractError && !extractedAffair && (
-                    <div style={{ textAlign: 'center', padding: '3.5rem 1.5rem', color: 'var(--text-muted)' }}>
-                      <p style={{ fontSize: 'var(--font-size-base)', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
-                        Ready for Conservative Extraction
-                      </p>
-                      <p style={{ fontSize: 'var(--font-size-sm)', maxWidth: '400px', margin: '0 auto 1.25rem auto' }}>
-                        Extract this document using Swiss-AI Apertus 1.5-8B into the unified Swiss parliamentary schema with 100% verified citations.
-                      </p>
-                      <button className="btn-extract" onClick={handleExtract}>
-                        ⚡ Extract with Apertus 1.5-8B
-                      </button>
-                    </div>
-                  )}
+              {!isExtracting && !extractError && !extractedAffair && (
+                <div className="studio-idle-hero">
+                  <div className="studio-hero-icon">🏛️</div>
+                  <h3 className="studio-hero-title">Apertus Grounded Extraction Ready</h3>
+                  <p className="studio-hero-desc">
+                    Extract structured parliamentary metadata, authors, submitted questions, executive answers,
+                    and financial credits into the unified Swiss schema with 100% verified citations.
+                  </p>
+                  <button
+                    className="btn-extract"
+                    onClick={handleExtract}
+                    disabled={!activeDoc?.url && !selectedSampleFile}
+                  >
+                    ⚡ Run Apertus 1.5-8B Extraction
+                  </button>
+                  <div className="studio-hero-features">
+                    <span className="studio-feature-pill">🛡️ Zero Hallucinations</span>
+                    <span className="studio-feature-pill">🔍 Algorithmic Provenance</span>
+                    <span className="studio-feature-pill">🏔️ CSCS Alps GH200</span>
+                    <span className="studio-feature-pill">🇨🇭 26 Cantons + Bund</span>
+                    <span className="studio-feature-pill">⚙️ Deterministic (temp=0.0)</span>
+                  </div>
+                </div>
+              )}
 
-                  {!isExtracting && extractedAffair && (
-                    <>
-                      {/* Provenance Score Banner */}
-                      <div className={`provenance-score-banner ${(provenanceReport?.provenance_score ?? 1.0) < 0.7 ? 'score-low' : ''}`}>
-                        <div className="provenance-left">
-                          <div className={`score-circle ${(provenanceReport?.provenance_score ?? 1.0) < 0.7 ? 'low' : ''}`}>
-                            {Math.round((provenanceReport?.provenance_score ?? 1.0) * 100)}%
-                          </div>
-                          <div className="provenance-meta">
-                            <h4>
-                              <span>🛡️ Conservative Grounded Extraction</span>
-                              <span className="badge-tag" style={{ marginLeft: '0.5rem' }}>Swiss-AI Apertus</span>
-                            </h4>
-                            <p>
-                              Zero hallucinations • {provenanceReport?.verified_citations ?? 0} of {provenanceReport?.total_citations ?? 0} citations algorithmically verified against source text.
-                            </p>
-                          </div>
-                        </div>
-                        <div className="provenance-stats">
-                          <div className="provenance-stat-pill">
-                            Model: <strong>Apertus-8B</strong>
-                          </div>
-                          <div className="provenance-stat-pill">
-                            Hardware: <strong>Alps GH200</strong>
-                          </div>
-                        </div>
+              {!isExtracting && extractedAffair && (
+                <>
+                  {/* Provenance Score Banner */}
+                  <div className={`provenance-score-banner ${(provenanceReport?.provenance_score ?? 1.0) < 0.7 ? 'score-low' : ''}`}>
+                    <div className="provenance-left">
+                      <div className={`score-circle ${(provenanceReport?.provenance_score ?? 1.0) < 0.7 ? 'low' : ''}`}>
+                        {Math.round((provenanceReport?.provenance_score ?? 1.0) * 100)}%
                       </div>
-
-                      {/* Header / Identity Card */}
-                      <div className="extracted-card">
-                        <div className="extracted-card-header">
-                          <h3>🏛️ Affair Identity & Metadata</h3>
-                          <div style={{ display: 'flex', gap: '0.4rem' }}>
-                            <span className="badge-body">{extractedAffair.canton_or_body}</span>
-                            <span className="citation-chip">{extractedAffair.level}</span>
-                            <span className="citation-chip">{extractedAffair.affair_type}</span>
-                          </div>
-                        </div>
-                        <div style={{ fontSize: 'var(--font-size-md)', fontWeight: 600, color: '#ffffff', marginBottom: '0.4rem' }}>
-                          {extractedAffair.title}
-                        </div>
-                        {extractedAffair.title_provenance && (
-                          <div className="citation-quote">
-                            <strong>Page {extractedAffair.title_provenance.page_number}:</strong> "{extractedAffair.title_provenance.source_text_snippet}"
-                          </div>
-                        )}
-                        <div style={{ display: 'flex', gap: '1.25rem', marginTop: '0.75rem', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}>
-                          {extractedAffair.submission_date && (
-                            <span>📅 Submitted: <strong>{extractedAffair.submission_date}</strong></span>
-                          )}
-                          {extractedAffair.addressed_to && (
-                            <span>📬 Addressed to: <strong>{extractedAffair.addressed_to}</strong></span>
-                          )}
-                          <span>🌐 Language: <strong>{extractedAffair.language.toUpperCase()}</strong></span>
-                        </div>
+                      <div className="provenance-meta">
+                        <h4>
+                          <span>🛡️ Conservative Grounded Extraction</span>
+                          <span className="badge-tag" style={{ marginLeft: '0.5rem' }}>Swiss-AI Apertus</span>
+                        </h4>
+                        <p>
+                          Zero hallucinations • {provenanceReport?.verified_citations ?? 0} of {provenanceReport?.total_citations ?? 0} citations algorithmically verified against source text.
+                        </p>
                       </div>
-
-                      {/* Authors / Actors */}
-                      <div className="extracted-card">
-                        <div className="extracted-card-header">
-                          <h3>👤 Authors & Submitters ({extractedAffair.authors.length})</h3>
-                        </div>
-                        {extractedAffair.authors.length > 0 ? (
-                          <div>
-                            {extractedAffair.authors.map((author, idx) => (
-                              <div key={idx} className="author-chip">
-                                <strong>{author.name}</strong>
-                                <span className="author-role">{author.role}</span>
-                                {author.party_or_fraction && (
-                                  <span style={{ color: '#94a3b8', fontSize: 'var(--font-size-sm)' }}>({author.party_or_fraction})</span>
-                                )}
-                                {author.provenance && (
-                                  <span className="citation-chip">
-                                    p. {author.provenance.page_number}
-                                  </span>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)' }}>
-                            No individual authors specified (e.g. collective governmental submission).
-                          </p>
-                        )}
+                    </div>
+                    <div className="provenance-stats">
+                      <div className="provenance-stat-pill">
+                        Model: <strong>Apertus-8B</strong>
                       </div>
+                      <div className="provenance-stat-pill">
+                        Hardware: <strong>Alps GH200</strong>
+                      </div>
+                    </div>
+                  </div>
 
-                      {/* Background & Rationale */}
-                      {extractedAffair.background_and_rationale && (
-                        <div className="extracted-card">
-                          <div className="extracted-card-header">
-                            <h3>📖 Context, Rationale & Rationale Provenance</h3>
-                            {extractedAffair.rationale_provenance && (
+                  {/* Header / Identity Card */}
+                  <div className="extracted-card">
+                    <div className="extracted-card-header">
+                      <h3>🏛️ Affair Identity & Metadata</h3>
+                      <div style={{ display: 'flex', gap: '0.4rem' }}>
+                        <span className="badge-body">{extractedAffair.canton_or_body}</span>
+                        <span className="citation-chip">{extractedAffair.level}</span>
+                        <span className="citation-chip">{extractedAffair.affair_type}</span>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: 'var(--font-size-md)', fontWeight: 600, color: '#ffffff', marginBottom: '0.4rem' }}>
+                      {extractedAffair.title}
+                    </div>
+                    {extractedAffair.title_provenance && (
+                      <div className="citation-quote">
+                        <strong>Page {extractedAffair.title_provenance.page_number}:</strong> "{extractedAffair.title_provenance.source_text_snippet}"
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', gap: '1.25rem', marginTop: '0.75rem', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}>
+                      {extractedAffair.submission_date && (
+                        <span>📅 Submitted: <strong>{extractedAffair.submission_date}</strong></span>
+                      )}
+                      {extractedAffair.addressed_to && (
+                        <span>📬 Addressed to: <strong>{extractedAffair.addressed_to}</strong></span>
+                      )}
+                      <span>🌐 Language: <strong>{extractedAffair.language.toUpperCase()}</strong></span>
+                    </div>
+                  </div>
+
+                  {/* Authors / Actors */}
+                  <div className="extracted-card">
+                    <div className="extracted-card-header">
+                      <h3>👤 Authors & Submitters ({extractedAffair.authors.length})</h3>
+                    </div>
+                    {extractedAffair.authors.length > 0 ? (
+                      <div>
+                        {extractedAffair.authors.map((author, idx) => (
+                          <div key={idx} className="author-chip">
+                            <strong>{author.name}</strong>
+                            <span className="author-role">{author.role}</span>
+                            {author.party_or_fraction && (
+                              <span style={{ color: '#94a3b8', fontSize: 'var(--font-size-sm)' }}>({author.party_or_fraction})</span>
+                            )}
+                            {author.provenance && (
                               <span className="citation-chip">
-                                Page {extractedAffair.rationale_provenance.page_number} Verified
+                                p. {author.provenance.page_number}
                               </span>
                             )}
                           </div>
-                          <p style={{ fontSize: 'var(--font-size-base)', color: '#cbd5e1', lineHeight: '1.6' }}>
-                            {extractedAffair.background_and_rationale}
-                          </p>
-                          {extractedAffair.rationale_provenance && (
-                            <div className="citation-quote">
-                              "{extractedAffair.rationale_provenance.source_text_snippet}"
+                        ))}
+                      </div>
+                    ) : (
+                      <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)' }}>
+                        No individual authors specified (e.g. collective governmental submission).
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Background & Rationale */}
+                  {extractedAffair.background_and_rationale && (
+                    <div className="extracted-card">
+                      <div className="extracted-card-header">
+                        <h3>📖 Context, Rationale & Rationale Provenance</h3>
+                        {extractedAffair.rationale_provenance && (
+                          <span className="citation-chip">
+                            Page {extractedAffair.rationale_provenance.page_number} Verified
+                          </span>
+                        )}
+                      </div>
+                      <p style={{ fontSize: 'var(--font-size-base)', color: '#cbd5e1', lineHeight: '1.6' }}>
+                        {extractedAffair.background_and_rationale}
+                      </p>
+                      {extractedAffair.rationale_provenance && (
+                        <div className="citation-quote">
+                          "{extractedAffair.rationale_provenance.source_text_snippet}"
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Questions and Answers */}
+                  <div className="extracted-card">
+                    <div className="extracted-card-header">
+                      <h3>❓ Questions & Executive Answers ({extractedAffair.questions_and_answers.length})</h3>
+                    </div>
+                    {extractedAffair.questions_and_answers.length > 0 ? (
+                      extractedAffair.questions_and_answers.map((qa, idx) => (
+                        <div key={idx} className="qa-card">
+                          <div className="qa-question">
+                            <strong>Question {qa.question.number || (idx + 1)}:</strong> {qa.question.text}
+                            {qa.question.provenance && (
+                              <span className="citation-chip" style={{ marginLeft: '0.5rem' }}>
+                                p. {qa.question.provenance.page_number}
+                              </span>
+                            )}
+                          </div>
+                          {qa.answer ? (
+                            <div className="qa-answer">
+                              <strong>Executive Answer:</strong> {qa.answer.text}
+                              {qa.answer.provenance && (
+                                <span className="citation-chip" style={{ marginLeft: '0.5rem' }}>
+                                  p. {qa.answer.provenance.page_number}
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
+                              [Pending executive answer]
                             </div>
                           )}
                         </div>
-                      )}
+                      ))
+                    ) : (
+                      <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)' }}>
+                        No formal question items present in document (conservative extraction).
+                      </p>
+                    )}
+                  </div>
 
-                      {/* Questions and Answers */}
-                      <div className="extracted-card">
-                        <div className="extracted-card-header">
-                          <h3>❓ Questions & Executive Answers ({extractedAffair.questions_and_answers.length})</h3>
-                        </div>
-                        {extractedAffair.questions_and_answers.length > 0 ? (
-                          extractedAffair.questions_and_answers.map((qa, idx) => (
-                            <div key={idx} className="qa-card">
-                              <div className="qa-question">
-                                <strong>Question {qa.question.number || (idx + 1)}:</strong> {qa.question.text}
-                                {qa.question.provenance && (
-                                  <span className="citation-chip" style={{ marginLeft: '0.5rem' }}>
-                                    p. {qa.question.provenance.page_number}
-                                  </span>
-                                )}
-                              </div>
-                              {qa.answer ? (
-                                <div className="qa-answer">
-                                  <strong>Executive Answer:</strong> {qa.answer.text}
-                                  {qa.answer.provenance && (
-                                    <span className="citation-chip" style={{ marginLeft: '0.5rem' }}>
-                                      p. {qa.answer.provenance.page_number}
-                                    </span>
-                                  )}
-                                </div>
-                              ) : (
-                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
-                                  [Pending executive answer]
-                                </div>
-                              )}
+                  {/* Financial Credits */}
+                  <div className="extracted-card">
+                    <div className="extracted-card-header">
+                      <h3>💰 Financial Credits & Appropriations ({extractedAffair.financial_details.length})</h3>
+                    </div>
+                    {extractedAffair.financial_details.length > 0 ? (
+                      <div className="financial-grid">
+                        {extractedAffair.financial_details.map((fin, idx) => (
+                          <div key={idx} className="financial-item">
+                            <div className="financial-amount">
+                              {fin.amount_chf ? `${fin.amount_chf.toLocaleString()} CHF` : 'Undisclosed CHF'}
                             </div>
-                          ))
-                        ) : (
-                          <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)' }}>
-                            No formal question items present in document (conservative extraction).
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Financial Credits */}
-                      <div className="extracted-card">
-                        <div className="extracted-card-header">
-                          <h3>💰 Financial Credits & Appropriations ({extractedAffair.financial_details.length})</h3>
-                        </div>
-                        {extractedAffair.financial_details.length > 0 ? (
-                          <div className="financial-grid">
-                            {extractedAffair.financial_details.map((fin, idx) => (
-                              <div key={idx} className="financial-item">
-                                <div className="financial-amount">
-                                  {fin.amount_chf ? `${fin.amount_chf.toLocaleString()} CHF` : 'Undisclosed CHF'}
-                                </div>
-                                <div className="financial-purpose">{fin.purpose}</div>
-                                {fin.credit_type && (
-                                  <div style={{ fontSize: 'var(--font-size-sm)', color: '#94a3b8', marginTop: '0.2rem' }}>
-                                    Type: {fin.credit_type}
-                                  </div>
-                                )}
-                                {fin.provenance && (
-                                  <div className="citation-chip" style={{ marginTop: '0.4rem' }}>
-                                    p. {fin.provenance.page_number}
-                                  </div>
-                                )}
+                            <div className="financial-purpose">{fin.purpose}</div>
+                            {fin.credit_type && (
+                              <div style={{ fontSize: 'var(--font-size-sm)', color: '#94a3b8', marginTop: '0.2rem' }}>
+                                Type: {fin.credit_type}
                               </div>
-                            ))}
+                            )}
+                            {fin.provenance && (
+                              <div className="citation-chip" style={{ marginTop: '0.4rem' }}>
+                                p. {fin.provenance.page_number}
+                              </div>
+                            )}
                           </div>
-                        ) : (
-                          <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)' }}>
-                            No financial expenditures or credits requested in this affair.
-                          </p>
-                        )}
+                        ))}
                       </div>
+                    ) : (
+                      <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)' }}>
+                        No financial expenditures or credits requested in this affair.
+                      </p>
+                    )}
+                  </div>
 
-                      {/* Provenance Audit Table */}
-                      {provenanceReport && provenanceReport.details && provenanceReport.details.length > 0 && (
-                        <div className="extracted-card">
-                          <div className="extracted-card-header">
-                            <h3>🔍 Provenance Verification Audit Log</h3>
-                            <span className="provenance-pill">
-                              {provenanceReport.verified_citations} / {provenanceReport.total_citations} Verified
-                            </span>
-                          </div>
-                          <table className="telemetry-table" style={{ marginTop: '0.5rem' }}>
-                            <thead>
-                              <tr>
-                                <th>Field</th>
-                                <th>Page</th>
-                                <th>Status</th>
-                                <th>Quote Snippet</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {provenanceReport.details.map((d, i) => (
-                                <tr key={i}>
-                                  <td className="mono" style={{ color: '#38bdf8' }}>{d.field}</td>
-                                  <td className="mono">{d.page ? `Page ${d.page}` : '—'}</td>
-                                  <td>
-                                    <span className={d.verified ? 'status-pill-ok' : 'badge-tag'}>
-                                      {d.status.toUpperCase()}
-                                    </span>
-                                  </td>
-                                  <td style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}>
-                                    {d.snippet_preview}
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      )}
-
-                      {/* Raw JSON View */}
-                      <div className="extracted-card">
-                        <div className="extracted-card-header">
-                          <h3>💻 Unified Pydantic Schema JSON</h3>
-                          <button
-                            className="doc-btn"
-                            onClick={() => setShowRawJson(!showRawJson)}
-                          >
-                            {showRawJson ? 'Hide JSON' : 'Show JSON'}
-                          </button>
-                        </div>
-                        {showRawJson && (
-                          <pre className="raw-json-box">
-                            {JSON.stringify(extractedAffair, null, 2)}
-                          </pre>
-                        )}
+                  {/* Provenance Audit Table */}
+                  {provenanceReport && provenanceReport.details && provenanceReport.details.length > 0 && (
+                    <div className="extracted-card">
+                      <div className="extracted-card-header">
+                        <h3>🔍 Provenance Verification Audit Log</h3>
+                        <span className="provenance-pill">
+                          {provenanceReport.verified_citations} / {provenanceReport.total_citations} Verified
+                        </span>
                       </div>
-                    </>
+                      <table className="telemetry-table" style={{ marginTop: '0.5rem' }}>
+                        <thead>
+                          <tr>
+                            <th>Field</th>
+                            <th>Page</th>
+                            <th>Status</th>
+                            <th>Quote Snippet</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {provenanceReport.details.map((d, i) => (
+                            <tr key={i}>
+                              <td className="mono" style={{ color: '#38bdf8' }}>{d.field}</td>
+                              <td className="mono">{d.page ? `Page ${d.page}` : '—'}</td>
+                              <td>
+                                <span className={d.verified ? 'status-pill-ok' : 'badge-tag'}>
+                                  {d.status.toUpperCase()}
+                                </span>
+                              </td>
+                              <td style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}>
+                                {d.snippet_preview}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   )}
-                </div>
-              )
-            ) : (
-              <div className="preview-placeholder">
-                <svg
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-                  />
-                </svg>
-                <p>Select an affair or a curated sample PDF from above to preview and extract</p>
-              </div>
-            )}
+
+                  {/* Raw JSON View */}
+                  {showRawJson && (
+                    <div className="extracted-card">
+                      <div className="extracted-card-header">
+                        <h3>💻 Unified Pydantic Schema JSON</h3>
+                      </div>
+                      <pre className="raw-json-box">
+                        {JSON.stringify(extractedAffair, null, 2)}
+                      </pre>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
       </main>

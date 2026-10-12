@@ -2,6 +2,9 @@
    PDF Preview Panel, Tabs and Parsed Page Text Breakdown
    ============================================================================ */
 
+.studio-selector-panel,
+.studio-doc-panel,
+.studio-extraction-panel,
 .preview-panel {
   background-color: var(--bg-panel);
   border: 1px solid var(--border-panel);
@@ -9,11 +12,14 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  height: calc(100vh - 280px);
+  height: calc(100vh - 115px);
+  min-height: 600px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
+.studio-panel-header,
 .preview-header {
-  padding: 0.75rem 1rem;
+  padding: 0.65rem 1.15rem;
   background-color: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
   display: flex;
@@ -21,6 +27,56 @@
   align-items: center;
   font-size: var(--font-size-base);
   font-weight: 600;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.panel-header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.panel-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-shrink: 0;
+}
+
+.doc-info-badge {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  max-width: 480px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.open-pdf-link {
+  color: #38bdf8;
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  background: rgba(56, 189, 248, 0.08);
+  font-weight: 500;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.open-pdf-link:hover {
+  background: rgba(56, 189, 248, 0.18);
+  border-color: rgba(56, 189, 248, 0.6);
 }
 
 .preview-iframe {
