@@ -5,8 +5,14 @@ interface TelemetryBarProps {
   telemetry: TelemetryStats | null;
 }
 
+type SortField = 'time' | 'canton' | 'cached' | 'total' | 'cost' | 'speed' | 'provenance';
+type SortOrder = 'asc' | 'desc';
+
 export function TelemetryBar({ telemetry }: TelemetryBarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedCanton, setSelectedCanton] = useState<string>('ALL');
+  const [sortField, setSortField] = useState<SortField>('time');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   // Close on outside click or Esc
@@ -30,6 +36,111 @@ export function TelemetryBar({ telemetry }: TelemetryBarProps) {
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen]);
+
+  const rawHistory = telemetry?.history || [];
+
+  // Extract unique cantons for header filter dropdown
+  const availableCantons = Array.from(
+    new Set(rawHistory.map((h) => h.canton).filter(Boolean) as string[])
+  ).sort();
+
+  const cantonCounts = rawHistory.reduce((acc, h) => {
+    if (h.canton) {
+      acc[h.canton] = (acc[h.canton] || 0) + 1;
+    }
+    return acc;
+  }, {} as Record<string, number>);
+
+  // Filter history by selected canton
+  const filteredHistory = rawHistory.filter((item) => {
+    if (selectedCanton === 'ALL') return true;
+    return item.canton === selectedCanton;
+  });
+
+  // Attach permanent original 1-based request index (#1 to #N)
+  const decoratedHistory = filteredHistory.map((item) => {
+    const originalIndex = rawHistory.indexOf(item);
+    const reqNum = originalIndex >= 0 ? originalIndex + 1 : 1;
+    const parsedTime = item.timestamp ? new Date(item.timestamp).getTime() : 0;
+    return {
+      ...item,
+      reqNum,
+      parsedTime,
+    };
+  });
+
+  // Sort history according to active column and direction
+  const sortedHistory = [...decoratedHistory].sort((a, b) => {
+    let valA: any = 0;
+    let valB: any = 0;
+
+    switch (sortField) {
+      case 'time':
+        valA = a.parsedTime || a.reqNum;
+        valB = b.parsedTime || b.reqNum;
+        break;
+      case 'canton':
+        valA = (a.canton || '').toLowerCase();
+        valB = (b.canton || '').toLowerCase();
+        break;
+      case 'cached':
+        valA = a.cached_tokens ?? 0;
+        valB = b.cached_tokens ?? 0;
+        break;
+      case 'total':
+        valA = a.total_tokens ?? 0;
+        valB = b.total_tokens ?? 0;
+        break;
+      case 'cost':
+        valA = a.cost_chf ?? 0;
+        valB = b.cost_chf ?? 0;
+        break;
+      case 'speed':
+        valA = a.latency_sec ?? 0;
+        valB = b.latency_sec ?? 0;
+        break;
+      case 'provenance':
+        valA = a.provenance_score ?? -1;
+        valB = b.provenance_score ?? -1;
+        break;
+    }
+
+    if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+    if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+    return b.reqNum - a.reqNum;
+  });
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortField(field);
+      // Default to ascending for alphabetical canton; descending (highest/newest) for metrics
+      setSortOrder(field === 'canton' ? 'asc' : 'desc');
+    }
+  };
+
+  const renderSortHeader = (field: SortField, label: string) => {
+    const isActive = sortField === field;
+    return (
+      <th
+        className={`sortable ${isActive ? 'active' : ''}`}
+        onClick={() => handleSort(field)}
+        title={
+          isActive
+            ? `Sorted by ${label} (${sortOrder === 'asc' ? 'ascending' : 'descending'}). Click to reverse.`
+            : `Click to sort by ${label}`
+        }
+      >
+        <div className="th-sort-wrapper">
+          <span>{label}</span>
+          <span className={isActive ? 'sort-icon-active' : 'sort-icon-inactive'}>
+            {isActive ? (sortOrder === 'asc' ? '▲' : '▼') : '↕'}
+          </span>
+        </div>
+      </th>
+    );
+  };
 
   return (
     <div className={`telemetry-wrapper ${isOpen ? 'open' : ''}`} ref={wrapperRef}>
@@ -64,14 +175,37 @@ export function TelemetryBar({ telemetry }: TelemetryBarProps) {
                 <span>CSCS Inference Telemetry</span>
                 <span className="popover-model-badge">🏔️ Alps Supercomputer Endpoint</span>
               </div>
-              <button
-                type="button"
-                className="popover-close-btn"
-                onClick={() => setIsOpen(false)}
-                title="Close telemetry details"
-              >
-                ✕
-              </button>
+              <div className="popover-header-actions">
+                {availableCantons.length > 0 && (
+                  <div className="popover-filter-group">
+                    <label htmlFor="telemetry-canton-select" className="popover-filter-label">
+                      Canton:
+                    </label>
+                    <select
+                      id="telemetry-canton-select"
+                      className="popover-canton-select"
+                      value={selectedCanton}
+                      onChange={(e) => setSelectedCanton(e.target.value)}
+                      title="Filter runs by Swiss Canton"
+                    >
+                      <option value="ALL">All ({rawHistory.length})</option>
+                      {availableCantons.map((c) => (
+                        <option key={c} value={c}>
+                          {c} ({cantonCounts[c] ?? 0})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  className="popover-close-btn"
+                  onClick={() => setIsOpen(false)}
+                  title="Close telemetry details"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
           </div>
 
@@ -79,22 +213,21 @@ export function TelemetryBar({ telemetry }: TelemetryBarProps) {
             <table className="telemetry-table">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>Date / Time</th>
-                  <th>Canton / Task</th>
+                  {renderSortHeader('time', '#')}
+                  {renderSortHeader('time', 'Date / Time')}
+                  {renderSortHeader('canton', 'Canton / Task')}
                   <th>In / Out</th>
-                  <th>Cached</th>
-                  <th>Total</th>
-                  <th>Cost (CHF)</th>
-                  <th>Speed</th>
-                  <th>Provenance</th>
+                  {renderSortHeader('cached', 'Cached')}
+                  {renderSortHeader('total', 'Total')}
+                  {renderSortHeader('cost', 'Cost (CHF)')}
+                  {renderSortHeader('speed', 'Speed')}
+                  {renderSortHeader('provenance', 'Provenance')}
                   <th>Status</th>
                 </tr>
               </thead>
               <tbody>
-                {telemetry?.history && telemetry.history.length > 0 ? (
-                  telemetry.history.slice().reverse().map((item, idx) => {
-                    const reqNum = telemetry.history!.length - idx;
+                {sortedHistory.length > 0 ? (
+                  sortedHistory.map((item) => {
                     const d = item.timestamp ? new Date(item.timestamp) : null;
                     const dateStr = d
                       ? d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })
@@ -109,8 +242,8 @@ export function TelemetryBar({ telemetry }: TelemetryBarProps) {
                       : '12:47:09';
                     const taskName = (item.task || 'Inference').replace(/^Extract:\s*/i, '');
                     return (
-                      <tr key={idx}>
-                        <td className="mono">#{reqNum}</td>
+                      <tr key={item.reqNum}>
+                        <td className="mono">#{item.reqNum}</td>
                         <td className="mono text-nowrap">
                           <span className="telemetry-date">{dateStr}</span>
                           <span className="telemetry-time">{timeStr}</span>
@@ -149,6 +282,12 @@ export function TelemetryBar({ telemetry }: TelemetryBarProps) {
                       </tr>
                     );
                   })
+                ) : rawHistory.length > 0 ? (
+                  <tr>
+                    <td colSpan={10} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+                      No benchmark runs found matching canton filter: <strong>{selectedCanton}</strong>
+                    </td>
+                  </tr>
                 ) : (
                   <tr>
                     <td className="mono">#1</td>
@@ -187,6 +326,11 @@ export function TelemetryBar({ telemetry }: TelemetryBarProps) {
           <div className="popover-footer">
             <div className="footer-meta">
               <span className="footer-tag">Official CSCS Academia Tariff</span>
+              {selectedCanton !== 'ALL' && (
+                <span className="footer-filter-pill">
+                  Showing {sortedHistory.length} of {rawHistory.length} runs ({selectedCanton})
+                </span>
+              )}
             </div>
             <div className="footer-metrics">
               <div className="metric-chip">
