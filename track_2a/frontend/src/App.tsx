@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import severinLogo from './assets/logo.png';
 import { TelemetryBar } from './components/TelemetryBar';
+import { CustomSelect } from './components/CustomSelect';
 import type {
   ParliamentaryAffairItem,
   DocumentItem,
@@ -21,6 +22,15 @@ const PRESET_BODIES = [
   { key: 'BS', label: 'BS — Basel-Stadt' },
   { key: 'GL', label: 'GL — Glarus' },
   { key: 'CHE', label: 'CHE — Federal Assembly' },
+];
+
+const PRESET_BODY_OPTIONS = PRESET_BODIES.map((b) => ({ value: b.key, label: b.label }));
+
+const MATCH_MODES = [
+  { value: 'partial', label: 'Partial' },
+  { value: 'exact', label: 'Exact' },
+  { value: 'natural', label: 'Natural' },
+  { value: 'boolean', label: 'Boolean' },
 ];
 
 /**
@@ -409,17 +419,11 @@ export function App() {
                 <div className="sidebar-api-form">
                   <div className="sidebar-field-group">
                     <label className="sidebar-field-label">Parliamentary Body</label>
-                    <select
-                      className="form-control"
+                    <CustomSelect
                       value={bodyKey}
-                      onChange={(e) => setBodyKey(e.target.value)}
-                    >
-                      {PRESET_BODIES.map((b) => (
-                        <option key={b.key} value={b.key}>
-                          {b.label}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(val) => setBodyKey(val)}
+                      options={PRESET_BODY_OPTIONS}
+                    />
                   </div>
 
                   <div className="sidebar-field-group">
@@ -437,16 +441,11 @@ export function App() {
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.45rem', alignItems: 'flex-end' }}>
                     <div className="sidebar-field-group">
                       <label className="sidebar-field-label">Match Mode</label>
-                      <select
-                        className="form-control"
+                      <CustomSelect
                         value={searchMode}
-                        onChange={(e) => setSearchMode(e.target.value)}
-                      >
-                        <option value="partial">Partial</option>
-                        <option value="exact">Exact</option>
-                        <option value="natural">Natural</option>
-                        <option value="boolean">Boolean</option>
-                      </select>
+                        onChange={(val) => setSearchMode(val)}
+                        options={MATCH_MODES}
+                      />
                     </div>
                     <button
                       className="btn-primary"

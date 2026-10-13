@@ -111,18 +111,19 @@
   backdrop-filter: blur(16px);
   z-index: 1000;
   overflow: hidden;
-  animation: popoverFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: top right;
+  animation: popoverFadeIn 0.24s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: default;
 }
 
 @keyframes popoverFadeIn {
   from {
     opacity: 0;
-    transform: translateY(-6px);
+    transform: translateY(-8px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -180,6 +181,21 @@
   cursor: pointer;
   outline: none;
   transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.telemetry-custom-select {
+  min-width: 130px;
+}
+
+.telemetry-custom-select .custom-select-trigger {
+  padding: 0.25rem 0.55rem;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.telemetry-custom-select .custom-select-dropdown {
+  max-height: 180px;
 }
 
 .popover-canton-select:hover,

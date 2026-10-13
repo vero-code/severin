@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import type { TelemetryStats } from '../types';
+import { CustomSelect } from './CustomSelect';
 
 interface TelemetryBarProps {
   telemetry: TelemetryStats | null;
@@ -162,7 +163,26 @@ export function TelemetryBar({ telemetry }: TelemetryBarProps) {
           <span className="metric-item">
             <strong>{telemetry?.average_latency_seconds ?? 0.15}s</strong> avg
           </span>
-          <span className="metric-chevron">{isOpen ? '▲' : '▼'}</span>
+          <span className="metric-chevron">
+            <svg
+              style={{
+                transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1)',
+                display: 'inline-block',
+                verticalAlign: '-1px',
+              }}
+              width="10"
+              height="10"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </span>
         </div>
       </button>
 
@@ -178,23 +198,21 @@ export function TelemetryBar({ telemetry }: TelemetryBarProps) {
               <div className="popover-header-actions">
                 {availableCantons.length > 0 && (
                   <div className="popover-filter-group">
-                    <label htmlFor="telemetry-canton-select" className="popover-filter-label">
+                    <label className="popover-filter-label">
                       Canton:
                     </label>
-                    <select
-                      id="telemetry-canton-select"
-                      className="popover-canton-select"
+                    <CustomSelect
+                      className="telemetry-custom-select"
                       value={selectedCanton}
-                      onChange={(e) => setSelectedCanton(e.target.value)}
-                      title="Filter runs by Swiss Canton"
-                    >
-                      <option value="ALL">All ({rawHistory.length})</option>
-                      {availableCantons.map((c) => (
-                        <option key={c} value={c}>
-                          {c} ({cantonCounts[c] ?? 0})
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(val) => setSelectedCanton(val)}
+                      options={[
+                        { value: 'ALL', label: `All (${rawHistory.length})` },
+                        ...availableCantons.map((c) => ({
+                          value: c,
+                          label: `${c} (${cantonCounts[c] ?? 0})`,
+                        })),
+                      ]}
+                    />
                   </div>
                 )}
                 <button
