@@ -40,7 +40,7 @@
   align-items: center;
   gap: 0.45rem;
   font-size: var(--font-size-base);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
   white-space: nowrap;
   flex-shrink: 0;
@@ -62,16 +62,20 @@
   min-width: 0;
   padding: 0 0.5rem;
   text-align: center;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
 }
 
 .doc-center-title .doc-info-badge {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  font-weight: 600;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-weight: 500;
 }
 
 .panel-header-actions {

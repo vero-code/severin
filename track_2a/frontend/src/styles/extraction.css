@@ -108,15 +108,13 @@
 }
 
 .studio-feature-pill {
-  font-size: 12px;
-  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
   font-weight: 500;
   padding: 0.25rem 0.65rem;
   background: rgba(18, 22, 31, 0.8);
   border: 1px solid var(--border-color);
   border-radius: 9999px;
   color: var(--text-muted);
-  letter-spacing: 0.02em;
 }
 
 /* ============================================================================
@@ -210,7 +208,7 @@
 }
 
 .extracted-card-header h3 {
-  font-size: 0.95rem;
+  font-size: var(--font-size-md);
   font-weight: 600;
   text-transform: none;
   letter-spacing: normal;
@@ -225,9 +223,9 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: #94A3B8;
-  font-size: 11px;
+  font-size: var(--font-size-sm);
   font-weight: 500;
-  padding: 0.15rem 0.5rem;
+  padding: 0.15rem 0.55rem;
   border-radius: var(--radius-sm);
   text-transform: capitalize;
   display: inline-flex;
@@ -246,10 +244,10 @@
 }
 
 .affair-title-text {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #F8FAFC;
-  line-height: 1.5;
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.45;
   margin-bottom: 0.6rem;
 }
 
@@ -257,7 +255,7 @@
   background: rgba(167, 243, 208, 0.08);
   border: 1px solid rgba(167, 243, 208, 0.28);
   color: var(--accent-mint);
-  font-size: 11px;
+  font-size: var(--font-size-sm);
   font-weight: 500;
   padding: 0.18rem 0.55rem;
   border-radius: var(--radius-sm);
@@ -271,9 +269,8 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: #94A3B8;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
   padding: 0.12rem 0.45rem;
   border-radius: 3px;
   display: inline-flex;
@@ -285,9 +282,9 @@
   background: rgba(167, 243, 208, 0.08);
   border: 1px solid rgba(167, 243, 208, 0.28);
   color: var(--accent-mint);
-  font-size: 11px;
+  font-size: var(--font-size-sm);
   font-weight: 500;
-  padding: 0.15rem 0.5rem;
+  padding: 0.15rem 0.55rem;
   border-radius: var(--radius-sm);
   display: inline-flex;
   align-items: center;
@@ -313,7 +310,6 @@
 .citation-quote strong {
   color: var(--accent-mint);
   font-style: normal;
-  font-family: var(--font-mono);
   font-weight: 600;
   margin-right: 0.35rem;
 }
@@ -327,11 +323,11 @@
   cursor: pointer;
   color: var(--text-secondary);
   user-select: none;
-  font-size: 11px;
+  font-size: var(--font-size-sm);
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.2rem 0.5rem;
+  padding: 0.2rem 0.55rem;
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -353,7 +349,7 @@
   background: rgba(167, 243, 208, 0.06);
   border: 1px solid rgba(167, 243, 208, 0.25);
   border-radius: var(--radius-sm);
-  font-size: 0.82rem;
+  font-size: var(--font-size-sm);
   color: #E2E8F0;
   line-height: 1.45;
 }
@@ -369,7 +365,7 @@
 }
 
 .context-body-text {
-  font-size: 0.9rem;
+  font-size: var(--font-size-base);
   color: #CBD5E1;
   line-height: 1.65;
   margin: 0;
@@ -389,7 +385,7 @@
   border: 1px solid var(--border-color);
   padding: 0.35rem 0.65rem;
   border-radius: var(--radius-sm);
-  font-size: 0.88rem;
+  font-size: var(--font-size-sm);
 }
 
 .author-name {
@@ -399,19 +395,19 @@
 
 .author-role {
   color: #94A3B8;
-  font-size: 11px;
+  font-size: var(--font-size-sm);
   text-transform: capitalize;
   letter-spacing: 0.02em;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 0.12rem 0.4rem;
+  padding: 0.12rem 0.45rem;
   border-radius: 3px;
   font-weight: 500;
 }
 
 .author-party {
   color: #94A3B8;
-  font-size: 12px;
+  font-size: var(--font-size-sm);
 }
 
 
@@ -451,7 +447,6 @@
 }
 
 .financial-amount {
-  font-family: var(--font-mono);
   font-size: var(--font-size-md);
   font-weight: 700;
   color: var(--accent-red-hover);
@@ -513,9 +508,8 @@
 }
 
 .json-schema-badge {
-  font-family: var(--font-mono);
-  font-size: var(--font-size-xs);
-  font-weight: 700;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
   color: var(--accent-mint);
   background: rgba(167, 243, 208, 0.1);
   border: 1px solid rgba(167, 243, 208, 0.28);

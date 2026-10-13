@@ -68,15 +68,13 @@
   border: 1px solid rgba(167, 243, 208, 0.28);
   color: var(--accent-mint);
   font-size: var(--font-size-sm);
-  font-weight: 700;
+  font-weight: 600;
   padding: 0.18rem 0.45rem;
   border-radius: 4px;
-  font-family: var(--font-mono);
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
 }
 
 .affair-short-id {
-  font-family: var(--font-mono);
   font-size: var(--font-size-sm);
   color: var(--text-muted);
 }

@@ -474,9 +474,8 @@ select.form-control option {
 }
 
 .sample-item-meta {
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
-  font-family: var(--font-mono);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

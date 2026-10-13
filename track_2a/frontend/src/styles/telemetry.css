@@ -63,7 +63,6 @@
 }
 
 .telemetry-model {
-  font-family: var(--font-mono);
   font-weight: 700;
   letter-spacing: 0.02em;
 }
@@ -73,7 +72,6 @@
   align-items: center;
   gap: 0.55rem;
   color: var(--text-secondary);
-  font-family: var(--font-mono);
 }
 
 .metric-item strong {
@@ -161,12 +159,11 @@
 }
 
 .popover-filter-label {
-  font-size: 11px;
-  font-family: var(--font-mono);
-  font-weight: 700;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
 }
 
 .popover-canton-select {
@@ -175,9 +172,8 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   padding: 0.2rem 0.5rem;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
   cursor: pointer;
   outline: none;
   transition: border-color 0.15s ease, background 0.15s ease;
@@ -189,9 +185,8 @@
 
 .telemetry-custom-select .custom-select-trigger {
   padding: 0.25rem 0.55rem;
-  font-size: 12px;
-  font-family: var(--font-mono);
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
 }
 
 .telemetry-custom-select .custom-select-dropdown {
@@ -200,7 +195,7 @@
 
 .popover-canton-select:hover,
 .popover-canton-select:focus {
-  border-color: #38bdf8;
+  border-color: var(--accent-mint);
   background: var(--bg-card-hover);
 }
 
@@ -227,11 +222,10 @@
 }
 
 .popover-model-badge {
-  background: rgba(56, 189, 248, 0.08);
-  border: 1px solid rgba(56, 189, 248, 0.25);
-  color: #38bdf8;
-  font-size: 13px;
-  font-family: var(--font-mono);
+  background: rgba(167, 243, 208, 0.08);
+  border: 1px solid rgba(167, 243, 208, 0.28);
+  color: var(--accent-mint);
+  font-size: var(--font-size-sm);
   padding: 0.2rem 0.65rem;
   border-radius: var(--radius-sm);
   font-weight: 500;
@@ -269,11 +263,10 @@
   text-align: left;
   padding: 0.65rem 0.8rem;
   color: #94A3B8;
-  font-weight: 700;
-  font-family: var(--font-mono);
+  font-weight: 600;
   text-transform: uppercase;
-  font-size: 13px;
-  letter-spacing: 0.05em;
+  font-size: var(--font-size-sm);
+  letter-spacing: 0.03em;
   white-space: nowrap;
 }
 
@@ -289,7 +282,7 @@
 }
 
 .telemetry-table th.sortable.active {
-  color: #38bdf8;
+  color: var(--accent-mint);
 }
 
 .th-sort-wrapper {
@@ -311,10 +304,10 @@
 }
 
 .sort-icon-active {
-  color: #38bdf8;
+  color: var(--accent-mint);
   font-size: 11px;
   font-weight: 700;
-  text-shadow: 0 0 6px rgba(56, 189, 248, 0.4);
+  text-shadow: 0 0 6px rgba(167, 243, 208, 0.4);
 }
 
 .telemetry-table th:first-child,
@@ -347,7 +340,7 @@
 }
 
 .telemetry-table .mono {
-  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 .telemetry-date {
@@ -377,10 +370,9 @@
   background: var(--badge-bg);
   border: 1px solid var(--badge-border);
   color: var(--badge-text);
-  font-family: var(--font-mono);
   font-size: var(--font-size-sm);
-  font-weight: 700;
-  padding: 0.15rem 0.4rem;
+  font-weight: 600;
+  padding: 0.15rem 0.45rem;
   border-radius: 4px;
   margin-right: 0.45rem;
   display: inline-block;
@@ -398,9 +390,8 @@
   color: #94a3b8;
   padding: 0.15rem 0.55rem;
   border-radius: 9999px;
-  font-size: 12px;
-  font-family: var(--font-mono);
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
   white-space: nowrap !important;
   display: inline-flex;
   align-items: center;
@@ -414,7 +405,7 @@
   color: var(--accent-mint);
   padding: 0.18rem 0.55rem;
   border-radius: var(--radius-sm);
-  font-size: 11px;
+  font-size: var(--font-size-sm);
   font-weight: 500;
   white-space: nowrap !important;
   display: inline-flex;
@@ -442,8 +433,7 @@
 }
 
 .footer-tag {
-  font-size: 12px;
-  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
   background: rgba(255, 255, 255, 0.04);
   padding: 0.2rem 0.55rem;
@@ -452,11 +442,10 @@
 }
 
 .footer-filter-pill {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: #38bdf8;
-  background: rgba(56, 189, 248, 0.1);
-  border: 1px solid rgba(56, 189, 248, 0.25);
+  font-size: var(--font-size-sm);
+  color: var(--accent-mint);
+  background: rgba(167, 243, 208, 0.08);
+  border: 1px solid rgba(167, 243, 208, 0.28);
   padding: 0.15rem 0.55rem;
   border-radius: 4px;
   margin-left: 0.65rem;
@@ -473,8 +462,7 @@
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  font-size: 13px;
-  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
 }
 
 .chip-label {

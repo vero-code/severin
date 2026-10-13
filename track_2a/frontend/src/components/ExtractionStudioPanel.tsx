@@ -223,7 +223,11 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                extractedAffair.title_provenance.source_text_snippet.trim() !== extractedAffair.title.trim() && (
                 <details className="source-header-details">
                   <summary className="source-header-summary">
-                    <span>Source header excerpt in PDF (Page {extractedAffair.title_provenance.page_number})</span>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                    <span>Source header excerpt in PDF</span>
                   </summary>
                   <div className="citation-quote" style={{ marginTop: '0.4rem' }}>
                     "{extractedAffair.title_provenance.source_text_snippet}"
@@ -276,7 +280,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                         )}
                         {author.provenance && (
                           <>
-                            <span style={{ color: 'var(--text-muted)', fontSize: '11px', margin: '0 0.15rem' }}>on</span>
+                            <span style={{ color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)', margin: '0 0.15rem' }}>on</span>
                             <span className="citation-page-tag">
                               page {author.provenance.page_number}
                             </span>
@@ -296,10 +300,10 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
             {/* Background & Rationale */}
             <div className="extracted-card">
               <div className="extracted-card-header">
-                <h3>Context, Rationale & Provenance</h3>
-                {extractedAffair.rationale_provenance && (
-                  <span className="badge-verified">
-                    ✓ Page {extractedAffair.rationale_provenance.page_number} Verified
+                <h3>Context & Rationale</h3>
+                {extractedAffair.background_and_rationale && extractedAffair.rationale_provenance && (
+                  <span className="citation-page-tag">
+                    page {extractedAffair.rationale_provenance.page_number}
                   </span>
                 )}
               </div>
@@ -317,7 +321,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                 </>
               ) : (
                 <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', margin: 0 }}>
-                  No formal rationale or background text present in document (conservative extraction).
+                  No background or rationale text present in this document.
                 </p>
               )}
             </div>
@@ -355,8 +359,8 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                   </div>
                 ))
               ) : (
-                <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)' }}>
-                  No formal question items present in document (conservative extraction).
+                <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', margin: 0 }}>
+                  No parliamentary questions present in this document.
                 </p>
               )}
             </div>
@@ -388,7 +392,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                   ))}
                 </div>
               ) : (
-                <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)' }}>
+                <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', margin: 0 }}>
                   No financial expenditures or credits requested in this affair.
                 </p>
               )}
