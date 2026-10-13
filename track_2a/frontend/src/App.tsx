@@ -14,13 +14,13 @@ import type {
 
 // Prevalent Swiss parliamentary bodies for fast selection
 const PRESET_BODIES = [
-  { key: 'ZH', label: 'ZH — Zürich (Cantonal)' },
-  { key: 'GR', label: 'GR — Graubünden (Trilingual)' },
-  { key: 'GE', label: 'GE — Genève (French)' },
-  { key: 'BE', label: 'BE — Bern (Bilingual)' },
+  { key: 'ZH', label: 'ZH — Zürich' },
+  { key: 'GR', label: 'GR — Graubünden' },
+  { key: 'GE', label: 'GE — Genève' },
+  { key: 'BE', label: 'BE — Bern' },
   { key: 'BS', label: 'BS — Basel-Stadt' },
   { key: 'GL', label: 'GL — Glarus' },
-  { key: 'CHE', label: 'CHE — Federal Assembly (Bund)' },
+  { key: 'CHE', label: 'CHE — Federal Assembly' },
 ];
 
 /**
@@ -373,7 +373,7 @@ export function App() {
               <div className="sidebar-api-section">
                 <div className="sidebar-api-form">
                   <div className="sidebar-field-group">
-                    <label className="sidebar-field-label">Parliamentary Body:</label>
+                    <label className="sidebar-field-label">Parliamentary Body</label>
                     <select
                       className="form-control"
                       value={bodyKey}
@@ -388,20 +388,20 @@ export function App() {
                   </div>
 
                   <div className="sidebar-field-group">
-                    <label className="sidebar-field-label">Search Query:</label>
+                    <label className="sidebar-field-label">Search Query</label>
                     <input
                       type="text"
                       className="form-control"
-                      placeholder="e.g. Klima, Spital, Finanzen..."
+                      placeholder="e.g. Klima, Budget, Spital"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && fetchAffairs()}
                     />
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', alignItems: 'flex-end' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.45rem', alignItems: 'flex-end' }}>
                     <div className="sidebar-field-group">
-                      <label className="sidebar-field-label">Mode:</label>
+                      <label className="sidebar-field-label">Match Mode</label>
                       <select
                         className="form-control"
                         value={searchMode}
@@ -415,11 +415,11 @@ export function App() {
                     </div>
                     <button
                       className="btn-primary"
-                      style={{ padding: '0.65rem 0.5rem', fontSize: 'var(--font-size-sm)' }}
+                      style={{ padding: '0.55rem 0.5rem', fontSize: 'var(--font-size-sm)', fontWeight: 600 }}
                       onClick={fetchAffairs}
                       disabled={loading}
                     >
-                      {loading ? 'Fetching...' : 'Fetch'}
+                      {loading ? 'Searching...' : 'Search'}
                     </button>
                   </div>
                 </div>
@@ -427,9 +427,15 @@ export function App() {
                 <div className="sidebar-affairs-list">
                   {affairs.length === 0 && !loading && (
                     <div className="sidebar-empty-hint">
-                      <p>No live API affairs queried yet.</p>
-                      <p style={{ fontSize: 'var(--font-size-sm)', marginTop: '0.35rem' }}>
-                        Select a body and click <strong>Fetch</strong>.
+                      <div className="empty-hint-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+                          <circle cx="11" cy="11" r="8" />
+                          <path d="m21 21-4.35-4.35" />
+                        </svg>
+                      </div>
+                      <p style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>No live affairs queried</p>
+                      <p style={{ fontSize: 'var(--font-size-sm)', marginTop: '0.35rem', color: 'var(--text-muted)' }}>
+                        Select a body and click <strong>Search</strong>.
                       </p>
                     </div>
                   )}
@@ -452,8 +458,8 @@ export function App() {
                           {getText(affair.title)}
                         </h4>
                         <div className="affair-meta">
-                          {affair.begin_date && <span>📅 {affair.begin_date}</span>}
-                          {docsList.length > 0 && <span>📄 {docsList.length} docs</span>}
+                          {affair.begin_date && <span>{affair.begin_date}</span>}
+                          {docsList.length > 0 && <span>{docsList.length} docs</span>}
                         </div>
                         {docsList.length > 0 && (
                           <div className="docs-tag-list" style={{ marginTop: '0.4rem' }}>
@@ -467,7 +473,11 @@ export function App() {
                                   handleSelectDoc(doc);
                                 }}
                               >
-                                📄 {getText(doc.title) || `Doc ${doc.id}`}
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '4px', verticalAlign: '-1px' }}>
+                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                  <polyline points="14 2 14 8 20 8" />
+                                </svg>
+                                {getText(doc.title) || `Doc ${doc.id}`}
                               </button>
                             ))}
                           </div>
