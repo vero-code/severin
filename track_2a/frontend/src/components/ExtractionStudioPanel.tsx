@@ -62,11 +62,6 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
       <div className="studio-panel-header">
         <div className="panel-header-title">
           <span>Apertus Studio</span>
-          {provenanceReport && (
-            <span className="provenance-pill">
-              {Math.round(provenanceReport.provenance_score * 100)}%
-            </span>
-          )}
         </div>
 
         <div className="panel-header-actions">
@@ -215,31 +210,31 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
 
             {/* Header / Identity Card */}
             <div className="extracted-card">
-              <div className="extracted-card-header">
-                <h3>Affair Identity & Metadata</h3>
-                <div style={{ display: 'flex', gap: '0.4rem' }}>
-                  <span className="badge-body">{extractedAffair.canton_or_body}</span>
-                  <span className="citation-chip">{extractedAffair.level}</span>
-                  <span className="citation-chip">{extractedAffair.affair_type}</span>
-                </div>
-              </div>
-              <div style={{ fontSize: 'var(--font-size-md)', fontWeight: 600, color: '#ffffff', marginBottom: '0.4rem' }}>
+              <div className="affair-title-text">
                 {extractedAffair.title}
               </div>
-              {extractedAffair.title_provenance && (
+              <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                <span className="meta-tag meta-tag-canton">{extractedAffair.canton_or_body}</span>
+                <span className="meta-tag">{extractedAffair.level}</span>
+                <span className="meta-tag">{extractedAffair.affair_type}</span>
+                <span className="meta-tag">{extractedAffair.language.toUpperCase()}</span>
+              </div>
+              {extractedAffair.title_provenance && 
+               extractedAffair.title_provenance.source_text_snippet.trim() !== extractedAffair.title.trim() && (
                 <div className="citation-quote">
                   <strong>Page {extractedAffair.title_provenance.page_number}:</strong> "{extractedAffair.title_provenance.source_text_snippet}"
                 </div>
               )}
-              <div style={{ display: 'flex', gap: '1.25rem', marginTop: '0.75rem', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}>
-                {extractedAffair.submission_date && (
-                  <span>Submitted: <strong>{extractedAffair.submission_date}</strong></span>
-                )}
-                {extractedAffair.addressed_to && (
-                  <span>Addressed to: <strong>{extractedAffair.addressed_to}</strong></span>
-                )}
-                <span>Language: <strong>{extractedAffair.language.toUpperCase()}</strong></span>
-              </div>
+              {(extractedAffair.submission_date || extractedAffair.addressed_to) && (
+                <div style={{ display: 'flex', gap: '1.25rem', marginTop: '0.75rem', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}>
+                  {extractedAffair.submission_date && (
+                    <span>Submitted: <strong>{extractedAffair.submission_date}</strong></span>
+                  )}
+                  {extractedAffair.addressed_to && (
+                    <span>Addressed to: <strong>{extractedAffair.addressed_to}</strong></span>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Authors / Actors */}
@@ -248,24 +243,27 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                 <h3>Authors & Submitters ({extractedAffair.authors.length})</h3>
               </div>
               {extractedAffair.authors.length > 0 ? (
-                <div>
+                <div className="authors-list">
                   {extractedAffair.authors.map((author, idx) => (
                     <div key={idx} className="author-chip">
-                      <strong>{author.name}</strong>
-                      <span className="author-role">{author.role}</span>
-                      {author.party_or_fraction && (
-                        <span style={{ color: '#94a3b8', fontSize: 'var(--font-size-sm)' }}>({author.party_or_fraction})</span>
+                      <span className="author-name">{author.name}</span>
+                      {author.role && (
+                        <span className="author-role">{author.role}</span>
                       )}
+                      {author.party_or_fraction && (
+                        <span className="author-party">({author.party_or_fraction})</span>
+                      )}
+                      on
                       {author.provenance && (
-                        <span className="citation-chip">
-                          p. {author.provenance.page_number}
+                        <span className="citation-page-tag">
+                          page {author.provenance.page_number}
                         </span>
                       )}
                     </div>
                   ))}
                 </div>
               ) : (
-                <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)' }}>
+                <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', margin: 0 }}>
                   No individual authors specified (e.g. collective governmental submission).
                 </p>
               )}
@@ -277,15 +275,16 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                 <div className="extracted-card-header">
                   <h3>Context, Rationale & Provenance</h3>
                   {extractedAffair.rationale_provenance && (
-                    <span className="citation-chip">
-                      Page {extractedAffair.rationale_provenance.page_number} Verified
+                    <span className="badge-verified">
+                      ✓ Page {extractedAffair.rationale_provenance.page_number} Verified
                     </span>
                   )}
                 </div>
-                <p style={{ fontSize: 'var(--font-size-base)', color: '#cbd5e1', lineHeight: '1.6' }}>
+                <p className="context-body-text">
                   {extractedAffair.background_and_rationale}
                 </p>
-                {extractedAffair.rationale_provenance && (
+                {extractedAffair.rationale_provenance &&
+                 extractedAffair.rationale_provenance.source_text_snippet.trim() !== extractedAffair.background_and_rationale.trim() && (
                   <div className="citation-quote">
                     "{extractedAffair.rationale_provenance.source_text_snippet}"
                   </div>
@@ -304,7 +303,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                     <div className="qa-question">
                       <strong>Question {qa.question.number || (idx + 1)}:</strong> {qa.question.text}
                       {qa.question.provenance && (
-                        <span className="citation-chip" style={{ marginLeft: '0.5rem' }}>
+                        <span className="citation-page-tag" style={{ marginLeft: '0.5rem' }}>
                           p. {qa.question.provenance.page_number}
                         </span>
                       )}
@@ -313,7 +312,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                       <div className="qa-answer">
                         <strong>Executive Answer:</strong> {qa.answer.text}
                         {qa.answer.provenance && (
-                          <span className="citation-chip" style={{ marginLeft: '0.5rem' }}>
+                          <span className="citation-page-tag" style={{ marginLeft: '0.5rem' }}>
                             p. {qa.answer.provenance.page_number}
                           </span>
                         )}

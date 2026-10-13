@@ -128,8 +128,8 @@
   align-items: center;
   gap: 0.65rem;
   padding: 0.5rem 0.85rem;
-  background: rgba(16, 185, 129, 0.08);
-  border: 1px solid rgba(16, 185, 129, 0.28);
+  background: rgba(167, 243, 208, 0.08);
+  border: 1px solid rgba(167, 243, 208, 0.28);
   border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
   color: #E2E8F0;
@@ -145,7 +145,7 @@
 }
 
 .trust-strip-icon {
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.95rem;
   color: var(--accent-mint);
   display: inline-flex;
@@ -157,9 +157,8 @@
 }
 
 .trust-strip-score {
-  font-weight: 700;
+  font-weight: 600;
   color: var(--accent-mint);
-  font-family: var(--font-mono);
   letter-spacing: 0.01em;
 }
 
@@ -181,13 +180,12 @@
 
 .provenance-pill {
   background: rgba(167, 243, 208, 0.08);
-  border: 1px solid rgba(167, 243, 208, 0.25);
-  color: #a7f3d0;
-  font-family: var(--font-mono);
+  border: 1px solid rgba(167, 243, 208, 0.28);
+  color: var(--accent-mint);
   font-size: var(--font-size-sm);
-  font-weight: 600;
-  padding: 0.15rem 0.55rem;
-  border-radius: 9999px;
+  font-weight: 500;
+  padding: 0.18rem 0.55rem;
+  border-radius: var(--radius-sm);
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
@@ -206,69 +204,166 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .extracted-card-header h3 {
-  font-size: var(--font-size-md);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-secondary);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
+  color: #E2E8F0;
   display: flex;
   align-items: center;
   gap: 0.45rem;
+  margin: 0;
+}
+
+.meta-tag {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94A3B8;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  text-transform: capitalize;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.4;
+  box-sizing: border-box;
+}
+
+.meta-tag-canton {
+  background: rgba(167, 243, 208, 0.08);
+  border: 1px solid rgba(167, 243, 208, 0.28);
+  color: var(--accent-mint);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.affair-title-text {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #F8FAFC;
+  line-height: 1.5;
+  margin-bottom: 0.6rem;
+}
+
+.badge-verified {
+  background: rgba(167, 243, 208, 0.08);
+  border: 1px solid rgba(167, 243, 208, 0.28);
+  color: var(--accent-mint);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 0.18rem 0.55rem;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
 }
 
 .citation-chip {
-  background: var(--badge-bg);
-  border: 1px solid var(--badge-border);
-  color: var(--badge-text);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94A3B8;
   font-family: var(--font-mono);
-  font-size: var(--font-size-sm);
+  font-size: 11px;
   font-weight: 600;
-  padding: 0.15rem 0.5rem;
-  border-radius: 9999px;
+  padding: 0.12rem 0.45rem;
+  border-radius: 3px;
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
 }
 
+.citation-page-tag {
+  background: rgba(167, 243, 208, 0.08);
+  border: 1px solid rgba(167, 243, 208, 0.28);
+  color: var(--accent-mint);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
 .citation-quote {
-  background: var(--accent-coral-highlight);
-  border-left: 3px solid var(--accent-red);
-  padding: 0.5rem 0.75rem;
+  background: rgba(15, 23, 42, 0.7);
+  border-left: 3px solid #38BDF8;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 0.65rem 0.85rem;
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  font-size: var(--font-size-sm);
-  color: var(--text-primary);
+  font-size: 0.84rem;
+  color: #CBD5E1;
   font-style: italic;
-  margin-top: 0.6rem;
+  line-height: 1.55;
+  margin-top: 0.65rem;
+}
+
+.citation-quote strong {
+  color: #38BDF8;
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  margin-right: 0.35rem;
+}
+
+.context-body-text {
+  font-size: 0.9rem;
+  color: #CBD5E1;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.authors-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .author-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  background: #1F2633;
+  gap: 0.55rem;
+  background: #141923;
   border: 1px solid var(--border-color);
-  padding: 0.35rem 0.7rem;
+  padding: 0.35rem 0.65rem;
   border-radius: var(--radius-sm);
-  font-size: var(--font-size-sm);
-  margin-right: 0.5rem;
-  margin-bottom: 0.5rem;
+  font-size: 0.88rem;
 }
 
-.author-chip strong {
-  color: var(--text-primary);
+.author-name {
+  color: #F8FAFC;
+  font-weight: 600;
 }
 
 .author-role {
-  color: var(--badge-text);
-  font-size: var(--font-size-sm);
-  text-transform: uppercase;
+  color: #94A3B8;
+  font-size: 11px;
+  text-transform: capitalize;
+  letter-spacing: 0.02em;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.12rem 0.4rem;
+  border-radius: 3px;
+  font-weight: 500;
 }
+
+.author-party {
+  color: #94A3B8;
+  font-size: 12px;
+}
+
 
 .qa-card {
   background: rgba(18, 22, 31, 0.6);
