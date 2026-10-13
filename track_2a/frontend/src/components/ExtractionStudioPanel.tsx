@@ -186,7 +186,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
             </div>
             <h3 className="studio-hero-title">Grounded Extraction</h3>
             <p className="studio-hero-desc">
-              Conservative LLM analysis with verified Swiss citation provenance.
+              LLM analysis with verified Swiss citation provenance.
             </p>
           </div>
         )}

@@ -121,12 +121,11 @@
   align-items: center;
   justify-content: center;
   flex: 1;
-  height: 100%;
   min-height: 0;
-  padding: 3.5rem 2rem;
-  margin: auto;
-  max-width: 520px;
+  padding: 1.25rem;
+  box-sizing: border-box;
   text-align: center;
+  width: 100%;
 }
 
 .preview-hero-icon {

@@ -457,7 +457,7 @@ select.form-control option {
 }
 
 .sample-item-level {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-muted);
   text-transform: capitalize;
 }
