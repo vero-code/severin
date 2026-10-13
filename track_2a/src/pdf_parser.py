@@ -7,6 +7,7 @@ Track 2A - Hack Apertus 2026.
 
 import logging
 import re
+import unicodedata
 from pathlib import Path
 from typing import List, Dict, Any, Tuple, Optional, Union
 from pypdf import PdfReader
@@ -15,18 +16,91 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger("pdf_parser")
 
 
+def normalize_swiss_text(text: str) -> str:
+    """
+    Comprehensive normalization for Swiss multi-lingual parliamentary texts:
+    - Normalizes Unicode composition (NFC).
+    - Expands typographic ligatures (fi, fl, ff, ffi, ffl, oe, ae).
+    - Maps known legacy PDF Type 1 embedded font glyph artifacts (\x11 -> š, \x12 -> č, etc.).
+    - Strips unprintable control characters and zero-width spaces.
+    - Unifies typographic quotes and dashes.
+    """
+    if not text:
+        return ""
+
+    # 1. Unicode canonical composition
+    text = unicodedata.normalize("NFC", text)
+
+    # 2. Ligatures expansion
+    ligatures = {
+        "ﬁ": "fi",
+        "ﬂ": "fl",
+        "ﬀ": "ff",
+        "ﬃ": "ffi",
+        "ﬄ": "ffl",
+        "œ": "oe",
+        "Œ": "OE",
+        "æ": "ae",
+        "Æ": "AE",
+    }
+    for lig, rep in ligatures.items():
+        text = text.replace(lig, rep)
+
+    # 3. Known PDF Type 1 and Windows-1252 / CP1252 embedded font glyph artifacts
+    glyph_map = {
+        "\x11": "š",
+        "\x12": "č",
+        "\x13": "ć",
+        "\x14": "ž",
+        "\x15": "đ",
+        "\x8a": "Š",
+        "\x8c": "Œ",
+        "\x8e": "Ž",
+        "\x9a": "š",
+        "\x9c": "œ",
+        "\x9e": "ž",
+        "\x9f": "Ÿ",
+    }
+    for g, rep in glyph_map.items():
+        text = text.replace(g, rep)
+
+    # 4. Strip unprintable ASCII C0 control characters, zero-width spaces, and replacement glyphs
+    text = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f\u200b-\u200f\ufeff\ufffd]", "", text)
+
+    # 5. Typographic dashes & quotes
+    text = (
+        text.replace("–", "-")
+        .replace("—", "-")
+        .replace("«", '"')
+        .replace("»", '"')
+        .replace("“", '"')
+        .replace("”", '"')
+        .replace("„", '"')
+        .replace("’", "'")
+        .replace("‘", "'")
+    )
+
+    return text
+
+
+def fold_diacritics(text: str) -> str:
+    """Strip all diacritical marks (accents, umlauts, carons) for fallback search matching."""
+    if not text:
+        return ""
+    normalized = normalize_swiss_text(text)
+    return "".join(
+        c for c in unicodedata.normalize("NFD", normalized)
+        if unicodedata.category(c) != "Mn"
+    ).lower()
+
+
 def clean_page_text(text: str) -> str:
     """Normalize excessive whitespace and PDF glyph artifacts while preserving structure."""
     if not text:
         return ""
-    # Normalize non-breaking spaces, form feeds, soft hyphens, and replacement glyphs
-    cleaned = (
-        text.replace("\xa0", " ")
-        .replace("\x0c", "\n")
-        .replace("\xad", "")
-        .replace("\u200b", "")
-        .replace("\ufffd", "")
-    )
+    cleaned = normalize_swiss_text(text)
+    # Normalize non-breaking spaces and form feeds
+    cleaned = cleaned.replace("\xa0", " ").replace("\x0c", "\n")
     # Collapse 3+ consecutive newlines to double newline
     cleaned = re.sub(r"\n{3,}", "\n\n", cleaned)
     # Strip trailing/leading spaces on lines
@@ -143,8 +217,8 @@ def find_snippet_offsets(snippet: str, page_text: str) -> Tuple[Optional[int], O
         return idx, idx + len(snippet)
 
     # 2b. Regex-based flexible whitespace match (handles line-wraps and embedded glyph artifacts)
-    glyph_normalized = snippet.replace("\x11", "š").strip()
-    words = [re.escape(w) for w in glyph_normalized.split() if w]
+    norm_s = normalize_swiss_text(snippet).strip()
+    words = [re.escape(w) for w in norm_s.split() if w]
     if len(words) >= 2:
         try:
             pattern = r"\s+".join(words)
@@ -153,6 +227,78 @@ def find_snippet_offsets(snippet: str, page_text: str) -> Tuple[Optional[int], O
                 return m.start(), m.end()
         except re.error:
             pass
+
+    # 2c. Diacritic-folded fallback match (resilient to accents/umlauts dropped or corrupted by PDF drivers)
+    folded_s = fold_diacritics(norm_s)
+    folded_p = fold_diacritics(page_text)
+    f_words = [re.escape(w) for w in folded_s.split() if w]
+    if len(f_words) >= 2:
+        try:
+            pattern = r"\s+".join(f_words)
+            m = re.search(pattern, folded_p)
+            if m:
+                return m.start(), m.end()
+        except re.error:
+            pass
+
+        # 2d. Leading anchor words match (resilient to trailing typos or character drops by LLMs)
+        if len(f_words) >= 3:
+            for k in (min(4, len(f_words)), 3):
+                try:
+                    anchor_pattern = r"\s+".join(f_words[:k])
+                    m = re.search(anchor_pattern, folded_p)
+                    if m:
+                        start = m.start()
+                        semi_idx = page_text.find(";", start)
+                        if semi_idx != -1 and semi_idx - start <= len(snippet) + 30:
+                            end = semi_idx + 1
+                        else:
+                            end = min(len(page_text), start + len(snippet))
+                        return start, end
+                except re.error:
+                    pass
+
+        # 2e. Token cluster matching (resilient to internal letter drops like š->empty by LLMs)
+        delims = r'[;,.:"()\[\]{}]'
+        tokens = [re.sub(delims, '', t) for t in folded_s.split()]
+        tokens = [t for t in tokens if len(t) >= 3]
+        if len(tokens) >= 2:
+            token_positions = []
+            for t in tokens:
+                for m in re.finditer(re.escape(t), folded_p):
+                    token_positions.append((m.start(), m.end(), t))
+            if token_positions:
+                max_span = int(len(snippet) * 1.5) + 40
+                best_cluster = []
+                token_positions.sort(key=lambda x: x[0])
+                for i, start_pos in enumerate(token_positions):
+                    cluster = [start_pos]
+                    for next_pos in token_positions[i+1:]:
+                        if next_pos[0] - start_pos[0] <= max_span:
+                            if not any(x[2] == next_pos[2] for x in cluster):
+                                cluster.append(next_pos)
+                        else:
+                            break
+                    if len(cluster) > len(best_cluster):
+                        best_cluster = cluster
+                if len(best_cluster) >= max(2, int(len(tokens) * 0.5)):
+                    cluster_start = best_cluster[0][0]
+                    cluster_end = max(x[1] for x in best_cluster)
+                    lookback = page_text[max(0, cluster_start - 30):cluster_start]
+                    semi = lookback.rfind(';')
+                    if semi != -1:
+                        start = max(0, cluster_start - 30) + semi + 1
+                        while start < len(page_text) and page_text[start] in ' \t\n\r':
+                            start += 1
+                    else:
+                        start = cluster_start
+                    lookforward = page_text[cluster_end:min(len(page_text), cluster_end + 30)]
+                    semi_fwd = lookforward.find(';')
+                    if semi_fwd != -1:
+                        end = cluster_end + semi_fwd + 1
+                    else:
+                        end = cluster_end
+                    return start, end
 
     # 3. Normalized whitespace match
     def normalize_ws(s: str) -> str:

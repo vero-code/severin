@@ -15,11 +15,9 @@ interface ExtractionStudioPanelProps {
   onHoverProvenance?: (prov: ActiveProvenance | null) => void;
   onLocateProvenance?: (prov: ActiveProvenance) => void;
 }
+import { normalizeSwissText } from '../utils/textNormalization';
 
-export const normalizeGlyphs = (str?: string | null): string => {
-  if (!str) return '';
-  return str.replace(/\u0011/g, 'š').replace(/[\x00-\x1f\x7f-\x9f\u200b\ufffd]/g, '');
-};
+export const normalizeGlyphs = normalizeSwissText;
 
 export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
   isExtracting,

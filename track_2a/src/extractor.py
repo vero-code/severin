@@ -12,7 +12,7 @@ from typing import Dict, Any, List, Optional, Tuple, Union
 
 from .schema import (ParliamentaryAffair, Provenance)
 from .enums import ExtractionStatus
-from .pdf_parser import extract_pdf_pages, format_pages_for_llm, find_snippet_offsets
+from .pdf_parser import extract_pdf_pages, format_pages_for_llm, find_snippet_offsets, normalize_swiss_text
 from .cscs_client import CSCSInferenceClient
 from .prompts import (
     get_extraction_prompt_with_schema,
@@ -56,6 +56,7 @@ def verify_single_provenance(
     if start is not None and end is not None:
         provenance.char_start = start
         provenance.char_end = end
+        provenance.source_text_snippet = page_text[start:end]
         provenance.status = ExtractionStatus.EXTRACTED
         return provenance, True
 
@@ -71,6 +72,7 @@ def verify_single_provenance(
             provenance.page_number = other_page
             provenance.char_start = start
             provenance.char_end = end
+            provenance.source_text_snippet = other_text[start:end]
             provenance.status = ExtractionStatus.INFERRED
             return provenance, True
 
@@ -124,6 +126,13 @@ def verify_provenance(
     # 2. Authors
     for idx, author in enumerate(affair.authors):
         author.provenance = check(f"authors[{idx}].{author.name}", author.provenance)
+        if author.provenance and author.provenance.status in (ExtractionStatus.EXTRACTED, ExtractionStatus.INFERRED):
+            # Ground the author's name to the physical text in the PDF before comma/semicolon
+            raw_chunk = author.provenance.source_text_snippet.split(",")[0].split(";")[0].strip()
+            if ":" in raw_chunk:
+                raw_chunk = raw_chunk.split(":")[-1].strip()
+            if raw_chunk and 2 <= len(raw_chunk) <= 60 and not any(p in raw_chunk.lower() for p in ("depart", "direktion", "amt", "initiative")):
+                author.name = raw_chunk
 
     # 3. Questions & Answers
     for idx, qa in enumerate(affair.questions_and_answers):
@@ -179,7 +188,7 @@ def normalize_provenance(prov: Any) -> Optional[Dict[str, Any]]:
 
     clean_prov: Dict[str, Any] = {
         "page_number": page_num,
-        "source_text_snippet": snippet.replace("\x11", "š").strip(),
+        "source_text_snippet": normalize_swiss_text(snippet).strip(),
     }
     if "char_start" in prov and isinstance(prov["char_start"], int):
         clean_prov["char_start"] = prov["char_start"]
@@ -257,8 +266,14 @@ def normalize_extracted_dict(raw_dict: Any) -> Dict[str, Any]:
                 if not name and item.get("role"):
                     name = item.get("role")
                 if name:
+                    name_str = normalize_swiss_text(str(name)).strip()
+                    if ":" in name_str and any(p in name_str.lower() for p in ("initiativ", "komitee", "urheber", "unterzeichn", "bestehend", "berechtigt")):
+                        name_str = name_str.split(":")[-1].strip()
+                    if "," in name_str and any(char.isdigit() for char in name_str):
+                        name_str = name_str.split(",")[0].strip()
+
                     author_dict = {
-                        "name": str(name).replace("\x11", "š").strip(),
+                        "name": name_str,
                         "role": str(item.get("role", "author") or "author").strip().lower(),
                         "party_or_fraction": item.get("party_or_fraction") or item.get("party"),
                         "canton_or_municipality": item.get("canton_or_municipality") or item.get("canton"),

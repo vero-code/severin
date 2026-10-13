@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { getText } from '../constants';
+import { normalizeSwissText, foldDiacritics } from '../utils/textNormalization';
 import type { DocumentItem, PdfPageItem, ActiveProvenance } from '../types';
 
 interface DocumentStudioPanelProps {
@@ -87,10 +88,7 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
     }
 
     // 2. Whitespace-flexible and glyph-normalized regex match (handles line-wraps and embedded artifacts)
-    const normalizedSnippet = cleanSnippet
-      .replace(/\u0011/g, 'š')
-      .replace(/[\x00-\x1f\x7f-\x9f\u200b\ufffd]/g, '')
-      .trim();
+    const normalizedSnippet = normalizeSwissText(cleanSnippet).trim();
 
     const words = normalizedSnippet.split(/\s+/).filter(w => w.length > 0);
     if (words.length >= 2) {
@@ -139,13 +137,39 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
       } catch {}
     }
 
-    // 4. Target entity match from activeProvenance.field (e.g. "author: Weil Anjuška")
+    // 4. Diacritic-folded fallback match (resilient to accents/umlauts dropped or corrupted by PDF drivers)
+    const foldedPage = foldDiacritics(page.text);
+    const foldedSnippet = foldDiacritics(normalizedSnippet);
+    const foldedWords = foldedSnippet.split(/\s+/).filter(w => w.length > 0);
+    if (foldedWords.length >= 2) {
+      const escapedFolded = foldedWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+      try {
+        const foldedRegex = new RegExp(escapedFolded.join('\\s+'), 'i');
+        const match = foldedPage.match(foldedRegex);
+        if (match && typeof match.index === 'number') {
+          const matchStart = match.index;
+          const matchLen = match[0].length;
+          const before = page.text.slice(0, matchStart);
+          const matched = page.text.slice(matchStart, matchStart + matchLen);
+          const after = page.text.slice(matchStart + matchLen);
+          return (
+            <>
+              {before}
+              <mark className="provenance-highlight-mark" id="active-provenance-mark">
+                {matched}
+              </mark>
+              {after}
+            </>
+          );
+        }
+      } catch {}
+    }
+
+    // 5. Target entity match from activeProvenance.field (e.g. "author: Weil Anjuška")
     if (activeProvenance?.field) {
-      const entityName = activeProvenance.field
-        .replace(/^(?:author|title|question|answer|financial|event):\s*/i, '')
-        .replace(/\u0011/g, 'š')
-        .replace(/[\x00-\x1f\x7f-\x9f\u200b\ufffd]/g, '')
-        .trim();
+      const entityName = normalizeSwissText(
+        activeProvenance.field.replace(/^(?:author|title|question|answer|financial|event):\s*/i, '')
+      ).trim();
       if (entityName.length >= 3) {
         const entityWords = entityName.split(/\s+/).filter(w => w.length > 0);
         const escapedEntity = entityWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
@@ -167,6 +191,33 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
             );
           }
         } catch {}
+
+        // Entity fallback with diacritic folding
+        const foldedEntity = foldDiacritics(entityName);
+        const foldedEntityWords = foldedEntity.split(/\s+/).filter(w => w.length > 0);
+        if (foldedEntityWords.length >= 1) {
+          const escapedFoldedEntity = foldedEntityWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+          try {
+            const entityFoldedRegex = new RegExp(escapedFoldedEntity.join('\\s+'), 'i');
+            const match = foldedPage.match(entityFoldedRegex);
+            if (match && typeof match.index === 'number') {
+              const matchStart = match.index;
+              const matchLen = match[0].length;
+              const before = page.text.slice(0, matchStart);
+              const matched = page.text.slice(matchStart, matchStart + matchLen);
+              const after = page.text.slice(matchStart + matchLen);
+              return (
+                <>
+                  {before}
+                  <mark className="provenance-highlight-mark" id="active-provenance-mark">
+                    {matched}
+                  </mark>
+                  {after}
+                </>
+              );
+            }
+          } catch {}
+        }
       }
     }
 
