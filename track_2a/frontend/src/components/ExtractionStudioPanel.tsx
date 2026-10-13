@@ -10,6 +10,7 @@ interface ExtractionStudioPanelProps {
   provenanceReport: ProvenanceReport | null;
   showRawJson: boolean;
   onToggleRawJson: () => void;
+  onSetRawJson?: (show: boolean) => void;
 }
 
 export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
@@ -21,7 +22,41 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
   provenanceReport,
   showRawJson,
   onToggleRawJson,
+  onSetRawJson,
 }) => {
+  const [copiedJson, setCopiedJson] = React.useState(false);
+
+  const handleCopyJson = async () => {
+    if (!extractedAffair) return;
+    const jsonStr = JSON.stringify(extractedAffair, null, 2);
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(jsonStr);
+      } else {
+        const textArea = document.createElement('textarea');
+        textArea.value = jsonStr;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+      setCopiedJson(true);
+      setTimeout(() => setCopiedJson(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy JSON:', err);
+    }
+  };
+
+  const handleSelectView = (view: 'cards' | 'json') => {
+    if (view === 'cards' && showRawJson) {
+      if (onSetRawJson) onSetRawJson(false);
+      else onToggleRawJson();
+    } else if (view === 'json' && !showRawJson) {
+      if (onSetRawJson) onSetRawJson(true);
+      else onToggleRawJson();
+    }
+  };
+
   return (
     <div className="studio-extraction-panel">
       <div className="studio-panel-header">
@@ -37,20 +72,31 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
         <div className="panel-header-actions">
           {extractedAffair && (
             <>
+              <div className="preview-tabs">
+                <button
+                  type="button"
+                  className={`preview-tab-btn ${!showRawJson ? 'active' : ''}`}
+                  onClick={() => handleSelectView('cards')}
+                >
+                  Cards
+                </button>
+                <button
+                  type="button"
+                  className={`preview-tab-btn ${showRawJson ? 'active' : ''}`}
+                  onClick={() => handleSelectView('json')}
+                >
+                  JSON
+                </button>
+              </div>
+
               <button
+                type="button"
                 className={`btn-extract ${isExtracting ? 'btn-extract-loading' : ''}`}
                 onClick={onExtract}
                 disabled={isExtracting || !canExtract}
                 title="Re-run conservative extraction with Swiss-AI Apertus 1.5-8B on CSCS Alps Supercomputer"
               >
-                {isExtracting ? 'Extracting...' : 'Re-run Extraction'}
-              </button>
-              <button
-                className="doc-btn"
-                onClick={onToggleRawJson}
-                style={{ whiteSpace: 'nowrap', padding: '0.3rem 0.6rem', fontSize: 'var(--font-size-sm)' }}
-              >
-                {showRawJson ? 'Hide JSON' : 'JSON'}
+                {isExtracting ? 'Extracting...' : 'Re-run'}
               </button>
             </>
           )}
@@ -122,31 +168,40 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
         )}
 
         {!isExtracting && extractedAffair && (
-          <>
-            {/* Provenance Score Banner */}
-            <div className={`provenance-score-banner ${(provenanceReport?.provenance_score ?? 1.0) < 0.7 ? 'score-low' : ''}`}>
-              <div className="provenance-left">
-                <div className={`score-circle ${(provenanceReport?.provenance_score ?? 1.0) < 0.7 ? 'low' : ''}`}>
-                  {Math.round((provenanceReport?.provenance_score ?? 1.0) * 100)}%
+          showRawJson ? (
+            <div className="json-inspector-container">
+              <div className="json-inspector-toolbar">
+                <div className="json-toolbar-title">
+                  <span className="json-schema-badge">UnifiedAffairSchema</span>
+                  <span className="json-meta-hint">Valid Pydantic v2 • Deterministic T=0.0</span>
                 </div>
-                <div className="provenance-meta">
-                  <h4>
-                    <span>Conservative Grounded Extraction</span>
-                    <span className="badge-tag" style={{ marginLeft: '0.5rem' }}>Swiss-AI Apertus</span>
-                  </h4>
-                  <p>
-                    Strict conservative grounding • {provenanceReport?.verified_citations ?? 0} of {provenanceReport?.total_citations ?? 0} citations algorithmically verified against source text.
-                  </p>
-                </div>
+                <button
+                  type="button"
+                  className={`btn-copy-json ${copiedJson ? 'copied' : ''}`}
+                  onClick={handleCopyJson}
+                  title="Copy full JSON schema to clipboard"
+                >
+                  {copiedJson ? '✓ Copied' : 'Copy JSON'}
+                </button>
               </div>
-              <div className="provenance-stats">
-                <div className="provenance-stat-pill">
-                  Model: <strong>Apertus-8B</strong>
-                </div>
-                <div className="provenance-stat-pill">
-                  Hardware: <strong>Alps GH200</strong>
-                </div>
-              </div>
+              <pre className="json-inspector-pre">
+                {JSON.stringify(extractedAffair, null, 2)}
+              </pre>
+            </div>
+          ) : (
+            <>
+            {/* Provenance Trust Strip */}
+            <div className={`provenance-trust-strip ${(provenanceReport?.provenance_score ?? 1.0) < 0.7 ? 'strip-warning' : ''}`}>
+              <span className="trust-strip-icon">
+                {(provenanceReport?.provenance_score ?? 1.0) >= 0.7 ? '✓' : '⚠️'}
+              </span>
+              <span className="trust-strip-score">
+                {Math.round((provenanceReport?.provenance_score ?? 1.0) * 100)}% Grounded
+              </span>
+              <span className="trust-strip-separator">•</span>
+              <span className="trust-strip-text">
+                {provenanceReport?.verified_citations ?? 0} of {provenanceReport?.total_citations ?? 0} citations algorithmically verified against source PDF
+              </span>
             </div>
 
             {/* Header / Identity Card */}
@@ -339,18 +394,8 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
               </div>
             )}
 
-            {/* Raw JSON View */}
-            {showRawJson && (
-              <div className="extracted-card">
-                <div className="extracted-card-header">
-                  <h3>Unified Pydantic Schema JSON</h3>
-                </div>
-                <pre className="raw-json-box">
-                  {JSON.stringify(extractedAffair, null, 2)}
-                </pre>
-              </div>
-            )}
-          </>
+            </>
+          )
         )}
       </div>
     </div>

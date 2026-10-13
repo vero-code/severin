@@ -359,6 +359,7 @@ export function App() {
             provenanceReport={provenanceReport}
             showRawJson={showRawJson}
             onToggleRawJson={() => setShowRawJson(!showRawJson)}
+            onSetRawJson={setShowRawJson}
           />
         </div>
       </main>
