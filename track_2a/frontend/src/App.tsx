@@ -80,6 +80,7 @@ export function App() {
   const [isExtracting, setIsExtracting] = useState<boolean>(false);
   const [extractError, setExtractError] = useState<string | null>(null);
   const [showRawJson, setShowRawJson] = useState<boolean>(false);
+  const [copiedPage, setCopiedPage] = useState<number | null>(null);
 
   // Curated nationwide sample PDFs
   const [samplePdfs, setSamplePdfs] = useState<SamplePdfItem[]>([]);
@@ -165,6 +166,13 @@ export function App() {
     } finally {
       setIsParsing(false);
     }
+  };
+
+  const handleCopyPageText = (pageNum: number, text: string) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    setCopiedPage(pageNum);
+    setTimeout(() => setCopiedPage(null), 1500);
   };
 
   const handleExtract = async () => {
@@ -509,7 +517,7 @@ export function App() {
                     }
                   }}
                 >
-                  Text {parsedPages.length > 0 ? `(${parsedPages.length}p)` : ''}
+                  Text
                 </button>
               </div>
 
@@ -600,8 +608,27 @@ export function App() {
                   parsedPages.map((page) => (
                     <div key={page.page_number} className="parsed-page-card">
                       <div className="parsed-page-header">
-                        <span>PAGE {page.page_number}</span>
-                        <span>{page.char_count.toLocaleString()} characters</span>
+                        <div className="parsed-page-header-left">
+                          <span className="parsed-page-badge">PAGE {page.page_number}</span>
+                          <span className="parsed-page-chars">{page.char_count.toLocaleString()} characters</span>
+                        </div>
+                        <button
+                          className={`btn-copy-page ${copiedPage === page.page_number ? 'copied' : ''}`}
+                          onClick={() => handleCopyPageText(page.page_number, page.text)}
+                          title={copiedPage === page.page_number ? 'Copied to clipboard!' : 'Copy page text'}
+                          aria-label="Copy page text"
+                        >
+                          {copiedPage === page.page_number ? (
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                          ) : (
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                            </svg>
+                          )}
+                        </button>
                       </div>
                       <div className="parsed-page-content">
                         {page.text || <em style={{ color: 'var(--text-muted)' }}>[Empty or image-only page]</em>}

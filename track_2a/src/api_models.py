@@ -55,9 +55,14 @@ class TelemetryResponse(BaseModel):
 
 class ParsePdfPage(BaseModel):
     """Single PDF page text extraction model."""
-    page: int = Field(description="1-indexed physical page number")
+    page_number: int = Field(description="1-indexed physical page number")
     char_count: int = Field(description="Character count on this page")
     text: str = Field(description="Extracted raw page text")
+    page: Optional[int] = Field(default=None, description="Optional alias for physical page number")
+
+    def model_post_init(self, __context: Any) -> None:
+        if self.page is None:
+            self.page = self.page_number
 
 
 class ParsePdfResponse(BaseModel):
