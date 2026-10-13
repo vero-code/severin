@@ -34,6 +34,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
   onLocateProvenance,
 }) => {
   const [copiedJson, setCopiedJson] = React.useState(false);
+  const [copiedRationale, setCopiedRationale] = React.useState(false);
 
   const handleCopyJson = async () => {
     if (!extractedAffair) return;
@@ -56,6 +57,26 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
     }
   };
 
+  const handleCopyRationale = async () => {
+    if (!extractedAffair?.background_and_rationale) return;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(extractedAffair.background_and_rationale);
+      } else {
+        const textArea = document.createElement('textarea');
+        textArea.value = extractedAffair.background_and_rationale;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+      setCopiedRationale(true);
+      setTimeout(() => setCopiedRationale(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy rationale:', err);
+    }
+  };
+
   const handleSelectView = (view: 'cards' | 'json') => {
     if (view === 'cards' && showRawJson) {
       if (onSetRawJson) onSetRawJson(false);
@@ -66,13 +87,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
     }
   };
 
-  const hasSeparateHeader = Boolean(
-    extractedAffair?.title_provenance &&
-    extractedAffair.title_provenance.source_text_snippet.trim() !== extractedAffair.title.trim()
-  );
-  const isTitleInteractive = Boolean(
-    extractedAffair?.title_provenance && !hasSeparateHeader
-  );
+  const isTitleInteractive = Boolean(extractedAffair?.title_provenance);
 
   return (
     <div className="studio-extraction-panel">
@@ -83,35 +98,39 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
 
         <div className="panel-header-actions">
           {extractedAffair && (
-            <>
-              <div className="preview-tabs">
-                <button
-                  type="button"
-                  className={`preview-tab-btn ${!showRawJson ? 'active' : ''}`}
-                  onClick={() => handleSelectView('cards')}
-                >
-                  Cards
-                </button>
-                <button
-                  type="button"
-                  className={`preview-tab-btn ${showRawJson ? 'active' : ''}`}
-                  onClick={() => handleSelectView('json')}
-                >
-                  JSON
-                </button>
-              </div>
-
+            <div className="preview-tabs">
               <button
                 type="button"
-                className={`btn-extract ${isExtracting ? 'btn-extract-loading' : ''}`}
-                onClick={onExtract}
-                disabled={isExtracting || !canExtract}
-                title="Re-run conservative extraction with Swiss-AI Apertus 1.5-8B on CSCS Alps Supercomputer"
+                className={`preview-tab-btn ${!showRawJson ? 'active' : ''}`}
+                onClick={() => handleSelectView('cards')}
               >
-                {isExtracting ? 'Extracting...' : 'Re-run'}
+                Cards
               </button>
-            </>
+              <button
+                type="button"
+                className={`preview-tab-btn ${showRawJson ? 'active' : ''}`}
+                onClick={() => handleSelectView('json')}
+              >
+                JSON
+              </button>
+            </div>
           )}
+
+          <button
+            type="button"
+            className={`btn-extract ${isExtracting ? 'btn-extract-loading' : ''}`}
+            onClick={onExtract}
+            disabled={isExtracting || !canExtract}
+            title={canExtract ? 'Run conservative extraction with Swiss-AI Apertus 1.5-8B on CSCS Alps Supercomputer' : 'Select a document first'}
+          >
+            {isExtracting ? (
+              'Extracting...'
+            ) : extractedAffair ? (
+              'Re-run'
+            ) : (
+              'Extract with Apertus'
+            )}
+          </button>
         </div>
       </div>
 
@@ -169,13 +188,6 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
             <p className="studio-hero-desc">
               Conservative LLM analysis with verified Swiss citation provenance.
             </p>
-            <button
-              className="btn-extract"
-              onClick={onExtract}
-              disabled={!canExtract}
-            >
-              {canExtract ? 'Extract with Apertus 1.5-8B' : 'Select a document to run'}
-            </button>
           </div>
         )}
 
@@ -232,15 +244,19 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                 onMouseEnter={isTitleInteractive ? () => onHoverProvenance?.({
                   field: 'title',
                   page_number: extractedAffair.title_provenance!.page_number,
-                  snippet: extractedAffair.title_provenance!.source_text_snippet
+                  snippet: extractedAffair.title_provenance!.source_text_snippet,
+                  char_start: extractedAffair.title_provenance!.char_start,
+                  char_end: extractedAffair.title_provenance!.char_end,
                 }) : undefined}
                 onMouseLeave={isTitleInteractive ? () => onHoverProvenance?.(null) : undefined}
                 onClick={isTitleInteractive ? () => onLocateProvenance?.({
                   field: 'title',
                   page_number: extractedAffair.title_provenance!.page_number,
-                  snippet: extractedAffair.title_provenance!.source_text_snippet
+                  snippet: extractedAffair.title_provenance!.source_text_snippet,
+                  char_start: extractedAffair.title_provenance!.char_start,
+                  char_end: extractedAffair.title_provenance!.char_end,
                 }) : undefined}
-                title={isTitleInteractive ? 'Click to jump to title in document' : undefined}
+                title={isTitleInteractive ? 'Click to locate title in document (or hover to highlight)' : undefined}
               >
                 {extractedAffair.title}
               </div>
@@ -250,26 +266,6 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                 <span className="meta-tag">{extractedAffair.affair_type}</span>
                 <span className="meta-tag">{extractedAffair.language.toUpperCase()}</span>
               </div>
-              {hasSeparateHeader && (
-                <div style={{ marginTop: '0.65rem' }}>
-                  <span
-                    className="source-header-summary"
-                    onMouseEnter={() => onHoverProvenance?.({
-                      field: 'title',
-                      page_number: extractedAffair.title_provenance!.page_number,
-                      snippet: extractedAffair.title_provenance!.source_text_snippet
-                    })}
-                    onMouseLeave={() => onHoverProvenance?.(null)}
-                    title="Hover to highlight source header excerpt in document"
-                  >
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                    <span>Source header excerpt in PDF</span>
-                  </span>
-                </div>
-              )}
               {extractedAffair.questions_and_answers.length === 0 && !extractedAffair.background_and_rationale && (
                 <div className="document-nature-notice">
                   <svg className="notice-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -305,7 +301,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
               {extractedAffair.authors.length > 0 ? (
                 <div className="authors-directory">
                   {extractedAffair.authors.map((author, idx) => {
-                    const isDept = /Depart[e]?ment|D[eé]partement|Regierungsrat|Conseil d'?[EÉ]tat|Consiglio di Stato|Direktion|Direction|Dipartimento|Amt|Kanzlei|Staatsschreiberei|Chancellerie|Cancelleria/i.test(author.name);
+                    const isDept = /Depart[e]?ment|D[eé]partement|Regierungsr[aä]t(?:in)?|Conseil d'?[EÉ]tat|Consiglio di Stato|Direktion|Direction|Dipartimento|Amt|Kanzlei|Staatsschreiberei|Chancellerie|Cancelleria/i.test(author.name);
                     const displayRole = isDept ? 'Issuing Body' : (author.role || 'Author');
                     return (
                       <div
@@ -358,30 +354,52 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
             <div className="extracted-card">
               <div className="extracted-card-header">
                 <h3>Context & Rationale</h3>
-                {extractedAffair.background_and_rationale && extractedAffair.rationale_provenance && (
-                  <span
-                    className="citation-page-tag interactive-tag"
-                    style={{ cursor: 'pointer' }}
-                    onMouseEnter={() => onHoverProvenance?.({
-                      field: 'background_and_rationale',
-                      page_number: extractedAffair.rationale_provenance!.page_number,
-                      snippet: extractedAffair.rationale_provenance!.source_text_snippet,
-                      char_start: extractedAffair.rationale_provenance!.char_start,
-                      char_end: extractedAffair.rationale_provenance!.char_end,
-                    })}
-                    onMouseLeave={() => onHoverProvenance?.(null)}
-                    onClick={() => onLocateProvenance?.({
-                      field: 'background_and_rationale',
-                      page_number: extractedAffair.rationale_provenance!.page_number,
-                      snippet: extractedAffair.rationale_provenance!.source_text_snippet,
-                      char_start: extractedAffair.rationale_provenance!.char_start,
-                      char_end: extractedAffair.rationale_provenance!.char_end,
-                    })}
-                    title="Click to view citation (or hover to highlight)"
-                  >
-                    Page {extractedAffair.rationale_provenance.page_number}
-                  </span>
-                )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                  {extractedAffair.background_and_rationale && extractedAffair.rationale_provenance && (
+                    <span
+                      className="citation-page-tag interactive-tag"
+                      style={{ cursor: 'pointer' }}
+                      onMouseEnter={() => onHoverProvenance?.({
+                        field: 'background_and_rationale',
+                        page_number: extractedAffair.rationale_provenance!.page_number,
+                        snippet: extractedAffair.rationale_provenance!.source_text_snippet,
+                        char_start: extractedAffair.rationale_provenance!.char_start,
+                        char_end: extractedAffair.rationale_provenance!.char_end,
+                      })}
+                      onMouseLeave={() => onHoverProvenance?.(null)}
+                      onClick={() => onLocateProvenance?.({
+                        field: 'background_and_rationale',
+                        page_number: extractedAffair.rationale_provenance!.page_number,
+                        snippet: extractedAffair.rationale_provenance!.source_text_snippet,
+                        char_start: extractedAffair.rationale_provenance!.char_start,
+                        char_end: extractedAffair.rationale_provenance!.char_end,
+                      })}
+                      title="Click to view citation (or hover to highlight)"
+                    >
+                      Page {extractedAffair.rationale_provenance.page_number}
+                    </span>
+                  )}
+                  {extractedAffair.background_and_rationale && (
+                    <button
+                      type="button"
+                      className={`btn-copy-icon ${copiedRationale ? 'copied' : ''}`}
+                      onClick={handleCopyRationale}
+                      title={copiedRationale ? 'Copied to clipboard!' : 'Copy context & rationale'}
+                      aria-label="Copy context & rationale"
+                    >
+                      {copiedRationale ? (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      ) : (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                        </svg>
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
               {extractedAffair.background_and_rationale ? (
                 <p className="context-body-text">

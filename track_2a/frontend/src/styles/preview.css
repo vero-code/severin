@@ -366,6 +366,29 @@
   box-shadow: 0 0 6px var(--accent-mint);
 }
 
+.btn-clear-provenance {
+  background: transparent;
+  border: none;
+  color: var(--accent-mint);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0.2rem;
+  margin-left: 0.25rem;
+  border-radius: 3px;
+  opacity: 0.8;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-clear-provenance:hover {
+  opacity: 1;
+  background: rgba(167, 243, 208, 0.25);
+  transform: scale(1.1);
+}
+
 .parsed-page-card.page-highlighted {
   border-color: rgba(167, 243, 208, 0.5) !important;
   box-shadow: 0 0 16px rgba(167, 243, 208, 0.12);

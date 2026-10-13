@@ -170,6 +170,18 @@ export function App() {
   };
 
   const handleLocateProvenance = (prov: ActiveProvenance) => {
+    // If clicking the same item that's already selected, toggle it off!
+    if (
+      selectedProvenance &&
+      selectedProvenance.page_number === prov.page_number &&
+      selectedProvenance.field === prov.field &&
+      selectedProvenance.snippet === prov.snippet
+    ) {
+      setSelectedProvenance(null);
+      setHoveredProvenance(null);
+      return;
+    }
+
     setSelectedProvenance(prov);
     setHoveredProvenance(null);
 
@@ -194,6 +206,11 @@ export function App() {
         }, 2500);
       }, 20);
     }
+  };
+
+  const handleClearProvenance = () => {
+    setSelectedProvenance(null);
+    setHoveredProvenance(null);
   };
 
   const handleSetDocTab = (tab: 'pdf' | 'text') => {
@@ -410,6 +427,7 @@ export function App() {
             onCopyPageText={handleCopyPageText}
             activeProvenance={activeProvenance}
             textTabHint={textTabHint}
+            onClearProvenance={handleClearProvenance}
           />
 
           {/* Column 3: Apertus 1.5-8B Studio */}

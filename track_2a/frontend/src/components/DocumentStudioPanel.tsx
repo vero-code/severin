@@ -20,6 +20,7 @@ interface DocumentStudioPanelProps {
   onCopyPageText: (pageNum: number, text: string) => void;
   activeProvenance?: ActiveProvenance | null;
   textTabHint?: boolean;
+  onClearProvenance?: () => void;
 }
 
 export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
@@ -39,6 +40,7 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
   onCopyPageText,
   activeProvenance,
   textTabHint = false,
+  onClearProvenance,
 }) => {
   const hasDocument = Boolean(activeDoc?.url || currentSampleFile);
 
@@ -323,7 +325,21 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
             {docTab === 'text' && activeProvenance?.page_number && (
               <span className="provenance-active-indicator" title={activeProvenance.snippet || undefined}>
                 <span className="provenance-dot" />
-                Target: Page {activeProvenance.page_number}
+                Target
+                {onClearProvenance && (
+                  <button
+                    type="button"
+                    className="btn-clear-provenance"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onClearProvenance();
+                    }}
+                    title="Clear highlight"
+                    aria-label="Clear highlight"
+                  >
+                    ✕
+                  </button>
+                )}
               </span>
             )}
           </div>
