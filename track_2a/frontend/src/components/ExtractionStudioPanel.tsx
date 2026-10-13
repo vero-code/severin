@@ -213,7 +213,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
               <div className="affair-title-text">
                 {extractedAffair.title}
               </div>
-              <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
                 <span className="meta-tag meta-tag-canton">{extractedAffair.canton_or_body}</span>
                 <span className="meta-tag">{extractedAffair.level}</span>
                 <span className="meta-tag">{extractedAffair.affair_type}</span>
@@ -221,10 +221,30 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
               </div>
               {extractedAffair.title_provenance && 
                extractedAffair.title_provenance.source_text_snippet.trim() !== extractedAffair.title.trim() && (
-                <div className="citation-quote">
-                  <strong>Page {extractedAffair.title_provenance.page_number}:</strong> "{extractedAffair.title_provenance.source_text_snippet}"
+                <details className="source-header-details">
+                  <summary className="source-header-summary">
+                    <span>Source header excerpt in PDF (Page {extractedAffair.title_provenance.page_number})</span>
+                  </summary>
+                  <div className="citation-quote" style={{ marginTop: '0.4rem' }}>
+                    "{extractedAffair.title_provenance.source_text_snippet}"
+                  </div>
+                </details>
+              )}
+              {extractedAffair.questions_and_answers.length === 0 && !extractedAffair.background_and_rationale && (
+                <div className="document-nature-notice">
+                  <svg className="notice-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="16" x2="12" y2="12" />
+                    <line x1="12" y1="8" x2="12.01" y2="8" />
+                  </svg>
+                  <div className="notice-content">
+                    <strong>Administrative Annex / Consultation Document:</strong> Contains official addressee rosters and procedure metadata. No parliamentary questions or debate motions present in source.
+                  </div>
                 </div>
               )}
+
+
+              
               {(extractedAffair.submission_date || extractedAffair.addressed_to) && (
                 <div style={{ display: 'flex', gap: '1.25rem', marginTop: '0.75rem', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}>
                   {extractedAffair.submission_date && (
@@ -244,23 +264,27 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
               </div>
               {extractedAffair.authors.length > 0 ? (
                 <div className="authors-list">
-                  {extractedAffair.authors.map((author, idx) => (
-                    <div key={idx} className="author-chip">
-                      <span className="author-name">{author.name}</span>
-                      {author.role && (
-                        <span className="author-role">{author.role}</span>
-                      )}
-                      {author.party_or_fraction && (
-                        <span className="author-party">({author.party_or_fraction})</span>
-                      )}
-                      on
-                      {author.provenance && (
-                        <span className="citation-page-tag">
-                          page {author.provenance.page_number}
-                        </span>
-                      )}
-                    </div>
-                  ))}
+                  {extractedAffair.authors.map((author, idx) => {
+                    const isDept = /Depart[e]?ment|D[eé]partement|Regierungsrat|Conseil d'?[EÉ]tat|Consiglio di Stato|Direktion|Direction|Dipartimento|Amt|Kanzlei|Staatsschreiberei|Chancellerie|Cancelleria/i.test(author.name);
+                    const displayRole = isDept ? 'Issuing Body' : (author.role || 'Author');
+                    return (
+                      <div key={idx} className="author-chip">
+                        <span className="author-name">{author.name}</span>
+                        <span className="author-role">{displayRole}</span>
+                        {author.party_or_fraction && (
+                          <span className="author-party">({author.party_or_fraction})</span>
+                        )}
+                        {author.provenance && (
+                          <>
+                            <span style={{ color: 'var(--text-muted)', fontSize: '11px', margin: '0 0.15rem' }}>on</span>
+                            <span className="citation-page-tag">
+                              page {author.provenance.page_number}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
                 <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', margin: 0 }}>
@@ -270,27 +294,33 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
             </div>
 
             {/* Background & Rationale */}
-            {extractedAffair.background_and_rationale && (
-              <div className="extracted-card">
-                <div className="extracted-card-header">
-                  <h3>Context, Rationale & Provenance</h3>
-                  {extractedAffair.rationale_provenance && (
-                    <span className="badge-verified">
-                      ✓ Page {extractedAffair.rationale_provenance.page_number} Verified
-                    </span>
-                  )}
-                </div>
-                <p className="context-body-text">
-                  {extractedAffair.background_and_rationale}
-                </p>
-                {extractedAffair.rationale_provenance &&
-                 extractedAffair.rationale_provenance.source_text_snippet.trim() !== extractedAffair.background_and_rationale.trim() && (
-                  <div className="citation-quote">
-                    "{extractedAffair.rationale_provenance.source_text_snippet}"
-                  </div>
+            <div className="extracted-card">
+              <div className="extracted-card-header">
+                <h3>Context, Rationale & Provenance</h3>
+                {extractedAffair.rationale_provenance && (
+                  <span className="badge-verified">
+                    ✓ Page {extractedAffair.rationale_provenance.page_number} Verified
+                  </span>
                 )}
               </div>
-            )}
+              {extractedAffair.background_and_rationale ? (
+                <>
+                  <p className="context-body-text">
+                    {extractedAffair.background_and_rationale}
+                  </p>
+                  {extractedAffair.rationale_provenance &&
+                   extractedAffair.rationale_provenance.source_text_snippet.trim() !== extractedAffair.background_and_rationale.trim() && (
+                    <div className="citation-quote">
+                      "{extractedAffair.rationale_provenance.source_text_snippet}"
+                    </div>
+                  )}
+                </>
+              ) : (
+                <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', margin: 0 }}>
+                  No formal rationale or background text present in document (conservative extraction).
+                </p>
+              )}
+            </div>
 
             {/* Questions and Answers */}
             <div className="extracted-card">
@@ -385,7 +415,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                   <tbody>
                     {provenanceReport.details.map((d, i) => (
                       <tr key={i}>
-                        <td className="mono" style={{ color: '#38bdf8' }}>{d.field}</td>
+                        <td className="mono" style={{ color: 'var(--accent-mint)' }}>{d.field}</td>
                         <td className="mono">{d.page ? `Page ${d.page}` : '—'}</td>
                         <td>
                           <span className={d.verified ? 'status-pill-ok' : 'badge-tag'}>
