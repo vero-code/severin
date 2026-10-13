@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import severinLogo from './assets/logo.png';
 import { TelemetryBar } from './components/TelemetryBar';
 import { SourceSelectorPanel } from './components/SourceSelectorPanel';
@@ -38,7 +38,11 @@ export function App() {
   const [extractError, setExtractError] = useState<string | null>(null);
   const [showRawJson, setShowRawJson] = useState<boolean>(false);
   const [copiedPage, setCopiedPage] = useState<number | null>(null);
-  const [activeProvenance, setActiveProvenance] = useState<ActiveProvenance | null>(null);
+  const [selectedProvenance, setSelectedProvenance] = useState<ActiveProvenance | null>(null);
+  const [hoveredProvenance, setHoveredProvenance] = useState<ActiveProvenance | null>(null);
+  const activeProvenance = hoveredProvenance || selectedProvenance;
+  const [textTabHint, setTextTabHint] = useState<boolean>(false);
+  const hintTimeoutRef = useRef<any>(null);
 
   // Curated nationwide sample PDFs context
   const [samplePdfs, setSamplePdfs] = useState<SamplePdfItem[]>([]);
@@ -106,10 +110,14 @@ export function App() {
       setSampleProvenanceReport(null);
       setSampleParsedPages([]);
       setExtractError(null);
+      setSelectedProvenance(null);
+      setHoveredProvenance(null);
       return;
     }
 
     setSelectedSampleFile(filename);
+    setSelectedProvenance(null);
+    setHoveredProvenance(null);
     if (filename) {
       const sample = samplePdfs.find((s) => s.file_name === filename);
       if (sample) {
@@ -162,15 +170,44 @@ export function App() {
   };
 
   const handleLocateProvenance = (prov: ActiveProvenance) => {
-    setActiveProvenance(prov);
-    setDocTab('text');
-    if (parsedPages.length === 0) {
+    setSelectedProvenance(prov);
+    setHoveredProvenance(null);
+
+    // Pre-fetch text pages in the background if not yet loaded so they are instantly ready
+    if (parsedPages.length === 0 && (activeDoc?.url || currentSampleFile)) {
       fetchParsedText(activeDoc?.url);
+    }
+
+    if (docTab !== 'pdf') {
+      setDocTab('text');
+    } else {
+      // User clicked on a provenance badge/tag while in PDF mode!
+      // Gently glow the Text tab button so they know where to find the verified text excerpt
+      if (hintTimeoutRef.current) {
+        clearTimeout(hintTimeoutRef.current);
+      }
+      setTextTabHint(false);
+      setTimeout(() => {
+        setTextTabHint(true);
+        hintTimeoutRef.current = setTimeout(() => {
+          setTextTabHint(false);
+        }, 2500);
+      }, 20);
+    }
+  };
+
+  const handleSetDocTab = (tab: 'pdf' | 'text') => {
+    setDocTab(tab);
+    if (tab === 'text') {
+      setTextTabHint(false);
+      if (parsedPages.length === 0 && (activeDoc?.url || currentSampleFile)) {
+        fetchParsedText(activeDoc?.url);
+      }
     }
   };
 
   const handleHoverProvenance = (prov: ActiveProvenance | null) => {
-    setActiveProvenance(prov);
+    setHoveredProvenance(prov);
   };
 
   const handleExtract = async () => {
@@ -227,6 +264,8 @@ export function App() {
     setApiExtractedAffair(null);
     setApiProvenanceReport(null);
     setExtractError(null);
+    setSelectedProvenance(null);
+    setHoveredProvenance(null);
     if (docTab === 'text') {
       fetchParsedText(doc.url);
     }
@@ -356,7 +395,7 @@ export function App() {
           {/* Column 2: Source Document Studio */}
           <DocumentStudioPanel
             docTab={docTab}
-            onSetDocTab={setDocTab}
+            onSetDocTab={handleSetDocTab}
             activeDoc={activeDoc}
             currentSampleFile={currentSampleFile}
             currentBodyKey={currentBodyKey}
@@ -370,6 +409,7 @@ export function App() {
             copiedPage={copiedPage}
             onCopyPageText={handleCopyPageText}
             activeProvenance={activeProvenance}
+            textTabHint={textTabHint}
           />
 
           {/* Column 3: Apertus 1.5-8B Studio */}

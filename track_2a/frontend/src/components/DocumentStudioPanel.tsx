@@ -19,6 +19,7 @@ interface DocumentStudioPanelProps {
   copiedPage: number | null;
   onCopyPageText: (pageNum: number, text: string) => void;
   activeProvenance?: ActiveProvenance | null;
+  textTabHint?: boolean;
 }
 
 export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
@@ -37,22 +38,35 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
   copiedPage,
   onCopyPageText,
   activeProvenance,
+  textTabHint = false,
 }) => {
   const hasDocument = Boolean(activeDoc?.url || currentSampleFile);
 
   useEffect(() => {
-    if (activeProvenance?.page_number && docTab === 'text') {
-      const markEl = document.getElementById('active-provenance-mark');
-      if (markEl) {
-        markEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      } else {
+    if (activeProvenance?.page_number && docTab === 'text' && parsedPages.length > 0) {
+      const scrollToProvenance = () => {
+        const markEl = document.getElementById('active-provenance-mark');
+        if (markEl) {
+          markEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return true;
+        }
         const pageEl = document.getElementById(`parsed-page-${activeProvenance.page_number}`);
         if (pageEl) {
           pageEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return true;
         }
-      }
+        return false;
+      };
+
+      scrollToProvenance();
+      const t1 = setTimeout(scrollToProvenance, 60);
+      const t2 = setTimeout(scrollToProvenance, 250);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
     }
-  }, [activeProvenance, docTab]);
+  }, [activeProvenance, docTab, parsedPages]);
 
   const renderPageContent = (page: PdfPageItem) => {
     if (!page.text) {
@@ -60,10 +74,35 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
     }
 
     const isTargetPage = activeProvenance?.page_number === page.page_number;
+    if (!isTargetPage) {
+      return page.text;
+    }
+
+    // 0. Exact character offset slice if provided by backend provenance grounding
+    if (
+      typeof activeProvenance?.char_start === 'number' &&
+      typeof activeProvenance?.char_end === 'number' &&
+      activeProvenance.char_end > activeProvenance.char_start &&
+      activeProvenance.char_end <= page.text.length
+    ) {
+      const before = page.text.slice(0, activeProvenance.char_start);
+      const matched = page.text.slice(activeProvenance.char_start, activeProvenance.char_end);
+      const after = page.text.slice(activeProvenance.char_end);
+      return (
+        <>
+          {before}
+          <mark className="provenance-highlight-mark" id="active-provenance-mark">
+            {matched}
+          </mark>
+          {after}
+        </>
+      );
+    }
+
     const rawSnippet = activeProvenance?.snippet;
     const cleanSnippet = rawSnippet ? rawSnippet.replace(/\.{3,}$/, '').trim() : '';
 
-    if (!isTargetPage || !cleanSnippet || cleanSnippet.length < 3) {
+    if (!cleanSnippet || cleanSnippet.length < 3) {
       return page.text;
     }
 
@@ -221,6 +260,30 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
       }
     }
 
+    // 6. Long text phrase prefix match (resilient to subtle typography differences in long rationale sections)
+    if (words.length >= 5) {
+      const prefixWords = words.slice(0, 6);
+      const escapedPrefix = prefixWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+      try {
+        const prefixRegex = new RegExp(escapedPrefix.join('\\s+'), 'i');
+        const match = page.text.match(prefixRegex);
+        if (match && typeof match.index === 'number') {
+          const before = page.text.slice(0, match.index);
+          const matched = page.text.slice(match.index, Math.min(page.text.length, match.index + cleanSnippet.length));
+          const after = page.text.slice(Math.min(page.text.length, match.index + cleanSnippet.length));
+          return (
+            <>
+              {before}
+              <mark className="provenance-highlight-mark" id="active-provenance-mark">
+                {matched}
+              </mark>
+              {after}
+            </>
+          );
+        }
+      } catch {}
+    }
+
     return page.text;
   };
 
@@ -235,15 +298,17 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
             PDF
           </button>
           <button
-            className={`preview-tab-btn ${docTab === 'text' ? 'active' : ''}`}
+            className={`preview-tab-btn ${docTab === 'text' ? 'active' : ''} ${textTabHint ? 'tab-hint-glow' : ''}`}
             onClick={() => {
               onSetDocTab('text');
               if (parsedPages.length === 0) {
                 onFetchParsedText(activeDoc?.url);
               }
             }}
+            title={textTabHint ? 'Citation ready in Text view (click to view)' : undefined}
           >
             Text
+            {textTabHint && <span className="tab-hint-dot" />}
           </button>
         </div>
 
@@ -255,7 +320,7 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
             >
               [{currentBodyKey}] {getText(activeDoc.title) || `Doc #${activeDoc.id}`}
             </span>
-            {activeProvenance?.page_number && (
+            {docTab === 'text' && activeProvenance?.page_number && (
               <span className="provenance-active-indicator" title={activeProvenance.snippet || undefined}>
                 <span className="provenance-dot" />
                 Target: Page {activeProvenance.page_number}
@@ -300,9 +365,9 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
         </div>
       ) : docTab === 'pdf' ? (
         <iframe
-          key={activeProvenance?.page_number ? `pdf-p${activeProvenance.page_number}` : 'pdf-default'}
+          key={pdfProxyUrl || 'pdf-viewer'}
           title="PDF Document Preview"
-          src={`${pdfProxyUrl}#page=${activeProvenance?.page_number || 1}&view=FitH`}
+          src={`${pdfProxyUrl}#view=FitH`}
           className="preview-iframe"
         />
       ) : isParsing ? (

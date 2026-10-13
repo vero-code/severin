@@ -329,7 +329,7 @@
 }
 
 .source-header-summary {
-  cursor: pointer;
+  cursor: default;
   color: var(--text-secondary);
   user-select: none;
   font-size: var(--font-size-sm);

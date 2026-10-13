@@ -166,6 +166,8 @@ export interface ActiveProvenance {
   field?: string;
   page_number?: number | null;
   snippet?: string;
+  char_start?: number | null;
+  char_end?: number | null;
 }
 
 export interface ProvenanceReport {

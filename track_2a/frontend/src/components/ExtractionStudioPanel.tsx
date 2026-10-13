@@ -251,8 +251,8 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                 <span className="meta-tag">{extractedAffair.language.toUpperCase()}</span>
               </div>
               {hasSeparateHeader && (
-                <details className="source-header-details">
-                  <summary
+                <div style={{ marginTop: '0.65rem' }}>
+                  <span
                     className="source-header-summary"
                     onMouseEnter={() => onHoverProvenance?.({
                       field: 'title',
@@ -260,37 +260,15 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                       snippet: extractedAffair.title_provenance!.source_text_snippet
                     })}
                     onMouseLeave={() => onHoverProvenance?.(null)}
-                    onClick={(e) => {
-                      // Don't prevent details toggle, but also locate if requested
-                      if (e.target !== e.currentTarget) return;
-                    }}
-                    title="Hover or expand to inspect source header quote in document"
+                    title="Hover to highlight source header excerpt in document"
                   >
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                       <circle cx="12" cy="12" r="3" />
                     </svg>
                     <span>Source header excerpt in PDF</span>
-                  </summary>
-                  <div
-                    className="citation-quote interactive-quote"
-                    style={{ marginTop: '0.4rem' }}
-                    onMouseEnter={() => onHoverProvenance?.({
-                      field: 'title',
-                      page_number: extractedAffair.title_provenance!.page_number,
-                      snippet: extractedAffair.title_provenance!.source_text_snippet
-                    })}
-                    onMouseLeave={() => onHoverProvenance?.(null)}
-                    onClick={() => onLocateProvenance?.({
-                      field: 'title',
-                      page_number: extractedAffair.title_provenance!.page_number,
-                      snippet: extractedAffair.title_provenance!.source_text_snippet
-                    })}
-                    title="Click to jump to source header in document"
-                  >
-                    "{extractedAffair.title_provenance!.source_text_snippet}"
-                  </div>
-                </details>
+                  </span>
+                </div>
               )}
               {extractedAffair.questions_and_answers.length === 0 && !extractedAffair.background_and_rationale && (
                 <div className="document-nature-notice">
@@ -330,7 +308,26 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                     const isDept = /Depart[e]?ment|D[eé]partement|Regierungsrat|Conseil d'?[EÉ]tat|Consiglio di Stato|Direktion|Direction|Dipartimento|Amt|Kanzlei|Staatsschreiberei|Chancellerie|Cancelleria/i.test(author.name);
                     const displayRole = isDept ? 'Issuing Body' : (author.role || 'Author');
                     return (
-                      <div key={idx} className="author-dir-row">
+                      <div
+                        key={idx}
+                        className={`author-dir-row ${author.provenance ? 'interactive-author-row' : ''}`}
+                        onClick={author.provenance ? () => onLocateProvenance?.({
+                          field: `author: ${normalizeGlyphs(author.name)}`,
+                          page_number: author.provenance!.page_number,
+                          snippet: author.provenance!.source_text_snippet,
+                          char_start: author.provenance!.char_start,
+                          char_end: author.provenance!.char_end,
+                        }) : undefined}
+                        onMouseEnter={author.provenance ? () => onHoverProvenance?.({
+                          field: `author: ${normalizeGlyphs(author.name)}`,
+                          page_number: author.provenance!.page_number,
+                          snippet: author.provenance!.source_text_snippet,
+                          char_start: author.provenance!.char_start,
+                          char_end: author.provenance!.char_end,
+                        }) : undefined}
+                        onMouseLeave={author.provenance ? () => onHoverProvenance?.(null) : undefined}
+                        style={{ cursor: author.provenance ? 'pointer' : 'default' }}
+                      >
                         <div className="author-dir-left">
                           <span className="author-dir-idx">{idx + 1}.</span>
                           <span className="author-name">{normalizeGlyphs(author.name)}</span>
@@ -341,9 +338,6 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                         <div className="author-dir-right">
                           <span
                             className={`author-role ${author.provenance ? 'interactive-tag' : ''}`}
-                            onMouseEnter={author.provenance ? () => onHoverProvenance?.({ field: `author: ${normalizeGlyphs(author.name)}`, page_number: author.provenance!.page_number, snippet: author.provenance!.source_text_snippet }) : undefined}
-                            onMouseLeave={author.provenance ? () => onHoverProvenance?.(null) : undefined}
-                            onClick={author.provenance ? () => onLocateProvenance?.({ field: `author: ${normalizeGlyphs(author.name)}`, page_number: author.provenance!.page_number, snippet: author.provenance!.source_text_snippet }) : undefined}
                             title={author.provenance ? `Page ${author.provenance.page_number} • Click to jump to source in document` : undefined}
                           >
                             {displayRole}
@@ -367,33 +361,32 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                 {extractedAffair.background_and_rationale && extractedAffair.rationale_provenance && (
                   <span
                     className="citation-page-tag interactive-tag"
-                    onMouseEnter={() => onHoverProvenance?.({ field: 'background_and_rationale', page_number: extractedAffair.rationale_provenance!.page_number, snippet: extractedAffair.rationale_provenance!.source_text_snippet })}
+                    style={{ cursor: 'pointer' }}
+                    onMouseEnter={() => onHoverProvenance?.({
+                      field: 'background_and_rationale',
+                      page_number: extractedAffair.rationale_provenance!.page_number,
+                      snippet: extractedAffair.rationale_provenance!.source_text_snippet,
+                      char_start: extractedAffair.rationale_provenance!.char_start,
+                      char_end: extractedAffair.rationale_provenance!.char_end,
+                    })}
                     onMouseLeave={() => onHoverProvenance?.(null)}
-                    onClick={() => onLocateProvenance?.({ field: 'background_and_rationale', page_number: extractedAffair.rationale_provenance!.page_number, snippet: extractedAffair.rationale_provenance!.source_text_snippet })}
-                    title="Click to jump to citation in document"
+                    onClick={() => onLocateProvenance?.({
+                      field: 'background_and_rationale',
+                      page_number: extractedAffair.rationale_provenance!.page_number,
+                      snippet: extractedAffair.rationale_provenance!.source_text_snippet,
+                      char_start: extractedAffair.rationale_provenance!.char_start,
+                      char_end: extractedAffair.rationale_provenance!.char_end,
+                    })}
+                    title="Click to view citation (or hover to highlight)"
                   >
                     Page {extractedAffair.rationale_provenance.page_number}
                   </span>
                 )}
               </div>
               {extractedAffair.background_and_rationale ? (
-                <>
-                  <p className="context-body-text">
-                    {extractedAffair.background_and_rationale}
-                  </p>
-                  {extractedAffair.rationale_provenance &&
-                   extractedAffair.rationale_provenance.source_text_snippet.trim() !== extractedAffair.background_and_rationale.trim() && (
-                    <div
-                      className="citation-quote interactive-quote"
-                      onMouseEnter={() => onHoverProvenance?.({ field: 'background_and_rationale', page_number: extractedAffair.rationale_provenance!.page_number, snippet: extractedAffair.rationale_provenance!.source_text_snippet })}
-                      onMouseLeave={() => onHoverProvenance?.(null)}
-                      onClick={() => onLocateProvenance?.({ field: 'background_and_rationale', page_number: extractedAffair.rationale_provenance!.page_number, snippet: extractedAffair.rationale_provenance!.source_text_snippet })}
-                      title="Click to jump to citation in document"
-                    >
-                      "{extractedAffair.rationale_provenance.source_text_snippet}"
-                    </div>
-                  )}
-                </>
+                <p className="context-body-text">
+                  {extractedAffair.background_and_rationale}
+                </p>
               ) : (
                 <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', margin: 0 }}>
                   No background or rationale text present in this document.
@@ -412,7 +405,22 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                     <div className="qa-question">
                       <strong>Question {qa.question.number || (idx + 1)}:</strong> {qa.question.text}
                       {qa.question.provenance && (
-                        <span className="citation-page-tag" style={{ marginLeft: '0.5rem' }}>
+                        <span
+                          className="citation-page-tag interactive-tag"
+                          style={{ marginLeft: '0.5rem', cursor: 'pointer' }}
+                          onMouseEnter={() => onHoverProvenance?.({
+                            field: `question #${qa.question.number || (idx + 1)}`,
+                            page_number: qa.question.provenance!.page_number,
+                            snippet: qa.question.provenance!.source_text_snippet,
+                          })}
+                          onMouseLeave={() => onHoverProvenance?.(null)}
+                          onClick={() => onLocateProvenance?.({
+                            field: `question #${qa.question.number || (idx + 1)}`,
+                            page_number: qa.question.provenance!.page_number,
+                            snippet: qa.question.provenance!.source_text_snippet,
+                          })}
+                          title="Click to locate question citation"
+                        >
                           p. {qa.question.provenance.page_number}
                         </span>
                       )}
@@ -421,7 +429,22 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                       <div className="qa-answer">
                         <strong>Executive Answer:</strong> {qa.answer.text}
                         {qa.answer.provenance && (
-                          <span className="citation-page-tag" style={{ marginLeft: '0.5rem' }}>
+                          <span
+                            className="citation-page-tag interactive-tag"
+                            style={{ marginLeft: '0.5rem', cursor: 'pointer' }}
+                            onMouseEnter={() => onHoverProvenance?.({
+                              field: `answer #${qa.question.number || (idx + 1)}`,
+                              page_number: qa.answer!.provenance!.page_number,
+                              snippet: qa.answer!.provenance!.source_text_snippet,
+                            })}
+                            onMouseLeave={() => onHoverProvenance?.(null)}
+                            onClick={() => onLocateProvenance?.({
+                              field: `answer #${qa.question.number || (idx + 1)}`,
+                              page_number: qa.answer!.provenance!.page_number,
+                              snippet: qa.answer!.provenance!.source_text_snippet,
+                            })}
+                            title="Click to locate answer citation"
+                          >
                             p. {qa.answer.provenance.page_number}
                           </span>
                         )}
@@ -459,7 +482,22 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                         </div>
                       )}
                       {fin.provenance && (
-                        <div className="citation-chip" style={{ marginTop: '0.4rem' }}>
+                        <div
+                          className="citation-chip interactive-tag"
+                          style={{ marginTop: '0.4rem', cursor: 'pointer' }}
+                          onMouseEnter={() => onHoverProvenance?.({
+                            field: `finance: ${fin.purpose || 'credit'}`,
+                            page_number: fin.provenance!.page_number,
+                            snippet: fin.provenance!.source_text_snippet,
+                          })}
+                          onMouseLeave={() => onHoverProvenance?.(null)}
+                          onClick={() => onLocateProvenance?.({
+                            field: `finance: ${fin.purpose || 'credit'}`,
+                            page_number: fin.provenance!.page_number,
+                            snippet: fin.provenance!.source_text_snippet,
+                          })}
+                          title="Click to locate financial citation"
+                        >
                           p. {fin.provenance.page_number}
                         </div>
                       )}

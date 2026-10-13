@@ -122,6 +122,17 @@ def verify_provenance(
     # 1. Document-level Provenance
     affair.title_provenance = check("title", affair.title_provenance)
     affair.rationale_provenance = check("background_and_rationale", affair.rationale_provenance)
+    if affair.rationale_provenance and affair.background_and_rationale and affair.rationale_provenance.char_start is not None:
+        p_text = pages_map.get(affair.rationale_provenance.page_number, "")
+        if p_text:
+            end_tokens = [w.strip(";,.:\"()[]{}") for w in affair.background_and_rationale.split() if len(w.strip(";,.:\"()[]{}")) >= 3][-4:]
+            if len(end_tokens) >= 2:
+                end_pat = r"\s+".join(re.escape(w) for w in end_tokens)
+                end_m = re.search(end_pat, p_text[affair.rationale_provenance.char_start:], re.IGNORECASE)
+                if end_m:
+                    full_end = affair.rationale_provenance.char_start + end_m.end()
+                    affair.rationale_provenance.char_end = full_end
+                    affair.rationale_provenance.source_text_snippet = p_text[affair.rationale_provenance.char_start:full_end]
 
     # 2. Authors
     for idx, author in enumerate(affair.authors):
@@ -195,7 +206,8 @@ def normalize_provenance(prov: Any) -> Optional[Dict[str, Any]]:
     if "char_end" in prov and isinstance(prov["char_end"], int):
         clean_prov["char_end"] = prov["char_end"]
     if "status" in prov and isinstance(prov["status"], str):
-        clean_prov["status"] = prov["status"].lower()
+        st = prov["status"].strip().lower()
+        clean_prov["status"] = st if st in {"extracted", "inferred", "unverified", "not_found"} else "extracted"
     return clean_prov
 
 
@@ -209,7 +221,7 @@ def normalize_extracted_dict(raw_dict: Any) -> Dict[str, Any]:
     - Normalizes financial details and procedural events.
     - Cleans provenance fields (dropping empty snippets, ensuring page_number >= 1).
     - Maps and standardizes enums (level, affair_type, language, canton_or_body).
-    - Strips JSON Schema meta properties ($schema, $defs, etc.).
+    - Strips JSON Schema meta properties ($schema, $defs, etc.) and extraneous root keys.
     """
     if not isinstance(raw_dict, dict):
         return raw_dict
@@ -224,8 +236,12 @@ def normalize_extracted_dict(raw_dict: Any) -> Dict[str, Any]:
             raw_dict = inner
             break
 
-    # 2. Strip schema meta keys that violate extra='forbid'
-    for meta_key in ("$schema", "$id", "$defs", "definitions", "_comment", "properties"):
+    # 2. Strip schema meta keys and stray LLM envelope keys that violate extra='forbid'
+    for meta_key in (
+        "$schema", "$id", "$defs", "definitions", "_comment", "properties",
+        "extraction_status", "status", "confidence", "notes", "comments",
+        "summary", "explanation", "metadata", "reasoning", "type"
+    ):
         raw_dict.pop(meta_key, None)
 
     # 3. Hoist root affair fields that small LLMs occasionally dump inside authors[0]
@@ -443,6 +459,13 @@ def normalize_extracted_dict(raw_dict: Any) -> Dict[str, Any]:
 
     if not raw_dict.get("title"):
         raw_dict["title"] = "Untitled Parliamentary Affair"
+
+    # 10. Strip extraneous root keys not defined in ParliamentaryAffair schema (enforces strict extra="forbid" compliance)
+    valid_fields = set(ParliamentaryAffair.model_fields.keys())
+    for k in list(raw_dict.keys()):
+        if k not in valid_fields:
+            logger.info(f"Defensive normalizer stripped extraneous model key: '{k}'={raw_dict[k]!r}")
+            raw_dict.pop(k, None)
 
     return raw_dict
 
