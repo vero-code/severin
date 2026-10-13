@@ -44,6 +44,13 @@ export const SourceSelectorPanel: React.FC<SourceSelectorPanelProps> = ({
   onSelectDoc,
   onSetSelectedApiAffairId,
 }) => {
+  const [hasSearched, setHasSearched] = React.useState(false);
+
+  const handleSearch = () => {
+    setHasSearched(true);
+    onFetchAffairs();
+  };
+
   return (
     <div className="studio-selector-panel">
       <div className="studio-panel-header">
@@ -115,7 +122,7 @@ export const SourceSelectorPanel: React.FC<SourceSelectorPanelProps> = ({
                 placeholder="e.g. Klima, Budget, Spital"
                 value={searchQuery}
                 onChange={(e) => onSetSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && onFetchAffairs()}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               />
             </div>
 
@@ -131,7 +138,7 @@ export const SourceSelectorPanel: React.FC<SourceSelectorPanelProps> = ({
               <button
                 className="btn-primary"
                 style={{ padding: '0.55rem 0.5rem', fontSize: 'var(--font-size-sm)', fontWeight: 600 }}
-                onClick={onFetchAffairs}
+                onClick={handleSearch}
                 disabled={loading}
               >
                 {loading ? 'Searching...' : 'Search'}
@@ -143,15 +150,12 @@ export const SourceSelectorPanel: React.FC<SourceSelectorPanelProps> = ({
             {affairs.length === 0 && !loading && (
               <div className="sidebar-empty-hint">
                 <div className="empty-hint-icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
                     <circle cx="11" cy="11" r="8" />
                     <path d="m21 21-4.35-4.35" />
                   </svg>
                 </div>
-                <p style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>No live affairs queried</p>
-                <p style={{ fontSize: 'var(--font-size-sm)', marginTop: '0.35rem', color: 'var(--text-muted)' }}>
-                  Select a body and click <strong>Search</strong>.
-                </p>
+                <p>{hasSearched ? 'No affairs found' : 'Click Search to query affairs'}</p>
               </div>
             )}
             {affairs.map((affair) => {

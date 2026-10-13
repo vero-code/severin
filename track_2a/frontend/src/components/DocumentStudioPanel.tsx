@@ -89,18 +89,26 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
       {/* Document Content Area */}
       {!hasDocument ? (
         <div className="preview-placeholder">
-          <svg fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-            />
-          </svg>
-          <p>
+          <div className="preview-hero-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
+            </svg>
+          </div>
+          <h3 className="preview-hero-title">Document Inspection Studio</h3>
+          <p className="preview-hero-desc">
             {controlMode === 'api'
-              ? 'Search OpenParlData and select an affair document to preview'
-              : 'Select a cantonal sample to preview document'}
+              ? 'Search OpenParlData and select an affair document to preview PDF and page text.'
+              : 'Select a cantonal sample to preview PDF and extracted page text.'}
           </p>
+          <div className="studio-hero-features">
+            <span className="studio-feature-pill">Embedded PDF Viewer</span>
+            <span className="studio-feature-pill">pypdf Text Extraction</span>
+            <span className="studio-feature-pill">1-Click Text Copy</span>
+          </div>
         </div>
       ) : docTab === 'pdf' ? (
         <iframe
@@ -142,18 +150,21 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
         </div>
       ) : parsedPages.length === 0 ? (
         <div className="preview-placeholder">
-          <svg fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-            />
-          </svg>
-          <p>Text has not been extracted for this document yet.</p>
+          <div className="preview-hero-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
+            </svg>
+          </div>
+          <h3 className="preview-hero-title">Parse Document Text</h3>
+          <p className="preview-hero-desc">Extract raw text pages and character counts with pypdf.</p>
           {activeDoc?.url && (
             <button
               className="btn-primary"
-              style={{ marginTop: '0.4rem' }}
+              style={{ marginTop: '0.85rem' }}
               onClick={() => onFetchParsedText(activeDoc.url)}
             >
               Extract Page Text
