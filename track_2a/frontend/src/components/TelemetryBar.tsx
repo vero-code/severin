@@ -158,9 +158,9 @@ export function TelemetryBar({ telemetry }: TelemetryBarProps) {
           <span className="metric-item">
             <strong>{telemetry?.total_requests ?? 1}</strong> req
           </span>
-          <span className="metric-sep">•</span>
+          <span className="metric-sep" />
           <span className="metric-item">
-            ⚡ <strong>{telemetry?.average_latency_seconds ?? 0.15}s</strong> avg
+            <strong>{telemetry?.average_latency_seconds ?? 0.15}s</strong> avg
           </span>
           <span className="metric-chevron">{isOpen ? '▲' : '▼'}</span>
         </div>
@@ -172,7 +172,7 @@ export function TelemetryBar({ telemetry }: TelemetryBarProps) {
           <div className="popover-header">
             <div className="popover-title">
               <div className="popover-title-text">
-                <span>CSCS Inference Telemetry</span>
+                <span>CSCS Client-Side Telemetry</span>
                 <span className="popover-model-badge">🏔️ Alps Supercomputer Endpoint</span>
               </div>
               <div className="popover-header-actions">
@@ -325,7 +325,7 @@ export function TelemetryBar({ telemetry }: TelemetryBarProps) {
           {/* Structured Summary Footer */}
           <div className="popover-footer">
             <div className="footer-meta">
-              <span className="footer-tag">Official CSCS Academia Tariff</span>
+              <span className="footer-tag">Official Academia Tariff</span>
               {selectedCanton !== 'ALL' && (
                 <span className="footer-filter-pill">
                   Showing {sortedHistory.length} of {rawHistory.length} runs ({selectedCanton})

@@ -46,7 +46,8 @@
   --text-muted: #A0AEC0;
   --text-pdf: #1A202C;
 
-  /* 4. Status Indicators */
+  /* 4. Status Indicators & Accents */
+  --accent-mint: #a7f3d0;
   --accent-green: #38A169;
   --accent-green-bright: #48BB78;
   --accent-green-subtle: rgba(56, 161, 105, 0.18);
