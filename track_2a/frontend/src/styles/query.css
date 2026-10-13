@@ -240,7 +240,7 @@ select.form-control option {
 
 .sidebar-tab-btn {
   background: transparent;
-  border: 1px solid transparent;
+  border: var(--btn-border-width) solid transparent;
   color: var(--text-secondary);
   padding: 0.28rem 0.5rem;
   border-radius: 6px;
@@ -267,13 +267,14 @@ select.form-control option {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 
-.sidebar-sample-section {
+.sidebar-sample-section,
+.sidebar-api-section {
   display: flex;
   flex-direction: column;
   flex: 1;
   overflow: hidden;
-  padding: 0.65rem 0.85rem;
-  gap: 0.5rem;
+  padding: 0.75rem 0.85rem;
+  gap: 0.65rem;
 }
 
 .sample-counter-badge {
@@ -301,6 +302,7 @@ select.form-control option {
   flex: 1;
   padding-right: 0.35rem;
   margin-top: 0.25rem;
+  scrollbar-gutter: stable;
 }
 
 .sample-item-card {
@@ -360,15 +362,6 @@ select.form-control option {
   white-space: nowrap;
 }
 
-.sidebar-api-section {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  overflow: hidden;
-  padding: 0.85rem 1rem;
-  gap: 0.75rem;
-}
-
 .sidebar-api-form {
   display: flex;
   flex-direction: column;
@@ -404,6 +397,7 @@ select.form-control option {
   overflow-y: auto;
   flex: 1;
   padding-right: 0.35rem;
+  scrollbar-gutter: stable;
 }
 
 .sidebar-empty-hint {

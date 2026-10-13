@@ -61,8 +61,7 @@ export function App() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchMode, setSearchMode] = useState<string>('partial');
   const [affairs, setAffairs] = useState<ParliamentaryAffairItem[]>([]);
-  const [selectedAffairId, setSelectedAffairId] = useState<number | null>(null);
-  const [activeDoc, setActiveDoc] = useState<DocumentItem | null>(null);
+  const [selectedApiAffairId, setSelectedApiAffairId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -70,24 +69,43 @@ export function App() {
   const [controlMode, setControlMode] = useState<'samples' | 'api'>('samples');
   // Document panel tab: 'pdf' | 'text'
   const [docTab, setDocTab] = useState<'pdf' | 'text'>('pdf');
-  const [parsedPages, setParsedPages] = useState<PdfPageItem[]>([]);
   const [isParsing, setIsParsing] = useState<boolean>(false);
   const [parseError, setParseError] = useState<string | null>(null);
 
   // Apertus Extraction & Provenance states
-  const [extractedAffair, setExtractedAffair] = useState<ExtractedAffair | null>(null);
-  const [provenanceReport, setProvenanceReport] = useState<ProvenanceReport | null>(null);
   const [isExtracting, setIsExtracting] = useState<boolean>(false);
   const [extractError, setExtractError] = useState<string | null>(null);
   const [showRawJson, setShowRawJson] = useState<boolean>(false);
   const [copiedPage, setCopiedPage] = useState<number | null>(null);
 
-  // Curated nationwide sample PDFs
+  // Curated nationwide sample PDFs context
   const [samplePdfs, setSamplePdfs] = useState<SamplePdfItem[]>([]);
   const [selectedSampleFile, setSelectedSampleFile] = useState<string>('');
+  const [sampleDoc, setSampleDoc] = useState<DocumentItem | null>(null);
+  const [sampleAffairId, setSampleAffairId] = useState<number | null>(null);
+  const [sampleCanton, setSampleCanton] = useState<string>('ZH');
+  const [sampleExtractedAffair, setSampleExtractedAffair] = useState<ExtractedAffair | null>(null);
+  const [sampleProvenanceReport, setSampleProvenanceReport] = useState<ProvenanceReport | null>(null);
+  const [sampleParsedPages, setSampleParsedPages] = useState<PdfPageItem[]>([]);
+
+  // Live OpenParlData API context
+  const [apiDoc, setApiDoc] = useState<DocumentItem | null>(null);
+  const [apiExtractedAffair, setApiExtractedAffair] = useState<ExtractedAffair | null>(null);
+  const [apiProvenanceReport, setApiProvenanceReport] = useState<ProvenanceReport | null>(null);
+  const [apiParsedPages, setApiParsedPages] = useState<PdfPageItem[]>([]);
 
   // CSCS Telemetry state
   const [telemetry, setTelemetry] = useState<TelemetryStats | null>(null);
+
+  // Derived active context based on selected mode
+  const isSampleMode = controlMode === 'samples';
+  const activeDoc = isSampleMode ? sampleDoc : apiDoc;
+  const currentSampleFile = isSampleMode ? selectedSampleFile : '';
+  const currentBodyKey = isSampleMode ? sampleCanton : bodyKey;
+  const currentAffairId = isSampleMode ? sampleAffairId : selectedApiAffairId;
+  const extractedAffair = isSampleMode ? sampleExtractedAffair : apiExtractedAffair;
+  const provenanceReport = isSampleMode ? sampleProvenanceReport : apiProvenanceReport;
+  const parsedPages = isSampleMode ? sampleParsedPages : apiParsedPages;
 
   const fetchTelemetry = async () => {
     try {
@@ -112,38 +130,38 @@ export function App() {
       .then((r) => (r.ok ? r.json() : []))
       .then((data: SamplePdfItem[]) => {
         setSamplePdfs(data);
-        if (data && data.length > 0 && !selectedSampleFile) {
-          const sample = data[0];
-          setSelectedSampleFile(sample.file_name);
-          setBodyKey(sample.body_key);
-          setActiveDoc({
-            id: sample.doc_id,
-            title: getText(sample.title) || sample.doc_name,
-            url: sample.url,
-            type: 'pdf',
-          });
-          setSelectedAffairId(sample.affair_id);
-        }
       })
       .catch(() => {});
   }, []);
 
   const handleSelectSample = (filename: string) => {
+    if (selectedSampleFile === filename) {
+      // Toggle off / deselect to return to clean state
+      setSelectedSampleFile('');
+      setSampleDoc(null);
+      setSampleAffairId(null);
+      setSampleExtractedAffair(null);
+      setSampleProvenanceReport(null);
+      setSampleParsedPages([]);
+      setExtractError(null);
+      return;
+    }
+
     setSelectedSampleFile(filename);
     if (filename) {
       const sample = samplePdfs.find((s) => s.file_name === filename);
       if (sample) {
-        setBodyKey(sample.body_key);
-        setActiveDoc({
+        setSampleCanton(sample.body_key);
+        setSampleDoc({
           id: sample.doc_id,
           title: getText(sample.title) || sample.doc_name,
           url: sample.url,
           type: 'pdf',
         });
-        setSelectedAffairId(sample.affair_id);
-        setExtractedAffair(null);
-        setProvenanceReport(null);
-        setParsedPages([]);
+        setSampleAffairId(sample.affair_id);
+        setSampleExtractedAffair(null);
+        setSampleProvenanceReport(null);
+        setSampleParsedPages([]);
         setExtractError(null);
         setDocTab('pdf');
       }
@@ -160,7 +178,11 @@ export function App() {
         throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
       }
       const data: ParsePdfResponse = await resp.json();
-      setParsedPages(data.pages || []);
+      if (isSampleMode) {
+        setSampleParsedPages(data.pages || []);
+      } else {
+        setApiParsedPages(data.pages || []);
+      }
     } catch (err: any) {
       setParseError(err.message || 'Failed to extract text from PDF');
     } finally {
@@ -176,13 +198,13 @@ export function App() {
   };
 
   const handleExtract = async () => {
-    if (!activeDoc?.url && !selectedSampleFile) return;
+    if (!activeDoc?.url && !currentSampleFile) return;
     setIsExtracting(true);
     setExtractError(null);
     try {
-      const payload = selectedSampleFile
-        ? { sample_file: selectedSampleFile, canton_hint: bodyKey, affair_id_hint: selectedAffairId }
-        : { url: activeDoc?.url, canton_hint: bodyKey, affair_id_hint: selectedAffairId };
+      const payload = currentSampleFile
+        ? { sample_file: currentSampleFile, canton_hint: currentBodyKey, affair_id_hint: currentAffairId }
+        : { url: activeDoc?.url, canton_hint: currentBodyKey, affair_id_hint: currentAffairId };
 
       const resp = await fetch('/api/extract', {
         method: 'POST',
@@ -196,8 +218,14 @@ export function App() {
       }
 
       const data = await resp.json();
-      setExtractedAffair(data.affair);
-      setProvenanceReport(data.provenance_report);
+      if (isSampleMode) {
+        setSampleExtractedAffair(data.affair);
+        setSampleProvenanceReport(data.provenance_report);
+      } else {
+        setApiExtractedAffair(data.affair);
+        setApiProvenanceReport(data.provenance_report);
+      }
+
       if (data.telemetry) {
         setTelemetry(data.telemetry);
       } else {
@@ -211,11 +239,11 @@ export function App() {
   };
 
   const handleSelectDoc = (doc: DocumentItem) => {
-    setActiveDoc(doc);
-    setParsedPages([]);
+    setApiDoc(doc);
+    setApiParsedPages([]);
     setParseError(null);
-    setExtractedAffair(null);
-    setProvenanceReport(null);
+    setApiExtractedAffair(null);
+    setApiProvenanceReport(null);
     setExtractError(null);
     if (docTab === 'text') {
       fetchParsedText(doc.url);
@@ -245,19 +273,19 @@ export function App() {
       setAffairs(dataList);
       if (dataList.length > 0) {
         const firstWithDocs = dataList.find((a: any) => getAffairDocs(a).length > 0) || dataList[0];
-        setSelectedAffairId(firstWithDocs.id);
+        setSelectedApiAffairId(firstWithDocs.id);
         const docs = getAffairDocs(firstWithDocs);
         if (docs.length > 0) {
           handleSelectDoc(docs[0]);
           setDocTab('pdf');
         } else {
-          setActiveDoc(null);
-          setParsedPages([]);
+          setApiDoc(null);
+          setApiParsedPages([]);
         }
       } else {
-        setSelectedAffairId(null);
-        setActiveDoc(null);
-        setParsedPages([]);
+        setSelectedApiAffairId(null);
+        setApiDoc(null);
+        setApiParsedPages([]);
       }
     } catch (err: any) {
       setErrorMsg(err.message || 'Failed to fetch affairs');
@@ -267,23 +295,22 @@ export function App() {
   };
 
   const handleSelectAffair = (affair: ParliamentaryAffairItem) => {
-    setSelectedAffairId(affair.id);
-    setSelectedSampleFile('');
+    setSelectedApiAffairId(affair.id);
     const docs = getAffairDocs(affair);
     if (docs.length > 0) {
       handleSelectDoc(docs[0]);
       setDocTab('pdf');
     } else {
-      setActiveDoc(null);
-      setParsedPages([]);
+      setApiDoc(null);
+      setApiParsedPages([]);
     }
   };
 
   // Computed safe PDF filename and proxy URL for current document
   const rawTitle = activeDoc ? getText(activeDoc.title) || `doc_${activeDoc.id}` : 'document';
   const cleanTitle = rawTitle.replace(/[^a-zA-Z0-9_\u00C0-\u017F\u0400-\u04FF\s.-]/g, '_').trim().replace(/\s+/g, '_');
-  const safePdfFilename = `${bodyKey ? `${bodyKey}_` : ''}${cleanTitle.toLowerCase().endsWith('.pdf') ? cleanTitle : `${cleanTitle}.pdf`}`;
-  const pdfProxyUrl = `/api/pdf-proxy/${encodeURIComponent(safePdfFilename)}?url=${encodeURIComponent(activeDoc?.url || '')}${selectedSampleFile ? `&sample=${encodeURIComponent(selectedSampleFile)}` : ''}`;
+  const safePdfFilename = `${currentBodyKey ? `${currentBodyKey}_` : ''}${cleanTitle.toLowerCase().endsWith('.pdf') ? cleanTitle : `${cleanTitle}.pdf`}`;
+  const pdfProxyUrl = `/api/pdf-proxy/${encodeURIComponent(safePdfFilename)}?url=${encodeURIComponent(activeDoc?.url || '')}${currentSampleFile ? `&sample=${encodeURIComponent(currentSampleFile)}` : ''}`;
 
   return (
     <div className="app-container">
@@ -448,7 +475,7 @@ export function App() {
                     </div>
                   )}
                   {affairs.map((affair) => {
-                    const isSelected = affair.id === selectedAffairId;
+                    const isSelected = affair.id === selectedApiAffairId;
                     const docsList = getAffairDocs(affair);
                     return (
                       <div
@@ -477,7 +504,7 @@ export function App() {
                                 className="doc-btn"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setSelectedAffairId(affair.id);
+                                  setSelectedApiAffairId(affair.id);
                                   handleSelectDoc(doc);
                                 }}
                               >
@@ -527,7 +554,7 @@ export function App() {
                     className="doc-info-badge"
                     title={getText(activeDoc.title) || `Doc #${activeDoc.id}`}
                   >
-                    [{bodyKey}] {getText(activeDoc.title) || `Doc #${activeDoc.id}`}
+                    [{currentBodyKey}] {getText(activeDoc.title) || `Doc #${activeDoc.id}`}
                   </span>
                 </div>
               )}
@@ -549,7 +576,7 @@ export function App() {
 
             {/* Document Content Area */}
             {docTab === 'pdf' && (
-              activeDoc?.url || selectedSampleFile ? (
+              activeDoc?.url || currentSampleFile ? (
                 <iframe
                   title="PDF Document Preview"
                   src={`${pdfProxyUrl}#view=FitH`}
@@ -564,7 +591,11 @@ export function App() {
                       d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
                     />
                   </svg>
-                  <p>Select a canton sample or query OpenParlData to preview document</p>
+                  <p>
+                    {controlMode === 'api'
+                      ? 'Search OpenParlData and select an affair document to preview'
+                      : 'Select a cantonal sample to preview document'}
+                  </p>
                 </div>
               )
             )}
@@ -657,7 +688,7 @@ export function App() {
                     <button
                       className={`btn-extract ${isExtracting ? 'btn-extract-loading' : ''}`}
                       onClick={handleExtract}
-                      disabled={isExtracting || (!activeDoc?.url && !selectedSampleFile)}
+                      disabled={isExtracting || (!activeDoc?.url && !currentSampleFile)}
                       title="Re-run conservative extraction with Swiss-AI Apertus 1.5-8B on CSCS Alps Supercomputer"
                     >
                       {isExtracting ? 'Extracting...' : 'Re-run Extraction'}
@@ -728,7 +759,7 @@ export function App() {
                   <button
                     className="btn-extract"
                     onClick={handleExtract}
-                    disabled={!activeDoc?.url && !selectedSampleFile}
+                    disabled={!activeDoc?.url && !currentSampleFile}
                   >
                     Run Apertus 1.5-8B Extraction
                   </button>
