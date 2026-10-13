@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ExtractedAffair, ProvenanceReport } from '../types';
+import type { ExtractedAffair, ProvenanceReport, ActiveProvenance } from '../types';
 
 interface ExtractionStudioPanelProps {
   isExtracting: boolean;
@@ -11,6 +11,9 @@ interface ExtractionStudioPanelProps {
   showRawJson: boolean;
   onToggleRawJson: () => void;
   onSetRawJson?: (show: boolean) => void;
+  activeProvenance?: ActiveProvenance | null;
+  onHoverProvenance?: (prov: ActiveProvenance | null) => void;
+  onLocateProvenance?: (prov: ActiveProvenance) => void;
 }
 
 export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
@@ -23,6 +26,9 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
   showRawJson,
   onToggleRawJson,
   onSetRawJson,
+  activeProvenance,
+  onHoverProvenance,
+  onLocateProvenance,
 }) => {
   const [copiedJson, setCopiedJson] = React.useState(false);
 
@@ -281,7 +287,13 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                         {author.provenance && (
                           <>
                             <span style={{ color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)', margin: '0 0.15rem' }}>on</span>
-                            <span className="citation-page-tag">
+                            <span
+                              className="citation-page-tag interactive-tag"
+                              onMouseEnter={() => onHoverProvenance?.({ field: `author: ${author.name}`, page_number: author.provenance!.page_number, snippet: author.provenance!.source_text_snippet })}
+                              onMouseLeave={() => onHoverProvenance?.(null)}
+                              onClick={() => onLocateProvenance?.({ field: `author: ${author.name}`, page_number: author.provenance!.page_number, snippet: author.provenance!.source_text_snippet })}
+                              title="Click to jump to citation in document"
+                            >
                               page {author.provenance.page_number}
                             </span>
                           </>
@@ -302,7 +314,13 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
               <div className="extracted-card-header">
                 <h3>Context & Rationale</h3>
                 {extractedAffair.background_and_rationale && extractedAffair.rationale_provenance && (
-                  <span className="citation-page-tag">
+                  <span
+                    className="citation-page-tag interactive-tag"
+                    onMouseEnter={() => onHoverProvenance?.({ field: 'background_and_rationale', page_number: extractedAffair.rationale_provenance!.page_number, snippet: extractedAffair.rationale_provenance!.source_text_snippet })}
+                    onMouseLeave={() => onHoverProvenance?.(null)}
+                    onClick={() => onLocateProvenance?.({ field: 'background_and_rationale', page_number: extractedAffair.rationale_provenance!.page_number, snippet: extractedAffair.rationale_provenance!.source_text_snippet })}
+                    title="Click to jump to citation in document"
+                  >
                     page {extractedAffair.rationale_provenance.page_number}
                   </span>
                 )}
@@ -314,7 +332,13 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                   </p>
                   {extractedAffair.rationale_provenance &&
                    extractedAffair.rationale_provenance.source_text_snippet.trim() !== extractedAffair.background_and_rationale.trim() && (
-                    <div className="citation-quote">
+                    <div
+                      className="citation-quote interactive-quote"
+                      onMouseEnter={() => onHoverProvenance?.({ field: 'background_and_rationale', page_number: extractedAffair.rationale_provenance!.page_number, snippet: extractedAffair.rationale_provenance!.source_text_snippet })}
+                      onMouseLeave={() => onHoverProvenance?.(null)}
+                      onClick={() => onLocateProvenance?.({ field: 'background_and_rationale', page_number: extractedAffair.rationale_provenance!.page_number, snippet: extractedAffair.rationale_provenance!.source_text_snippet })}
+                      title="Click to jump to citation in document"
+                    >
                       "{extractedAffair.rationale_provenance.source_text_snippet}"
                     </div>
                   )}
@@ -407,32 +431,56 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                     {provenanceReport.verified_citations} / {provenanceReport.total_citations} Verified
                   </span>
                 </div>
-                <table className="telemetry-table" style={{ marginTop: '0.5rem' }}>
-                  <thead>
-                    <tr>
-                      <th>Field</th>
-                      <th>Page</th>
-                      <th>Status</th>
-                      <th>Quote Snippet</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {provenanceReport.details.map((d, i) => (
-                      <tr key={i}>
-                        <td className="mono" style={{ color: 'var(--accent-mint)' }}>{d.field}</td>
-                        <td className="mono">{d.page ? `Page ${d.page}` : '—'}</td>
-                        <td>
-                          <span className={d.verified ? 'status-pill-ok' : 'badge-tag'}>
-                            {d.status.toUpperCase()}
-                          </span>
-                        </td>
-                        <td style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}>
-                          {d.snippet_preview}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <div className="audit-log-list">
+                  {provenanceReport.details.map((d, i) => {
+                    const isAuthor = d.field.startsWith('authors[');
+                    const isQA = d.field.startsWith('questions_and_answers[');
+                    const displayField = isAuthor
+                      ? d.field.replace(/^authors\[\d+\]\.?/, 'author · ')
+                      : isQA
+                      ? d.field.replace(/^questions_and_answers\[(\d+)\]\./, 'q&a #$1 · ')
+                      : d.field;
+
+                    const isHighlighted = (activeProvenance?.field && activeProvenance.field === d.field) ||
+                      (activeProvenance?.page_number === d.page && Boolean(activeProvenance?.snippet) && activeProvenance?.snippet === d.snippet_preview);
+
+                    return (
+                      <div
+                        key={i}
+                        className={`audit-log-item ${isHighlighted ? 'active-highlight' : ''}`}
+                        onMouseEnter={() => onHoverProvenance?.({ field: d.field, page_number: d.page, snippet: d.snippet_preview })}
+                        onMouseLeave={() => onHoverProvenance?.(null)}
+                        onClick={() => onLocateProvenance?.({ field: d.field, page_number: d.page, snippet: d.snippet_preview })}
+                        title="Click to jump to source in document (PDF / Text)"
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <div className="audit-item-header">
+                          <div className="audit-field-info">
+                            <span className="audit-field-name">{displayField}</span>
+                            {d.page && (
+                              <span className="citation-page-tag">
+                                page {d.page}
+                              </span>
+                            )}
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                            <span className={`audit-status-badge ${d.verified ? 'audit-status-ok' : 'audit-status-fail'}`}>
+                              {d.verified ? '✓ VERIFIED' : d.status.toUpperCase()}
+                            </span>
+                            <span className="audit-locate-icon" title="Jump to source in document">
+                              ↗
+                            </span>
+                          </div>
+                        </div>
+                        {d.snippet_preview && (
+                          <div className="audit-item-quote">
+                            "{d.snippet_preview}"
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
 

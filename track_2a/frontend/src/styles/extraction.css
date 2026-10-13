@@ -390,6 +390,7 @@
 
 .author-name {
   color: #F8FAFC;
+  font-size: var(--font-size-base);
   font-weight: 600;
 }
 
@@ -620,3 +621,132 @@
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.35; transform: scale(0.85); }
 }
+
+/* ============================================================================
+   Provenance Verification Audit Log Feed
+   ============================================================================ */
+.audit-log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 0.5rem;
+}
+
+.audit-log-item {
+  background: rgba(20, 25, 35, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.audit-log-item:hover {
+  background: rgba(26, 32, 45, 0.85);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.audit-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.audit-field-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.audit-field-name {
+  color: var(--accent-mint);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.audit-status-badge {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
+.audit-status-ok {
+  background: rgba(167, 243, 208, 0.1);
+  color: var(--accent-mint);
+  border: 1px solid rgba(167, 243, 208, 0.3);
+}
+
+.audit-status-fail {
+  background: rgba(239, 68, 68, 0.12);
+  color: #F87171;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+.audit-item-quote {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  background: rgba(0, 0, 0, 0.25);
+  border-left: 2px solid var(--accent-mint);
+  padding: 0.4rem 0.65rem;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  line-height: 1.45;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.audit-log-item.active-highlight {
+  background: rgba(167, 243, 208, 0.08);
+  border-color: rgba(167, 243, 208, 0.45);
+  box-shadow: 0 0 16px rgba(167, 243, 208, 0.15);
+}
+
+.audit-locate-icon {
+  color: var(--accent-mint);
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0.6;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.audit-log-item:hover .audit-locate-icon {
+  opacity: 1;
+  transform: translate(2px, -2px);
+}
+
+.citation-page-tag.interactive-tag {
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.citation-page-tag.interactive-tag:hover {
+  background: rgba(167, 243, 208, 0.22);
+  border-color: var(--accent-mint);
+  color: #FFFFFF;
+  transform: translateY(-1px);
+  box-shadow: 0 0 8px rgba(167, 243, 208, 0.35);
+}
+
+.citation-quote.interactive-quote {
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.citation-quote.interactive-quote:hover {
+  background: rgba(167, 243, 208, 0.08);
+  border-left-color: #FFFFFF;
+}
+
+

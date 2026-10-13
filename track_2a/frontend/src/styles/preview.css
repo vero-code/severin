@@ -287,3 +287,62 @@
   word-break: break-word;
   background-color: var(--bg-secondary);
 }
+
+/* ============================================================================
+   Interactive Provenance Highlighting in Document Viewer
+   ============================================================================ */
+.provenance-active-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(167, 243, 208, 0.1);
+  border: 1px solid rgba(167, 243, 208, 0.35);
+  color: var(--accent-mint);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-sm);
+  margin-left: 0.6rem;
+  animation: pulse-border 2s infinite ease-in-out;
+}
+
+.provenance-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-mint);
+  box-shadow: 0 0 6px var(--accent-mint);
+}
+
+.parsed-page-card.page-highlighted {
+  border-color: rgba(167, 243, 208, 0.5) !important;
+  box-shadow: 0 0 16px rgba(167, 243, 208, 0.12);
+  transition: all 0.25s ease;
+}
+
+.parsed-page-active-tag {
+  background: rgba(167, 243, 208, 0.12);
+  color: var(--accent-mint);
+  border: 1px solid rgba(167, 243, 208, 0.35);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+}
+
+.provenance-highlight-mark {
+  background: rgba(167, 243, 208, 0.28) !important;
+  color: #FFFFFF !important;
+  border-bottom: 2px solid var(--accent-mint);
+  border-radius: 3px;
+  padding: 0.1rem 0.3rem;
+  box-shadow: 0 0 14px rgba(167, 243, 208, 0.5);
+  font-weight: 600;
+  display: inline;
+}
+
+@keyframes pulse-border {
+  0%, 100% { border-color: rgba(167, 243, 208, 0.35); }
+  50% { border-color: rgba(167, 243, 208, 0.7); }
+}
+

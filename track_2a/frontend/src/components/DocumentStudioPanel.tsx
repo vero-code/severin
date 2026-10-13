@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { getText } from '../constants';
-import type { DocumentItem, PdfPageItem } from '../types';
+import type { DocumentItem, PdfPageItem, ActiveProvenance } from '../types';
 
 interface DocumentStudioPanelProps {
   docTab: 'pdf' | 'text';
@@ -14,9 +14,10 @@ interface DocumentStudioPanelProps {
   parsedPages: PdfPageItem[];
   isParsing: boolean;
   parseError: string | null;
-  onFetchParsedText: (url: string) => void;
+  onFetchParsedText: (url?: string) => void;
   copiedPage: number | null;
   onCopyPageText: (pageNum: number, text: string) => void;
+  activeProvenance?: ActiveProvenance | null;
 }
 
 export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
@@ -34,8 +35,79 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
   onFetchParsedText,
   copiedPage,
   onCopyPageText,
+  activeProvenance,
 }) => {
   const hasDocument = Boolean(activeDoc?.url || currentSampleFile);
+
+  useEffect(() => {
+    if (activeProvenance?.page_number && docTab === 'text') {
+      const markEl = document.getElementById('active-provenance-mark');
+      if (markEl) {
+        markEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        const pageEl = document.getElementById(`parsed-page-${activeProvenance.page_number}`);
+        if (pageEl) {
+          pageEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    }
+  }, [activeProvenance, docTab]);
+
+  const renderPageContent = (page: PdfPageItem) => {
+    if (!page.text) {
+      return <em style={{ color: 'var(--text-muted)' }}>[Empty or image-only page]</em>;
+    }
+
+    const isTargetPage = activeProvenance?.page_number === page.page_number;
+    const rawSnippet = activeProvenance?.snippet;
+    const cleanSnippet = rawSnippet ? rawSnippet.replace(/\.{3,}$/, '').trim() : '';
+
+    if (!isTargetPage || !cleanSnippet || cleanSnippet.length < 3) {
+      return page.text;
+    }
+
+    const lowerText = page.text.toLowerCase();
+    const lowerSnippet = cleanSnippet.toLowerCase();
+    const matchIdx = lowerText.indexOf(lowerSnippet);
+
+    if (matchIdx !== -1) {
+      const before = page.text.slice(0, matchIdx);
+      const matched = page.text.slice(matchIdx, matchIdx + cleanSnippet.length);
+      const after = page.text.slice(matchIdx + cleanSnippet.length);
+      return (
+        <>
+          {before}
+          <mark className="provenance-highlight-mark" id="active-provenance-mark">
+            {matched}
+          </mark>
+          {after}
+        </>
+      );
+    }
+
+    // Try matching prefix if snippet had slight line-wrap/whitespace variations
+    const prefix = cleanSnippet.slice(0, Math.min(28, cleanSnippet.length)).trim().toLowerCase();
+    if (prefix.length >= 8) {
+      const pIdx = lowerText.indexOf(prefix);
+      if (pIdx !== -1) {
+        const before = page.text.slice(0, pIdx);
+        const matchLen = Math.min(cleanSnippet.length, page.text.length - pIdx);
+        const matched = page.text.slice(pIdx, pIdx + matchLen);
+        const after = page.text.slice(pIdx + matchLen);
+        return (
+          <>
+            {before}
+            <mark className="provenance-highlight-mark" id="active-provenance-mark">
+              {matched}
+            </mark>
+            {after}
+          </>
+        );
+      }
+    }
+
+    return page.text;
+  };
 
   return (
     <div className="studio-doc-panel">
@@ -51,8 +123,8 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
             className={`preview-tab-btn ${docTab === 'text' ? 'active' : ''}`}
             onClick={() => {
               onSetDocTab('text');
-              if (activeDoc?.url && parsedPages.length === 0) {
-                onFetchParsedText(activeDoc.url);
+              if (parsedPages.length === 0) {
+                onFetchParsedText(activeDoc?.url);
               }
             }}
           >
@@ -68,6 +140,12 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
             >
               [{currentBodyKey}] {getText(activeDoc.title) || `Doc #${activeDoc.id}`}
             </span>
+            {activeProvenance?.page_number && (
+              <span className="provenance-active-indicator" title={activeProvenance.snippet || undefined}>
+                <span className="provenance-dot" />
+                Target: Page {activeProvenance.page_number}
+              </span>
+            )}
           </div>
         )}
 
@@ -107,8 +185,9 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
         </div>
       ) : docTab === 'pdf' ? (
         <iframe
+          key={activeProvenance?.page_number ? `pdf-p${activeProvenance.page_number}` : 'pdf-default'}
           title="PDF Document Preview"
-          src={`${pdfProxyUrl}#view=FitH`}
+          src={`${pdfProxyUrl}#page=${activeProvenance?.page_number || 1}&view=FitH`}
           className="preview-iframe"
         />
       ) : isParsing ? (
@@ -165,23 +244,28 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
           </div>
           <h3 className="preview-hero-title">Parse Document Text</h3>
           <p className="preview-hero-desc">Extract raw text pages and character counts with pypdf.</p>
-          {activeDoc?.url && (
-            <button
-              className="btn-primary"
-              style={{ marginTop: '0.85rem' }}
-              onClick={() => onFetchParsedText(activeDoc.url)}
-            >
-              Extract Page Text
-            </button>
-          )}
+          <button
+            className="btn-primary"
+            style={{ marginTop: '0.85rem' }}
+            onClick={() => onFetchParsedText(activeDoc?.url)}
+          >
+            Extract Page Text
+          </button>
         </div>
       ) : (
         <div className="parsed-text-view">
           {parsedPages.map((page) => (
-            <div key={page.page_number} className="parsed-page-card">
+            <div
+              key={page.page_number}
+              id={`parsed-page-${page.page_number}`}
+              className={`parsed-page-card ${activeProvenance?.page_number === page.page_number ? 'page-highlighted' : ''}`}
+            >
               <div className="parsed-page-header">
                 <div className="parsed-page-header-left">
                   <span className="parsed-page-badge">PAGE {page.page_number}</span>
+                  {activeProvenance?.page_number === page.page_number && (
+                    <span className="parsed-page-active-tag">🎯 Active Provenance Source</span>
+                  )}
                   <span className="parsed-page-chars">{page.char_count.toLocaleString()} characters</span>
                 </div>
                 <button
@@ -203,7 +287,7 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
                 </button>
               </div>
               <div className="parsed-page-content">
-                {page.text || <em style={{ color: 'var(--text-muted)' }}>[Empty or image-only page]</em>}
+                {renderPageContent(page)}
               </div>
             </div>
           ))}

@@ -190,13 +190,45 @@ def proxy_pdf(
 
 
 @app.get("/api/parse-pdf", response_model=ParsePdfResponse)
-def parse_pdf(url: str = Query(..., description="OpenParlData PDF file URL")):
+def parse_pdf(
+    url: Optional[str] = Query(None, description="OpenParlData PDF file URL"),
+    sample: Optional[str] = Query(None, description="Local sample PDF filename")
+):
     """
     Download and parse PDF page-by-page returning text with physical page numbers.
+    Supports both remote URLs and local cantonal sample PDFs.
     """
-    if not (url.startswith("https://") or url.startswith("http://")):
-        raise HTTPException(status_code=400, detail="Invalid URL protocol")
     try:
+        if sample:
+            sample_path = SAMPLE_DIR / sample
+            if not sample_path.exists():
+                raise HTTPException(status_code=404, detail=f"Sample PDF not found: {sample}")
+            pages = extract_pdf_pages(sample_path)
+            total_chars = sum(p["char_count"] for p in pages)
+            return {
+                "url": sample,
+                "total_pages": len(pages),
+                "total_chars": total_chars,
+                "pages": pages
+            }
+
+        if url and url.strip() in URL_TO_SAMPLE_MAP:
+            local_sample = SAMPLE_DIR / URL_TO_SAMPLE_MAP[url.strip()]
+            if local_sample.exists():
+                pages = extract_pdf_pages(local_sample)
+                total_chars = sum(p["char_count"] for p in pages)
+                return {
+                    "url": url,
+                    "total_pages": len(pages),
+                    "total_chars": total_chars,
+                    "pages": pages
+                }
+
+        if not url:
+            raise HTTPException(status_code=400, detail="Must provide 'url' or 'sample'")
+        if not (url.startswith("https://") or url.startswith("http://")):
+            raise HTTPException(status_code=400, detail="Invalid URL protocol")
+
         resp = requests.get(url, stream=True, timeout=30)
         resp.raise_for_status()
 
@@ -219,8 +251,10 @@ def parse_pdf(url: str = Query(..., description="OpenParlData PDF file URL")):
             "total_chars": total_chars,
             "pages": pages
         }
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Error parsing PDF from {url}: {e}")
+        logger.error(f"Error parsing PDF: {e}")
         raise HTTPException(status_code=502, detail=f"Failed to parse PDF: {e}")
 
 

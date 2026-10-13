@@ -14,6 +14,7 @@ import type {
   ExtractedAffair,
   ProvenanceReport,
   SamplePdfItem,
+  ActiveProvenance,
 } from './types';
 
 export function App() {
@@ -37,6 +38,7 @@ export function App() {
   const [extractError, setExtractError] = useState<string | null>(null);
   const [showRawJson, setShowRawJson] = useState<boolean>(false);
   const [copiedPage, setCopiedPage] = useState<number | null>(null);
+  const [activeProvenance, setActiveProvenance] = useState<ActiveProvenance | null>(null);
 
   // Curated nationwide sample PDFs context
   const [samplePdfs, setSamplePdfs] = useState<SamplePdfItem[]>([]);
@@ -128,12 +130,14 @@ export function App() {
     }
   };
 
-  const fetchParsedText = async (docUrl: string) => {
-    if (!docUrl) return;
+  const fetchParsedText = async (docUrl?: string) => {
     setIsParsing(true);
     setParseError(null);
     try {
-      const resp = await fetch(`/api/parse-pdf?url=${encodeURIComponent(docUrl)}`);
+      const query = currentSampleFile
+        ? `sample=${encodeURIComponent(currentSampleFile)}`
+        : `url=${encodeURIComponent(docUrl || activeDoc?.url || '')}`;
+      const resp = await fetch(`/api/parse-pdf?${query}`);
       if (!resp.ok) {
         throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
       }
@@ -155,6 +159,18 @@ export function App() {
     navigator.clipboard.writeText(text);
     setCopiedPage(pageNum);
     setTimeout(() => setCopiedPage(null), 1500);
+  };
+
+  const handleLocateProvenance = (prov: ActiveProvenance) => {
+    setActiveProvenance(prov);
+    setDocTab('text');
+    if (parsedPages.length === 0) {
+      fetchParsedText(activeDoc?.url);
+    }
+  };
+
+  const handleHoverProvenance = (prov: ActiveProvenance | null) => {
+    setActiveProvenance(prov);
   };
 
   const handleExtract = async () => {
@@ -181,9 +197,15 @@ export function App() {
       if (isSampleMode) {
         setSampleExtractedAffair(data.affair);
         setSampleProvenanceReport(data.provenance_report);
+        if (data.provenance_report?.pages) {
+          setSampleParsedPages(data.provenance_report.pages);
+        }
       } else {
         setApiExtractedAffair(data.affair);
         setApiProvenanceReport(data.provenance_report);
+        if (data.provenance_report?.pages) {
+          setApiParsedPages(data.provenance_report.pages);
+        }
       }
 
       if (data.telemetry) {
@@ -347,6 +369,7 @@ export function App() {
             onFetchParsedText={fetchParsedText}
             copiedPage={copiedPage}
             onCopyPageText={handleCopyPageText}
+            activeProvenance={activeProvenance}
           />
 
           {/* Column 3: Apertus 1.5-8B Studio */}
@@ -360,6 +383,9 @@ export function App() {
             showRawJson={showRawJson}
             onToggleRawJson={() => setShowRawJson(!showRawJson)}
             onSetRawJson={setShowRawJson}
+            activeProvenance={activeProvenance}
+            onHoverProvenance={handleHoverProvenance}
+            onLocateProvenance={handleLocateProvenance}
           />
         </div>
       </main>

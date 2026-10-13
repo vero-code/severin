@@ -162,12 +162,19 @@ export interface ProvenanceDetailItem {
   snippet_preview: string;
 }
 
+export interface ActiveProvenance {
+  field?: string;
+  page_number?: number | null;
+  snippet?: string;
+}
+
 export interface ProvenanceReport {
   total_citations: number;
   verified_citations: number;
   failed_citations: number;
   provenance_score: number;
   details: ProvenanceDetailItem[];
+  pages?: PdfPageItem[];
 }
 
 export interface ExtractionResponse {

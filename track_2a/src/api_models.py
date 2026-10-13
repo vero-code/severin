@@ -80,6 +80,7 @@ class ProvenanceReport(BaseModel):
     failed_citations: int = Field(description="Number of unverified or hallucinated citations")
     provenance_score: float = Field(description="Ratio of verified to total citations (0.0 to 1.0)")
     details: List[Dict[str, Any]] = Field(description="Per-citation verification metadata with char offsets")
+    pages: Optional[List[Dict[str, Any]]] = Field(default=None, description="Extracted physical pages with text")
 
 
 class ExtractRequest(BaseModel):

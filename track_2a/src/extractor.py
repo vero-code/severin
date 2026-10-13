@@ -155,7 +155,8 @@ def verify_provenance(
         "verified_citations": verified_citations,
         "failed_citations": total_citations - verified_citations,
         "provenance_score": score,
-        "details": verification_details
+        "details": verification_details,
+        "pages": pages
     }
 
 
