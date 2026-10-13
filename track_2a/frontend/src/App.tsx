@@ -680,12 +680,15 @@ export function App() {
                 <div className="extract-loading-box">
                   <div className="spinner-supercomputer" />
                   <h3 style={{ color: '#ffffff', fontSize: 'var(--font-size-md)', marginBottom: '0.4rem' }}>
-                    Apertus 1.5-8B Extraction in Progress
+                    Awaiting response from Apertus 1.5-8B...
                   </h3>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-size-sm)', maxWidth: '440px' }}>
-                    Running inference on CSCS Alps supercomputer GH200 nodes.
-                    Validating strict schema and algorithmic provenance against physical PDF pages (temperature=0.0)...
+                  <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-size-sm)', maxWidth: '420px', lineHeight: '1.5' }}>
+                    Parsing document structure, extracting schema fields, and verifying citation provenance.
                   </p>
+                  <div className="studio-hero-features" style={{ marginTop: '1.25rem' }}>
+                    <span className="studio-feature-pill">Deterministic (T=0.0)</span>
+                    <span className="studio-feature-pill">Strict Pydantic</span>
+                  </div>
                 </div>
               )}
 
@@ -730,10 +733,10 @@ export function App() {
                     Run Apertus 1.5-8B Extraction
                   </button>
                   <div className="studio-hero-features">
-                    <span className="studio-feature-pill">Algorithmic Provenance</span>
                     <span className="studio-feature-pill">Conservative Extraction</span>
-                    <span className="studio-feature-pill">CSCS Alps GH200</span>
+                    <span className="studio-feature-pill">Unified Swiss Schema</span>
                     <span className="studio-feature-pill">26 Cantons + Bund</span>
+                    <span className="studio-feature-pill">Multilingual (DE/FR/IT)</span>
                   </div>
                 </div>
               )}
