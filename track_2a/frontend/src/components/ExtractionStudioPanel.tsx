@@ -172,16 +172,25 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
             <div className="json-inspector-container">
               <div className="json-inspector-toolbar">
                 <div className="json-toolbar-title">
-                  <span className="json-schema-badge">UnifiedAffairSchema</span>
-                  <span className="json-meta-hint">Valid Pydantic v2 • Deterministic T=0.0</span>
+                  <span className="json-meta-hint">Unified Representation Schema</span>
                 </div>
                 <button
                   type="button"
-                  className={`btn-copy-json ${copiedJson ? 'copied' : ''}`}
+                  className={`btn-copy-icon ${copiedJson ? 'copied' : ''}`}
                   onClick={handleCopyJson}
-                  title="Copy full JSON schema to clipboard"
+                  title={copiedJson ? 'Copied to clipboard!' : 'Copy JSON'}
+                  aria-label="Copy JSON"
                 >
-                  {copiedJson ? '✓ Copied' : 'Copy JSON'}
+                  {copiedJson ? (
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  ) : (
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
+                  )}
                 </button>
               </div>
               <pre className="json-inspector-pre">

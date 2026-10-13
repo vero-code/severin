@@ -352,17 +352,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.65rem 0.95rem;
+  padding: 0.45rem 0.85rem;
   background: #141820;
   border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
+  min-height: 40px;
 }
 
 .json-toolbar-title {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  flex-wrap: wrap;
+  gap: 0.65rem;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .json-schema-badge {
@@ -375,35 +377,38 @@
   padding: 0.2rem 0.5rem;
   border-radius: var(--radius-sm);
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .json-meta-hint {
   font-size: var(--font-size-xs);
   color: var(--text-secondary);
+  white-space: nowrap;
 }
 
-.btn-copy-json {
-  background: rgba(255, 255, 255, 0.06);
+.btn-copy-icon {
+  background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--border-color);
-  color: var(--text-primary);
-  padding: 0.32rem 0.75rem;
+  color: var(--text-secondary);
+  width: 28px;
+  height: 28px;
   border-radius: var(--radius-sm);
-  font-size: var(--font-size-xs);
-  font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  justify-content: center;
   transition: all 0.15s ease;
+  padding: 0;
+  flex-shrink: 0;
 }
 
-.btn-copy-json:hover {
+.btn-copy-icon:hover {
   background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.28);
+  border-color: rgba(255, 255, 255, 0.3);
   color: #ffffff;
 }
 
-.btn-copy-json.copied {
+.btn-copy-icon.copied {
   background: rgba(167, 243, 208, 0.15);
   border-color: var(--accent-mint);
   color: var(--accent-mint);
