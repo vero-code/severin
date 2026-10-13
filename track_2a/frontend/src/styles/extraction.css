@@ -360,16 +360,41 @@
 }
 
 .spinner-supercomputer {
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   border: 3px solid rgba(217, 38, 46, 0.2);
   border-top-color: #D9262E;
   border-right-color: #E53E3E;
   border-radius: 50%;
   animation: spin 0.85s linear infinite;
   margin-bottom: 1.25rem;
+  box-shadow: 0 0 24px rgba(217, 38, 46, 0.2);
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+.studio-pill-active {
+  color: var(--accent-mint) !important;
+  border-color: rgba(167, 243, 208, 0.35) !important;
+  background: rgba(167, 243, 208, 0.08) !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.studio-pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--accent-green-bright);
+  box-shadow: 0 0 8px var(--accent-green-bright);
+  animation: pulse-dot 1.5s ease-in-out infinite;
+  display: inline-block;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.85); }
 }

@@ -98,17 +98,12 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
               <polyline points="10 9 9 9 8 9" />
             </svg>
           </div>
-          <h3 className="preview-hero-title">Document Inspection Studio</h3>
+          <h3 className="preview-hero-title">Source Document</h3>
           <p className="preview-hero-desc">
             {controlMode === 'api'
-              ? 'Search OpenParlData and select an affair document to preview PDF and page text.'
-              : 'Select a cantonal sample to preview PDF and extracted page text.'}
+              ? 'Select an affair document to preview.'
+              : 'Select a cantonal sample to preview.'}
           </p>
-          <div className="studio-hero-features">
-            <span className="studio-feature-pill">Embedded PDF Viewer</span>
-            <span className="studio-feature-pill">pypdf Text Extraction</span>
-            <span className="studio-feature-pill">1-Click Text Copy</span>
-          </div>
         </div>
       ) : docTab === 'pdf' ? (
         <iframe
@@ -118,10 +113,19 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
         />
       ) : isParsing ? (
         <div className="preview-placeholder">
-          <div className="spinner-supercomputer" style={{ width: '32px', height: '32px', borderWidth: '3px' }} />
-          <p style={{ marginTop: '0.5rem', color: 'var(--text-secondary)' }}>
-            Parsing document pages via pypdf...
-          </p>
+          <div
+            className="spinner-supercomputer"
+            style={{
+              width: '42px',
+              height: '42px',
+              borderWidth: '3px',
+              borderTopColor: 'var(--accent-mint)',
+              borderRightColor: 'var(--accent-green-bright)',
+              boxShadow: '0 0 20px rgba(167, 243, 208, 0.2)',
+            }}
+          />
+          <h3 className="preview-hero-title">Extracting Document Pages</h3>
+          <p className="preview-hero-desc">Extracting raw text pages and character counts via pypdf</p>
         </div>
       ) : parseError ? (
         <div className="preview-placeholder">

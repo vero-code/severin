@@ -62,13 +62,16 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
         {isExtracting && (
           <div className="extract-loading-box">
             <div className="spinner-supercomputer" />
-            <h3 style={{ color: '#ffffff', fontSize: 'var(--font-size-md)', marginBottom: '0.4rem' }}>
-              Awaiting response from Apertus 1.5-8B...
+            <h3 style={{ color: '#ffffff', fontSize: 'var(--font-size-md)', fontWeight: 700, marginBottom: '0.45rem' }}>
+              Extracting with Apertus 1.5-8B
             </h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-size-sm)', maxWidth: '420px', lineHeight: '1.5' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-size-sm)', maxWidth: '440px', lineHeight: '1.6' }}>
               Parsing document structure, extracting schema fields, and verifying citation provenance.
             </p>
             <div className="studio-hero-features" style={{ marginTop: '1.25rem' }}>
+              <span className="studio-feature-pill studio-pill-active">
+                <span className="studio-pill-dot" /> Live Inference
+              </span>
               <span className="studio-feature-pill">Deterministic (T=0.0)</span>
               <span className="studio-feature-pill">Strict Pydantic</span>
             </div>
@@ -104,23 +107,17 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                 <path d="M3 21h18M3 10h18M5 10v11M9 10v11M13 10v11M17 10v11M19 10v11M12 2l9 6H3l9-6z" />
               </svg>
             </div>
-            <h3 className="studio-hero-title">Apertus Grounded Extraction</h3>
+            <h3 className="studio-hero-title">Grounded Extraction</h3>
             <p className="studio-hero-desc">
-              Extract parliamentary affairs into the unified Swiss schema with verified citation grounding.
+              Conservative LLM analysis with verified Swiss citation provenance.
             </p>
             <button
               className="btn-extract"
               onClick={onExtract}
               disabled={!canExtract}
             >
-              Run Apertus 1.5-8B Extraction
+              {canExtract ? 'Extract with Apertus 1.5-8B' : 'Select a document to run'}
             </button>
-            <div className="studio-hero-features">
-              <span className="studio-feature-pill">Conservative Extraction</span>
-              <span className="studio-feature-pill">Unified Swiss Schema</span>
-              <span className="studio-feature-pill">26 Cantons + Bund</span>
-              <span className="studio-feature-pill">Multilingual (DE/FR/IT)</span>
-            </div>
           </div>
         )}
 
