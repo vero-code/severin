@@ -12,9 +12,9 @@
   --bg-pdf: #FFFFFF;
 
   /* Borders & Dividers */
-  --border-width: 2px;
+  --border-width: 1px;
   --border-color: #2D3748;
-  --border-panel: #964E59;
+  --border-panel: #2D3748;
   --border-focus: #E53E3E;
 
   /* 2. Swiss Red & Coral Accents */

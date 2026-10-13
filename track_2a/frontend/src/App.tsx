@@ -333,14 +333,16 @@ export function App() {
               <button
                 className={`mode-btn ${controlMode === 'samples' ? 'active' : ''}`}
                 onClick={() => setControlMode('samples')}
+                title="Browse 27 curated nationwide test samples"
               >
-                🇨🇭 27 Cantonal Test Samples
+                🇨🇭 27 Samples
               </button>
               <button
                 className={`mode-btn ${controlMode === 'api' ? 'active' : ''}`}
                 onClick={() => setControlMode('api')}
+                title="Live search via OpenParlData API"
               >
-                🌐 Live OpenParlData API
+                🌐 Live API
               </button>
             </div>
 
@@ -513,15 +515,18 @@ export function App() {
                 </button>
               </div>
 
-              <div className="panel-header-actions">
-                {activeDoc && (
+              {activeDoc && (
+                <div className="doc-center-title">
                   <span
                     className="doc-info-badge"
                     title={getText(activeDoc.title) || `Doc #${activeDoc.id}`}
                   >
                     [{bodyKey}] {getText(activeDoc.title) || `Doc #${activeDoc.id}`}
                   </span>
-                )}
+                </div>
+              )}
+
+              <div className="panel-header-actions">
                 {activeDoc?.url && (
                   <a
                     href={pdfProxyUrl}
@@ -613,7 +618,7 @@ export function App() {
           <div className="studio-extraction-panel">
             <div className="studio-panel-header">
               <div className="panel-header-title">
-                <span>✨ Apertus Studio</span>
+                <span>Apertus Studio</span>
                 {provenanceReport && (
                   <span className="provenance-pill">
                     {Math.round(provenanceReport.provenance_score * 100)}%
@@ -622,22 +627,24 @@ export function App() {
               </div>
 
               <div className="panel-header-actions">
-                <button
-                  className={`btn-extract ${isExtracting ? 'btn-extract-loading' : ''}`}
-                  onClick={handleExtract}
-                  disabled={isExtracting || (!activeDoc?.url && !selectedSampleFile)}
-                  title="Run conservative extraction with Swiss-AI Apertus 1.5-8B on CSCS Alps Supercomputer"
-                >
-                  {isExtracting ? '⏳ Extracting...' : '⚡ Extract with Apertus'}
-                </button>
                 {extractedAffair && (
-                  <button
-                    className="doc-btn"
-                    onClick={() => setShowRawJson(!showRawJson)}
-                    style={{ whiteSpace: 'nowrap', padding: '0.3rem 0.6rem', fontSize: 'var(--font-size-sm)' }}
-                  >
-                    {showRawJson ? 'Hide JSON' : 'JSON'}
-                  </button>
+                  <>
+                    <button
+                      className={`btn-extract ${isExtracting ? 'btn-extract-loading' : ''}`}
+                      onClick={handleExtract}
+                      disabled={isExtracting || (!activeDoc?.url && !selectedSampleFile)}
+                      title="Re-run conservative extraction with Swiss-AI Apertus 1.5-8B on CSCS Alps Supercomputer"
+                    >
+                      {isExtracting ? 'Extracting...' : 'Re-run Extraction'}
+                    </button>
+                    <button
+                      className="doc-btn"
+                      onClick={() => setShowRawJson(!showRawJson)}
+                      style={{ whiteSpace: 'nowrap', padding: '0.3rem 0.6rem', fontSize: 'var(--font-size-sm)' }}
+                    >
+                      {showRawJson ? 'Hide JSON' : 'JSON'}
+                    </button>
+                  </>
                 )}
               </div>
             </div>
@@ -667,7 +674,7 @@ export function App() {
                     color: '#fca5a5',
                   }}
                 >
-                  <h4>⚠️ Extraction Failed</h4>
+                  <h4>Extraction Failed</h4>
                   <p style={{ marginTop: '0.4rem', fontSize: 'var(--font-size-sm)' }}>{extractError}</p>
                   <button
                     className="btn-primary"
@@ -681,25 +688,27 @@ export function App() {
 
               {!isExtracting && !extractError && !extractedAffair && (
                 <div className="studio-idle-hero">
-                  <div className="studio-hero-icon">🏛️</div>
-                  <h3 className="studio-hero-title">Apertus Grounded Extraction Ready</h3>
+                  <div className="studio-hero-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 21h18M3 10h18M5 10v11M9 10v11M13 10v11M17 10v11M19 10v11M12 2l9 6H3l9-6z" />
+                    </svg>
+                  </div>
+                  <h3 className="studio-hero-title">Apertus Grounded Extraction</h3>
                   <p className="studio-hero-desc">
-                    Extract structured parliamentary metadata, authors, submitted questions, executive answers,
-                    and financial credits into the unified Swiss schema with 100% verified citations.
+                    Extract parliamentary affairs into the unified Swiss schema with verified citation grounding.
                   </p>
                   <button
                     className="btn-extract"
                     onClick={handleExtract}
                     disabled={!activeDoc?.url && !selectedSampleFile}
                   >
-                    ⚡ Run Apertus 1.5-8B Extraction
+                    Run Apertus 1.5-8B Extraction
                   </button>
                   <div className="studio-hero-features">
-                    <span className="studio-feature-pill">🛡️ Zero Hallucinations</span>
-                    <span className="studio-feature-pill">🔍 Algorithmic Provenance</span>
-                    <span className="studio-feature-pill">🏔️ CSCS Alps GH200</span>
-                    <span className="studio-feature-pill">🇨🇭 26 Cantons + Bund</span>
-                    <span className="studio-feature-pill">⚙️ Deterministic (temp=0.0)</span>
+                    <span className="studio-feature-pill">Zero Hallucinations</span>
+                    <span className="studio-feature-pill">Algorithmic Provenance</span>
+                    <span className="studio-feature-pill">CSCS Alps GH200</span>
+                    <span className="studio-feature-pill">26 Cantons + Bund</span>
                   </div>
                 </div>
               )}
@@ -714,7 +723,7 @@ export function App() {
                       </div>
                       <div className="provenance-meta">
                         <h4>
-                          <span>🛡️ Conservative Grounded Extraction</span>
+                          <span>Conservative Grounded Extraction</span>
                           <span className="badge-tag" style={{ marginLeft: '0.5rem' }}>Swiss-AI Apertus</span>
                         </h4>
                         <p>
@@ -735,7 +744,7 @@ export function App() {
                   {/* Header / Identity Card */}
                   <div className="extracted-card">
                     <div className="extracted-card-header">
-                      <h3>🏛️ Affair Identity & Metadata</h3>
+                      <h3>Affair Identity & Metadata</h3>
                       <div style={{ display: 'flex', gap: '0.4rem' }}>
                         <span className="badge-body">{extractedAffair.canton_or_body}</span>
                         <span className="citation-chip">{extractedAffair.level}</span>
@@ -752,19 +761,19 @@ export function App() {
                     )}
                     <div style={{ display: 'flex', gap: '1.25rem', marginTop: '0.75rem', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}>
                       {extractedAffair.submission_date && (
-                        <span>📅 Submitted: <strong>{extractedAffair.submission_date}</strong></span>
+                        <span>Submitted: <strong>{extractedAffair.submission_date}</strong></span>
                       )}
                       {extractedAffair.addressed_to && (
-                        <span>📬 Addressed to: <strong>{extractedAffair.addressed_to}</strong></span>
+                        <span>Addressed to: <strong>{extractedAffair.addressed_to}</strong></span>
                       )}
-                      <span>🌐 Language: <strong>{extractedAffair.language.toUpperCase()}</strong></span>
+                      <span>Language: <strong>{extractedAffair.language.toUpperCase()}</strong></span>
                     </div>
                   </div>
 
                   {/* Authors / Actors */}
                   <div className="extracted-card">
                     <div className="extracted-card-header">
-                      <h3>👤 Authors & Submitters ({extractedAffair.authors.length})</h3>
+                      <h3>Authors & Submitters ({extractedAffair.authors.length})</h3>
                     </div>
                     {extractedAffair.authors.length > 0 ? (
                       <div>
@@ -794,7 +803,7 @@ export function App() {
                   {extractedAffair.background_and_rationale && (
                     <div className="extracted-card">
                       <div className="extracted-card-header">
-                        <h3>📖 Context, Rationale & Rationale Provenance</h3>
+                        <h3>Context, Rationale & Provenance</h3>
                         {extractedAffair.rationale_provenance && (
                           <span className="citation-chip">
                             Page {extractedAffair.rationale_provenance.page_number} Verified
@@ -815,7 +824,7 @@ export function App() {
                   {/* Questions and Answers */}
                   <div className="extracted-card">
                     <div className="extracted-card-header">
-                      <h3>❓ Questions & Executive Answers ({extractedAffair.questions_and_answers.length})</h3>
+                      <h3>Questions & Executive Answers ({extractedAffair.questions_and_answers.length})</h3>
                     </div>
                     {extractedAffair.questions_and_answers.length > 0 ? (
                       extractedAffair.questions_and_answers.map((qa, idx) => (
@@ -854,7 +863,7 @@ export function App() {
                   {/* Financial Credits */}
                   <div className="extracted-card">
                     <div className="extracted-card-header">
-                      <h3>💰 Financial Credits & Appropriations ({extractedAffair.financial_details.length})</h3>
+                      <h3>Financial Credits & Appropriations ({extractedAffair.financial_details.length})</h3>
                     </div>
                     {extractedAffair.financial_details.length > 0 ? (
                       <div className="financial-grid">
@@ -888,7 +897,7 @@ export function App() {
                   {provenanceReport && provenanceReport.details && provenanceReport.details.length > 0 && (
                     <div className="extracted-card">
                       <div className="extracted-card-header">
-                        <h3>🔍 Provenance Verification Audit Log</h3>
+                        <h3>Provenance Verification Audit Log</h3>
                         <span className="provenance-pill">
                           {provenanceReport.verified_citations} / {provenanceReport.total_citations} Verified
                         </span>
@@ -926,7 +935,7 @@ export function App() {
                   {showRawJson && (
                     <div className="extracted-card">
                       <div className="extracted-card-header">
-                        <h3>💻 Unified Pydantic Schema JSON</h3>
+                        <h3>Unified Pydantic Schema JSON</h3>
                       </div>
                       <pre className="raw-json-box">
                         {JSON.stringify(extractedAffair, null, 2)}

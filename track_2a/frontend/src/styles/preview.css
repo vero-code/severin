@@ -44,25 +44,38 @@
   min-width: 0;
 }
 
-.panel-header-actions {
+.preview-tabs {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  flex: 1;
-  justify-content: flex-end;
-  min-width: 0;
+  gap: 0.35rem;
+  flex-shrink: 0;
 }
 
-.doc-info-badge {
+.doc-center-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-width: 0;
+  padding: 0 0.5rem;
+  text-align: center;
+}
+
+.doc-center-title .doc-info-badge {
   font-size: var(--font-size-sm);
   color: var(--text-secondary);
-  flex: 0 1 auto;
-  min-width: 0;
-  max-width: 220px;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-weight: 500;
+}
+
+.panel-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-shrink: 0;
 }
 
 .open-pdf-link {

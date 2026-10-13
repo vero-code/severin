@@ -204,10 +204,10 @@
    ============================================================================ */
 
 .sidebar-mode-switch {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 0.45rem;
-  padding: 0.85rem 1rem;
+  padding: 0.55rem 0.85rem;
   background-color: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
@@ -216,13 +216,14 @@
 .sidebar-mode-switch .mode-btn {
   width: 100%;
   text-align: center;
-  padding: 0.55rem 0.85rem;
+  padding: 0.45rem 0.5rem;
   font-size: var(--font-size-sm);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
+  white-space: nowrap;
 }
 
 .sidebar-sample-section {
