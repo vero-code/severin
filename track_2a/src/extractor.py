@@ -179,7 +179,7 @@ def normalize_provenance(prov: Any) -> Optional[Dict[str, Any]]:
 
     clean_prov: Dict[str, Any] = {
         "page_number": page_num,
-        "source_text_snippet": snippet.strip(),
+        "source_text_snippet": snippet.replace("\x11", "š").strip(),
     }
     if "char_start" in prov and isinstance(prov["char_start"], int):
         clean_prov["char_start"] = prov["char_start"]
@@ -258,7 +258,7 @@ def normalize_extracted_dict(raw_dict: Any) -> Dict[str, Any]:
                     name = item.get("role")
                 if name:
                     author_dict = {
-                        "name": str(name).strip(),
+                        "name": str(name).replace("\x11", "š").strip(),
                         "role": str(item.get("role", "author") or "author").strip().lower(),
                         "party_or_fraction": item.get("party_or_fraction") or item.get("party"),
                         "canton_or_municipality": item.get("canton_or_municipality") or item.get("canton"),

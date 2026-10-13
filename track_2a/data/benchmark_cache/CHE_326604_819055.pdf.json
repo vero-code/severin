@@ -36,16 +36,16 @@
         }
       },
       {
-        "name": "Weil Anju\u0011ka",
+        "name": "Weil Anjuška",
         "role": "author",
         "party_or_fraction": null,
         "canton_or_municipality": "ZH",
         "provenance": {
           "page_number": 1,
-          "source_text_snippet": "Weil Anju\u0011ka, Goldbrunnenstrasse 131, 8055 Zürich;",
-          "char_start": null,
-          "char_end": null,
-          "status": "not_found"
+          "source_text_snippet": "Weil Anjuška, Goldbrunnenstrasse 131, 8055 Zürich;",
+          "char_start": 2003,
+          "char_end": 2053,
+          "status": "extracted"
         }
       },
       {
@@ -82,8 +82,8 @@
         "provenance": {
           "page_number": 1,
           "source_text_snippet": "Gilardi Paolo, Rue Jacques-Grosselin 6, 1227 Carouge;",
-          "char_start": 0,
-          "char_end": 53,
+          "char_start": 2149,
+          "char_end": 2202,
           "status": "extracted"
         }
       },
@@ -296,5 +296,111 @@
   "tokens_prompt": 5339,
   "tokens_completion": 1605,
   "tokens_cached": 5312,
-  "cost_chf": 6.4e-05
+  "cost_chf": 6.4e-05,
+  "provenance_report": {
+    "total_citations": 14,
+    "verified_citations": 14,
+    "failed_citations": 0,
+    "provenance_score": 1.0,
+    "details": [
+      {
+        "field": "title",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Eidgenössische Volksinitiative  «Nein zum F-35» (i..."
+      },
+      {
+        "field": "background_and_rationale",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Die unterzeichneten stimmberechtigten Schweizer Bü..."
+      },
+      {
+        "field": "authors[0].Künzi Daniel",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Künzi Daniel, Passage Daniel Baud-Bovy 10, 1205 Ge..."
+      },
+      {
+        "field": "authors[1].Sax Jacques",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Sax Jacques, Chemin de Renens 52D, 1004 Lausan ne;..."
+      },
+      {
+        "field": "authors[2].Weil Anjuška",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Weil Anjuška, Goldbrunnenstrasse 131, 8055 Zürich;..."
+      },
+      {
+        "field": "authors[3].Castellari Cli o Alba",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Castellari Cli o Alba, Via Carona 33, 6912 Pazzall..."
+      },
+      {
+        "field": "authors[4].Hofer André",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Hofer André, Sous Banbois 5, 2515 Prêles;..."
+      },
+      {
+        "field": "authors[5].Gilardi Paolo",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Gilardi Paolo, Rue Jacques-Grosselin 6, 1227 Carou..."
+      },
+      {
+        "field": "authors[6].Ebel Marianne",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Ebel Marianne, Chemin des Grands-Pins 19, 2000 Neu..."
+      },
+      {
+        "field": "authors[7].Dolivo Jean-Michel",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Dolivo Jean-Michel, Avenue Alexandre-Vinet 14, 100..."
+      },
+      {
+        "field": "authors[8].Kiener Nellen Margareta",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Kiener Nellen Margareta, Dorfstrasse 32, 3065 Boll..."
+      },
+      {
+        "field": "authors[9].Majno-Hurst Pietro",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Majno-Hurst Pietro, Via Naccio 2, 6614 Brissago;..."
+      },
+      {
+        "field": "authors[10].Sergi Giuseppe",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Sergi Giuseppe, Via Luigi Colombi 1, 6500 Bellinzo..."
+      },
+      {
+        "field": "authors[11].De Battista Régis",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "De Battista Régis, Chemin des Esserts 3, 1213 Peti..."
+      }
+    ]
+  }
 }

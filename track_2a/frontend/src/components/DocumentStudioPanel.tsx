@@ -66,6 +66,7 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
       return page.text;
     }
 
+    // 1. Direct case-insensitive match
     const lowerText = page.text.toLowerCase();
     const lowerSnippet = cleanSnippet.toLowerCase();
     const matchIdx = lowerText.indexOf(lowerSnippet);
@@ -85,24 +86,87 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
       );
     }
 
-    // Try matching prefix if snippet had slight line-wrap/whitespace variations
-    const prefix = cleanSnippet.slice(0, Math.min(28, cleanSnippet.length)).trim().toLowerCase();
-    if (prefix.length >= 8) {
-      const pIdx = lowerText.indexOf(prefix);
-      if (pIdx !== -1) {
-        const before = page.text.slice(0, pIdx);
-        const matchLen = Math.min(cleanSnippet.length, page.text.length - pIdx);
-        const matched = page.text.slice(pIdx, pIdx + matchLen);
-        const after = page.text.slice(pIdx + matchLen);
-        return (
-          <>
-            {before}
-            <mark className="provenance-highlight-mark" id="active-provenance-mark">
-              {matched}
-            </mark>
-            {after}
-          </>
-        );
+    // 2. Whitespace-flexible and glyph-normalized regex match (handles line-wraps and embedded artifacts)
+    const normalizedSnippet = cleanSnippet
+      .replace(/\u0011/g, 'š')
+      .replace(/[\x00-\x1f\x7f-\x9f\u200b\ufffd]/g, '')
+      .trim();
+
+    const words = normalizedSnippet.split(/\s+/).filter(w => w.length > 0);
+    if (words.length >= 2) {
+      const escapedWords = words.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+      try {
+        const fullRegex = new RegExp(escapedWords.join('\\s+'), 'i');
+        const match = page.text.match(fullRegex);
+        if (match && typeof match.index === 'number') {
+          const before = page.text.slice(0, match.index);
+          const matched = page.text.slice(match.index, match.index + match[0].length);
+          const after = page.text.slice(match.index + match[0].length);
+          return (
+            <>
+              {before}
+              <mark className="provenance-highlight-mark" id="active-provenance-mark">
+                {matched}
+              </mark>
+              {after}
+            </>
+          );
+        }
+      } catch {}
+    }
+
+    // 3. Leading words phrase match (e.g. author name and initial street)
+    if (words.length >= 2) {
+      const leadingWords = words.slice(0, Math.min(4, words.length));
+      const escapedLeading = leadingWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+      try {
+        const leadingRegex = new RegExp(escapedLeading.join('\\s+'), 'i');
+        const match = page.text.match(leadingRegex);
+        if (match && typeof match.index === 'number') {
+          const before = page.text.slice(0, match.index);
+          const matched = page.text.slice(match.index, match.index + match[0].length);
+          const after = page.text.slice(match.index + match[0].length);
+          return (
+            <>
+              {before}
+              <mark className="provenance-highlight-mark" id="active-provenance-mark">
+                {matched}
+              </mark>
+              {after}
+            </>
+          );
+        }
+      } catch {}
+    }
+
+    // 4. Target entity match from activeProvenance.field (e.g. "author: Weil Anjuška")
+    if (activeProvenance?.field) {
+      const entityName = activeProvenance.field
+        .replace(/^(?:author|title|question|answer|financial|event):\s*/i, '')
+        .replace(/\u0011/g, 'š')
+        .replace(/[\x00-\x1f\x7f-\x9f\u200b\ufffd]/g, '')
+        .trim();
+      if (entityName.length >= 3) {
+        const entityWords = entityName.split(/\s+/).filter(w => w.length > 0);
+        const escapedEntity = entityWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+        try {
+          const entityRegex = new RegExp(escapedEntity.join('\\s+'), 'i');
+          const match = page.text.match(entityRegex);
+          if (match && typeof match.index === 'number') {
+            const before = page.text.slice(0, match.index);
+            const matched = page.text.slice(match.index, match.index + match[0].length);
+            const after = page.text.slice(match.index + match[0].length);
+            return (
+              <>
+                {before}
+                <mark className="provenance-highlight-mark" id="active-provenance-mark">
+                  {matched}
+                </mark>
+                {after}
+              </>
+            );
+          }
+        } catch {}
       }
     }
 
@@ -263,9 +327,6 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
               <div className="parsed-page-header">
                 <div className="parsed-page-header-left">
                   <span className="parsed-page-badge">PAGE {page.page_number}</span>
-                  {activeProvenance?.page_number === page.page_number && (
-                    <span className="parsed-page-active-tag">🎯 Active Provenance Source</span>
-                  )}
                   <span className="parsed-page-chars">{page.char_count.toLocaleString()} characters</span>
                 </div>
                 <button

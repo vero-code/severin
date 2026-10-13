@@ -16,6 +16,11 @@ interface ExtractionStudioPanelProps {
   onLocateProvenance?: (prov: ActiveProvenance) => void;
 }
 
+export const normalizeGlyphs = (str?: string | null): string => {
+  if (!str) return '';
+  return str.replace(/\u0011/g, 'š').replace(/[\x00-\x1f\x7f-\x9f\u200b\ufffd]/g, '');
+};
+
 export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
   isExtracting,
   extractError,
@@ -62,6 +67,14 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
       else onToggleRawJson();
     }
   };
+
+  const hasSeparateHeader = Boolean(
+    extractedAffair?.title_provenance &&
+    extractedAffair.title_provenance.source_text_snippet.trim() !== extractedAffair.title.trim()
+  );
+  const isTitleInteractive = Boolean(
+    extractedAffair?.title_provenance && !hasSeparateHeader
+  );
 
   return (
     <div className="studio-extraction-panel">
@@ -216,7 +229,21 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
 
             {/* Header / Identity Card */}
             <div className="extracted-card">
-              <div className="affair-title-text">
+              <div
+                className={`affair-title-text ${isTitleInteractive ? 'interactive-title' : ''}`}
+                onMouseEnter={isTitleInteractive ? () => onHoverProvenance?.({
+                  field: 'title',
+                  page_number: extractedAffair.title_provenance!.page_number,
+                  snippet: extractedAffair.title_provenance!.source_text_snippet
+                }) : undefined}
+                onMouseLeave={isTitleInteractive ? () => onHoverProvenance?.(null) : undefined}
+                onClick={isTitleInteractive ? () => onLocateProvenance?.({
+                  field: 'title',
+                  page_number: extractedAffair.title_provenance!.page_number,
+                  snippet: extractedAffair.title_provenance!.source_text_snippet
+                }) : undefined}
+                title={isTitleInteractive ? 'Click to jump to title in document' : undefined}
+              >
                 {extractedAffair.title}
               </div>
               <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -225,18 +252,45 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                 <span className="meta-tag">{extractedAffair.affair_type}</span>
                 <span className="meta-tag">{extractedAffair.language.toUpperCase()}</span>
               </div>
-              {extractedAffair.title_provenance && 
-               extractedAffair.title_provenance.source_text_snippet.trim() !== extractedAffair.title.trim() && (
+              {hasSeparateHeader && (
                 <details className="source-header-details">
-                  <summary className="source-header-summary">
+                  <summary
+                    className="source-header-summary"
+                    onMouseEnter={() => onHoverProvenance?.({
+                      field: 'title',
+                      page_number: extractedAffair.title_provenance!.page_number,
+                      snippet: extractedAffair.title_provenance!.source_text_snippet
+                    })}
+                    onMouseLeave={() => onHoverProvenance?.(null)}
+                    onClick={(e) => {
+                      // Don't prevent details toggle, but also locate if requested
+                      if (e.target !== e.currentTarget) return;
+                    }}
+                    title="Hover or expand to inspect source header quote in document"
+                  >
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                       <circle cx="12" cy="12" r="3" />
                     </svg>
                     <span>Source header excerpt in PDF</span>
                   </summary>
-                  <div className="citation-quote" style={{ marginTop: '0.4rem' }}>
-                    "{extractedAffair.title_provenance.source_text_snippet}"
+                  <div
+                    className="citation-quote interactive-quote"
+                    style={{ marginTop: '0.4rem' }}
+                    onMouseEnter={() => onHoverProvenance?.({
+                      field: 'title',
+                      page_number: extractedAffair.title_provenance!.page_number,
+                      snippet: extractedAffair.title_provenance!.source_text_snippet
+                    })}
+                    onMouseLeave={() => onHoverProvenance?.(null)}
+                    onClick={() => onLocateProvenance?.({
+                      field: 'title',
+                      page_number: extractedAffair.title_provenance!.page_number,
+                      snippet: extractedAffair.title_provenance!.source_text_snippet
+                    })}
+                    title="Click to jump to source header in document"
+                  >
+                    "{extractedAffair.title_provenance!.source_text_snippet}"
                   </div>
                 </details>
               )}
@@ -273,31 +327,30 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                 <h3>Authors & Submitters ({extractedAffair.authors.length})</h3>
               </div>
               {extractedAffair.authors.length > 0 ? (
-                <div className="authors-list">
+                <div className="authors-directory">
                   {extractedAffair.authors.map((author, idx) => {
                     const isDept = /Depart[e]?ment|D[eé]partement|Regierungsrat|Conseil d'?[EÉ]tat|Consiglio di Stato|Direktion|Direction|Dipartimento|Amt|Kanzlei|Staatsschreiberei|Chancellerie|Cancelleria/i.test(author.name);
                     const displayRole = isDept ? 'Issuing Body' : (author.role || 'Author');
                     return (
-                      <div key={idx} className="author-chip">
-                        <span className="author-name">{author.name}</span>
-                        <span className="author-role">{displayRole}</span>
-                        {author.party_or_fraction && (
-                          <span className="author-party">({author.party_or_fraction})</span>
-                        )}
-                        {author.provenance && (
-                          <>
-                            <span style={{ color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)', margin: '0 0.15rem' }}>on</span>
-                            <span
-                              className="citation-page-tag interactive-tag"
-                              onMouseEnter={() => onHoverProvenance?.({ field: `author: ${author.name}`, page_number: author.provenance!.page_number, snippet: author.provenance!.source_text_snippet })}
-                              onMouseLeave={() => onHoverProvenance?.(null)}
-                              onClick={() => onLocateProvenance?.({ field: `author: ${author.name}`, page_number: author.provenance!.page_number, snippet: author.provenance!.source_text_snippet })}
-                              title="Click to jump to citation in document"
-                            >
-                              page {author.provenance.page_number}
-                            </span>
-                          </>
-                        )}
+                      <div key={idx} className="author-dir-row">
+                        <div className="author-dir-left">
+                          <span className="author-dir-idx">{idx + 1}.</span>
+                          <span className="author-name">{normalizeGlyphs(author.name)}</span>
+                          {author.party_or_fraction && (
+                            <span className="author-party">({normalizeGlyphs(author.party_or_fraction)})</span>
+                          )}
+                        </div>
+                        <div className="author-dir-right">
+                          <span
+                            className={`author-role ${author.provenance ? 'interactive-tag' : ''}`}
+                            onMouseEnter={author.provenance ? () => onHoverProvenance?.({ field: `author: ${normalizeGlyphs(author.name)}`, page_number: author.provenance!.page_number, snippet: author.provenance!.source_text_snippet }) : undefined}
+                            onMouseLeave={author.provenance ? () => onHoverProvenance?.(null) : undefined}
+                            onClick={author.provenance ? () => onLocateProvenance?.({ field: `author: ${normalizeGlyphs(author.name)}`, page_number: author.provenance!.page_number, snippet: author.provenance!.source_text_snippet }) : undefined}
+                            title={author.provenance ? `Page ${author.provenance.page_number} • Click to jump to source in document` : undefined}
+                          >
+                            {displayRole}
+                          </span>
+                        </div>
                       </div>
                     );
                   })}
@@ -321,7 +374,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                     onClick={() => onLocateProvenance?.({ field: 'background_and_rationale', page_number: extractedAffair.rationale_provenance!.page_number, snippet: extractedAffair.rationale_provenance!.source_text_snippet })}
                     title="Click to jump to citation in document"
                   >
-                    page {extractedAffair.rationale_provenance.page_number}
+                    Page {extractedAffair.rationale_provenance.page_number}
                   </span>
                 )}
               </div>
@@ -436,7 +489,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                     const isAuthor = d.field.startsWith('authors[');
                     const isQA = d.field.startsWith('questions_and_answers[');
                     const displayField = isAuthor
-                      ? d.field.replace(/^authors\[\d+\]\.?/, 'author · ')
+                      ? normalizeGlyphs(d.field).replace(/^authors\[\d+\]\.?/, 'author · ')
                       : isQA
                       ? d.field.replace(/^questions_and_answers\[(\d+)\]\./, 'q&a #$1 · ')
                       : d.field;
@@ -474,7 +527,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                         </div>
                         {d.snippet_preview && (
                           <div className="audit-item-quote">
-                            "{d.snippet_preview}"
+                            "{normalizeGlyphs(d.snippet_preview)}"
                           </div>
                         )}
                       </div>

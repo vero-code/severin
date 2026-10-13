@@ -104,6 +104,8 @@ def normalize_for_matching(text: str) -> str:
     """Normalize text for resilient quote matching across PDF extraction artifacts."""
     if not text:
         return ""
+    # Normalize known PDF Type 1 embedded font glyph artifacts (\x11 -> š)
+    text = text.replace("\x11", "š")
     # Strip soft hyphens, zero-width spaces, replacement glyphs, and control characters
     cleaned = re.sub(r"[\xad\u200b\ufffd\x00-\x08\x0b\x0c\x0e-\x1f]", "", text)
     # Normalize typographic dashes and quotes
@@ -139,6 +141,18 @@ def find_snippet_offsets(snippet: str, page_text: str) -> Tuple[Optional[int], O
     idx = page_text.lower().find(snippet.lower())
     if idx != -1:
         return idx, idx + len(snippet)
+
+    # 2b. Regex-based flexible whitespace match (handles line-wraps and embedded glyph artifacts)
+    glyph_normalized = snippet.replace("\x11", "š").strip()
+    words = [re.escape(w) for w in glyph_normalized.split() if w]
+    if len(words) >= 2:
+        try:
+            pattern = r"\s+".join(words)
+            m = re.search(pattern, page_text, re.IGNORECASE)
+            if m:
+                return m.start(), m.end()
+        except re.error:
+            pass
 
     # 3. Normalized whitespace match
     def normalize_ws(s: str) -> str:
