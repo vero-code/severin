@@ -79,7 +79,7 @@
 }
 
 .open-pdf-link {
-  color: #38bdf8;
+  color: var(--accent-mint);
   text-decoration: none;
   font-size: var(--font-size-sm);
   display: inline-flex;
@@ -87,8 +87,8 @@
   gap: 0.25rem;
   padding: 0.25rem 0.55rem;
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(167, 243, 208, 0.28);
+  background: rgba(167, 243, 208, 0.08);
   font-weight: 500;
   transition: all 0.15s ease;
   white-space: nowrap;
@@ -96,8 +96,8 @@
 }
 
 .open-pdf-link:hover {
-  background: rgba(56, 189, 248, 0.18);
-  border-color: rgba(56, 189, 248, 0.6);
+  background: rgba(167, 243, 208, 0.18);
+  border-color: rgba(167, 243, 208, 0.55);
 }
 
 .preview-iframe {
@@ -140,14 +140,14 @@
   background: transparent;
   border: 1px solid transparent;
   color: var(--text-secondary);
-  padding: 0.32rem 0.75rem;
+  padding: 0.28rem 0.6rem;
   border-radius: 6px;
   font-size: var(--font-size-sm);
   font-weight: 500;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.35rem;
   transition: all 0.15s ease;
   white-space: nowrap;
 }

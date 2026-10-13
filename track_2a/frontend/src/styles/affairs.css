@@ -64,14 +64,15 @@
 }
 
 .badge-body {
-  background-color: var(--badge-bg);
-  border: 1px solid var(--badge-border);
-  color: var(--badge-text);
+  background-color: rgba(167, 243, 208, 0.1);
+  border: 1px solid rgba(167, 243, 208, 0.28);
+  color: var(--accent-mint);
   font-size: var(--font-size-sm);
   font-weight: 700;
-  padding: 0.2rem 0.5rem;
+  padding: 0.18rem 0.45rem;
   border-radius: 4px;
   font-family: var(--font-mono);
+  letter-spacing: 0.03em;
 }
 
 .affair-short-id {

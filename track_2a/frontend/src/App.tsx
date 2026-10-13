@@ -320,39 +320,27 @@ export function App() {
           {/* Column 1: Source Selector Panel */}
           <div className="studio-selector-panel">
             <div className="studio-panel-header">
-              <div className="panel-header-title">
-                <span>🇨🇭 Sources</span>
+              <div className="sidebar-tabs-header">
+                <button
+                  className={`sidebar-tab-btn ${controlMode === 'samples' ? 'active' : ''}`}
+                  onClick={() => setControlMode('samples')}
+                  title="Browse 27 curated nationwide test samples"
+                >
+                  27 Samples
+                </button>
+                <button
+                  className={`sidebar-tab-btn ${controlMode === 'api' ? 'active' : ''}`}
+                  onClick={() => setControlMode('api')}
+                  title="Live search via OpenParlData API"
+                >
+                  Live API
+                </button>
               </div>
-              {/* <span className="doc-info-badge" style={{ textAlign: 'right' }}>
-                {controlMode === 'samples' ? `${samplePdfs.length} Curated` : affairs.length > 0 ? `[${bodyKey}] ${affairs.length}` : ''}
-              </span> */}
-            </div>
-
-            {/* Sidebar Mode Switch: Samples vs Live API */}
-            <div className="sidebar-mode-switch">
-              <button
-                className={`mode-btn ${controlMode === 'samples' ? 'active' : ''}`}
-                onClick={() => setControlMode('samples')}
-                title="Browse 27 curated nationwide test samples"
-              >
-                🇨🇭 27 Samples
-              </button>
-              <button
-                className={`mode-btn ${controlMode === 'api' ? 'active' : ''}`}
-                onClick={() => setControlMode('api')}
-                title="Live search via OpenParlData API"
-              >
-                🌐 Live API
-              </button>
             </div>
 
             {/* Mode 1: Curated Test Samples */}
             {controlMode === 'samples' && (
               <div className="sidebar-sample-section">
-                <div className="sidebar-sample-label-row">
-                  <span className="sidebar-field-label">Curated Documents:</span>
-                  <span className="sample-counter-badge">{samplePdfs.length} files</span>
-                </div>
 
                 <div className="sidebar-sample-list">
                   {samplePdfs.map((s) => {
@@ -500,7 +488,7 @@ export function App() {
                   className={`preview-tab-btn ${docTab === 'pdf' ? 'active' : ''}`}
                   onClick={() => setDocTab('pdf')}
                 >
-                  📄 PDF
+                  PDF
                 </button>
                 <button
                   className={`preview-tab-btn ${docTab === 'text' ? 'active' : ''}`}
@@ -511,7 +499,7 @@ export function App() {
                     }
                   }}
                 >
-                  📝 Text {parsedPages.length > 0 ? `(${parsedPages.length}p)` : ''}
+                  Text {parsedPages.length > 0 ? `(${parsedPages.length}p)` : ''}
                 </button>
               </div>
 
@@ -705,8 +693,8 @@ export function App() {
                     Run Apertus 1.5-8B Extraction
                   </button>
                   <div className="studio-hero-features">
-                    <span className="studio-feature-pill">Zero Hallucinations</span>
                     <span className="studio-feature-pill">Algorithmic Provenance</span>
+                    <span className="studio-feature-pill">Conservative Extraction</span>
                     <span className="studio-feature-pill">CSCS Alps GH200</span>
                     <span className="studio-feature-pill">26 Cantons + Bund</span>
                   </div>
@@ -727,7 +715,7 @@ export function App() {
                           <span className="badge-tag" style={{ marginLeft: '0.5rem' }}>Swiss-AI Apertus</span>
                         </h4>
                         <p>
-                          Zero hallucinations • {provenanceReport?.verified_citations ?? 0} of {provenanceReport?.total_citations ?? 0} citations algorithmically verified against source text.
+                          Strict conservative grounding • {provenanceReport?.verified_citations ?? 0} of {provenanceReport?.total_citations ?? 0} citations algorithmically verified against source text.
                         </p>
                       </div>
                     </div>
