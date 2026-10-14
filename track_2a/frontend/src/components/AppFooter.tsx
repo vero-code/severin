@@ -7,9 +7,12 @@ export const AppFooter: React.FC = () => {
   <span>&copy; 2026</span>
   <span className="footer-brand-title">SEVERIN</span>
   <span className="footer-separator">•</span>
-  <span className="footer-desc">
-    Built for Hack Apertus 2026 (Track 2A: Academia Challenges → OpenParlData)
-  </span>
+        <span
+          className="footer-desc"
+          title="Built for Hack Apertus 2026 (Track 2A: Academia Challenges → OpenParlData)"
+        >
+          Built for Hack Apertus 2026 (Track 2A: Academia Challenges → OpenParlData)
+        </span>
 </div>
 
 

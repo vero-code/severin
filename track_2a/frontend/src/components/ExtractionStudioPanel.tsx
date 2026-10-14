@@ -90,7 +90,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
   return (
     <div className="studio-extraction-panel">
       <div className="studio-panel-header">
-        <div className="panel-header-title">
+        <div className="panel-header-title" title="Apertus Dossier">
           <span>Apertus Dossier</span>
         </div>
 

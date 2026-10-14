@@ -22,21 +22,30 @@
   align-items: center;
   gap: 0.6rem;
   min-width: 0;
+  flex: 1 1 auto;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   padding: 3px 0;
   line-height: 1.4;
+}
+
+.footer-left > span:not(.footer-desc) {
+  flex-shrink: 0;
 }
 
 .footer-brand-title {
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--text-primary);
+  flex-shrink: 0;
 }
 
 .footer-desc {
   color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 0 1 auto;
 }
 
 .footer-badge {

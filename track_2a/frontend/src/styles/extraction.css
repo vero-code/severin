@@ -19,7 +19,7 @@
 }
 
 .studio-panel-header .btn-extract {
-  padding: 0.38rem 0.95rem;
+  padding: 0.35rem 0.85rem;
   font-size: var(--font-size-base);
   white-space: nowrap;
   flex-shrink: 0;
