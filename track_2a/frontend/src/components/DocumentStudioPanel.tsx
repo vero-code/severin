@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { getText } from '../constants';
-import { normalizeSwissText, foldDiacritics } from '../utils/textNormalization';
+import { normalizeSwissText, foldDiacritics, buildWordPattern } from '../utils/textNormalization';
 import type { DocumentItem, PdfPageItem, ActiveProvenance } from '../types';
 
 interface DocumentStudioPanelProps {
@@ -40,7 +40,6 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
   onCopyPageText,
   activeProvenance,
   textTabHint = false,
-  onClearProvenance,
 }) => {
   const hasDocument = Boolean(activeDoc?.url || currentSampleFile);
 
@@ -87,9 +86,38 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
       activeProvenance.char_end > activeProvenance.char_start &&
       activeProvenance.char_end <= page.text.length
     ) {
-      const before = page.text.slice(0, activeProvenance.char_start);
-      const matched = page.text.slice(activeProvenance.char_start, activeProvenance.char_end);
-      const after = page.text.slice(activeProvenance.char_end);
+      let start = activeProvenance.char_start;
+      let end = activeProvenance.char_end;
+
+      // Defensive healing: if end was truncated prematurely due to line-break hyphenations
+      const rawSnippet = activeProvenance?.snippet;
+      const cleanSnippet = rawSnippet ? rawSnippet.replace(/\.{3,}$/, '').trim() : '';
+      if (cleanSnippet) {
+        const snippetWords = cleanSnippet.split(/\s+/).filter(w => w.length > 0);
+        const lastWord = snippetWords[snippetWords.length - 1]?.replace(/^[^\w\u00C0-\u024F]+|[^\w\u00C0-\u024F]+$/g, '');
+        if (lastWord) {
+          const searchStart = Math.max(start, end - 25);
+          const searchEnd = Math.min(page.text.length, end + 80);
+          const searchWindow = page.text.slice(searchStart, searchEnd);
+          const lastWordRegex = new RegExp(`\\b${lastWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[.!?]?`, 'i');
+          const m = searchWindow.match(lastWordRegex);
+          if (m && typeof m.index === 'number') {
+            end = searchStart + m.index + m[0].length;
+          }
+        }
+      }
+
+      // Expand if landing mid-word or missing trailing sentence punctuation
+      while (end < page.text.length && /\w/.test(page.text[end])) {
+        end++;
+      }
+      if (end < page.text.length && /[.!?:;,]/.test(page.text[end])) {
+        end++;
+      }
+
+      const before = page.text.slice(0, start);
+      const matched = page.text.slice(start, end);
+      const after = page.text.slice(end);
       return (
         <>
           {before}
@@ -128,12 +156,12 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
       );
     }
 
-    // 2. Whitespace-flexible and glyph-normalized regex match (handles line-wraps and embedded artifacts)
+    // 2. Whitespace-flexible and hyphenation-resilient regex match (handles line-wraps and embedded artifacts)
     const normalizedSnippet = normalizeSwissText(cleanSnippet).trim();
 
     const words = normalizedSnippet.split(/\s+/).filter(w => w.length > 0);
     if (words.length >= 2) {
-      const escapedWords = words.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+      const escapedWords = words.map(buildWordPattern);
       try {
         const fullRegex = new RegExp(escapedWords.join('\\s+'), 'i');
         const match = page.text.match(fullRegex);
@@ -157,7 +185,7 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
     // 3. Leading words phrase match (e.g. author name and initial street)
     if (words.length >= 2) {
       const leadingWords = words.slice(0, Math.min(4, words.length));
-      const escapedLeading = leadingWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+      const escapedLeading = leadingWords.map(buildWordPattern);
       try {
         const leadingRegex = new RegExp(escapedLeading.join('\\s+'), 'i');
         const match = page.text.match(leadingRegex);
@@ -183,7 +211,7 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
     const foldedSnippet = foldDiacritics(normalizedSnippet);
     const foldedWords = foldedSnippet.split(/\s+/).filter(w => w.length > 0);
     if (foldedWords.length >= 2) {
-      const escapedFolded = foldedWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+      const escapedFolded = foldedWords.map(buildWordPattern);
       try {
         const foldedRegex = new RegExp(escapedFolded.join('\\s+'), 'i');
         const match = foldedPage.match(foldedRegex);
@@ -213,7 +241,7 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
       ).trim();
       if (entityName.length >= 3) {
         const entityWords = entityName.split(/\s+/).filter(w => w.length > 0);
-        const escapedEntity = entityWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+        const escapedEntity = entityWords.map(buildWordPattern);
         try {
           const entityRegex = new RegExp(escapedEntity.join('\\s+'), 'i');
           const match = page.text.match(entityRegex);
@@ -237,7 +265,7 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
         const foldedEntity = foldDiacritics(entityName);
         const foldedEntityWords = foldedEntity.split(/\s+/).filter(w => w.length > 0);
         if (foldedEntityWords.length >= 1) {
-          const escapedFoldedEntity = foldedEntityWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+          const escapedFoldedEntity = foldedEntityWords.map(buildWordPattern);
           try {
             const entityFoldedRegex = new RegExp(escapedFoldedEntity.join('\\s+'), 'i');
             const match = foldedPage.match(entityFoldedRegex);
@@ -262,17 +290,39 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
       }
     }
 
-    // 6. Long text phrase prefix match (resilient to subtle typography differences in long rationale sections)
+    // 6. Long text phrase prefix & suffix match (resilient to subtle typography differences in long rationale sections)
     if (words.length >= 5) {
       const prefixWords = words.slice(0, 6);
-      const escapedPrefix = prefixWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+      const escapedPrefix = prefixWords.map(buildWordPattern);
       try {
         const prefixRegex = new RegExp(escapedPrefix.join('\\s+'), 'i');
         const match = page.text.match(prefixRegex);
         if (match && typeof match.index === 'number') {
-          const before = page.text.slice(0, match.index);
-          const matched = page.text.slice(match.index, Math.min(page.text.length, match.index + cleanSnippet.length));
-          const after = page.text.slice(Math.min(page.text.length, match.index + cleanSnippet.length));
+          const matchStart = match.index;
+          let matchEnd = Math.min(page.text.length, matchStart + cleanSnippet.length);
+
+          // Suffix anchor match to prevent premature hyphenation cuts
+          const suffixWords = words.slice(-3);
+          const escapedSuffix = suffixWords.map(buildWordPattern);
+          const suffixRegex = new RegExp(escapedSuffix.join('\\s+'), 'i');
+          const searchAfter = Math.max(matchStart, matchStart + Math.floor(cleanSnippet.length * 0.7));
+          const textAfter = page.text.slice(searchAfter, Math.min(page.text.length, matchStart + cleanSnippet.length + 300));
+          const suffixMatch = textAfter.match(suffixRegex);
+          if (suffixMatch && typeof suffixMatch.index === 'number') {
+            matchEnd = searchAfter + suffixMatch.index + suffixMatch[0].length;
+          } else {
+            // Expand past partial word if cut mid-word
+            while (matchEnd < page.text.length && /\w/.test(page.text[matchEnd])) {
+              matchEnd++;
+            }
+            if (matchEnd < page.text.length && /[.!?:;,]/.test(page.text[matchEnd])) {
+              matchEnd++;
+            }
+          }
+
+          const before = page.text.slice(0, matchStart);
+          const matched = page.text.slice(matchStart, matchEnd);
+          const after = page.text.slice(matchEnd);
           return (
             <>
               {before}

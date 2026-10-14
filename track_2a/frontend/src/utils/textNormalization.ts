@@ -63,3 +63,14 @@ export const foldDiacritics = (text?: string | null): string => {
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase();
 };
+
+/**
+ * Builds a regex pattern for a word that allows optional hyphenation across linebreaks.
+ * Handles soft hyphen (\u00ad), hyphen-minus (-), and unicode dashes (\u2010, \u2011) followed by whitespace.
+ */
+export const buildWordPattern = (word: string): string => {
+  if (!word) return '';
+  const chars = Array.from(word).map(c => c.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  return chars.join('(?:[-\\u00ad\\u2010\\u2011]\\s*)?');
+};
+

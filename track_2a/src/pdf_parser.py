@@ -216,9 +216,12 @@ def find_snippet_offsets(snippet: str, page_text: str) -> Tuple[Optional[int], O
     if idx != -1:
         return idx, idx + len(snippet)
 
-    # 2b. Regex-based flexible whitespace match (handles line-wraps and embedded glyph artifacts)
+    # 2b. Regex-based flexible whitespace & hyphen-resilient match (handles line-wraps, Dun-\nkelziffer, etc.)
+    def _word_pattern(w: str) -> str:
+        return r"(?:[-\u00ad\u2010\u2011]\s*)?".join(re.escape(c) for c in w)
+
     norm_s = normalize_swiss_text(snippet).strip()
-    words = [re.escape(w) for w in norm_s.split() if w]
+    words = [_word_pattern(w) for w in norm_s.split() if w]
     if len(words) >= 2:
         try:
             pattern = r"\s+".join(words)
@@ -231,7 +234,7 @@ def find_snippet_offsets(snippet: str, page_text: str) -> Tuple[Optional[int], O
     # 2c. Diacritic-folded fallback match (resilient to accents/umlauts dropped or corrupted by PDF drivers)
     folded_s = fold_diacritics(norm_s)
     folded_p = fold_diacritics(page_text)
-    f_words = [re.escape(w) for w in folded_s.split() if w]
+    f_words = [_word_pattern(w) for w in folded_s.split() if w]
     if len(f_words) >= 2:
         try:
             pattern = r"\s+".join(f_words)
@@ -241,7 +244,7 @@ def find_snippet_offsets(snippet: str, page_text: str) -> Tuple[Optional[int], O
         except re.error:
             pass
 
-        # 2d. Leading anchor words match (resilient to trailing typos or character drops by LLMs)
+        # 2d. Leading anchor words match with suffix boundary detection
         if len(f_words) >= 3:
             for k in (min(4, len(f_words)), 3):
                 try:
@@ -253,7 +256,18 @@ def find_snippet_offsets(snippet: str, page_text: str) -> Tuple[Optional[int], O
                         if semi_idx != -1 and semi_idx - start <= len(snippet) + 30:
                             end = semi_idx + 1
                         else:
-                            end = min(len(page_text), start + len(snippet))
+                            end = None
+                            for s_k in (min(3, len(f_words)), 2, 1):
+                                try:
+                                    s_pat = r"\s+".join(f_words[-s_k:])
+                                    s_m = re.search(s_pat, folded_p[start:])
+                                    if s_m:
+                                        end = start + s_m.end()
+                                        break
+                                except re.error:
+                                    pass
+                            if end is None:
+                                end = min(len(page_text), start + len(snippet))
                         return start, end
                 except re.error:
                     pass
