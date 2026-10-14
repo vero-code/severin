@@ -53,8 +53,8 @@
 .faq-modal-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  padding: 1.25rem 1.75rem;
+  align-items: center;
+  padding: 1rem 1.75rem;
   background: var(--bg-panel-header);
   border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
@@ -63,22 +63,7 @@
 
 .faq-header-titles {
   display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.faq-title-badge {
-  display: inline-block;
-  align-self: flex-start;
-  font-size: var(--font-size-sm);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 0.15rem 0.55rem;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--border-panel);
-  color: var(--text-secondary);
+  align-items: center;
 }
 
 .faq-modal-header h2 {
@@ -86,14 +71,14 @@
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
-  line-height: 1.3;
+  line-height: 1;
 }
 
 .faq-header-subtitle {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
   color: var(--text-secondary);
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 .faq-modal-close {
@@ -138,155 +123,47 @@
 }
 
 .faq-card {
-  background: rgba(18, 22, 31, 0.75);
-  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  border: 1px solid var(--border-panel);
   border-radius: var(--radius-md);
-  padding: 1.15rem;
+  padding: 1.25rem 1.35rem;
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
-  transition: all 0.2s ease;
+  gap: 0.55rem;
+  transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
 }
 
 .faq-card:hover {
-  border-color: rgba(255, 255, 255, 0.22);
-  background: rgba(24, 29, 38, 0.95);
+  border-color: rgba(255, 255, 255, 0.25);
+  background: var(--bg-card-hover);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-}
-
-.faq-card-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.faq-card-icon-box {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.icon-box-red {
-  background: rgba(217, 38, 46, 0.16);
-  border: 1px solid rgba(217, 38, 46, 0.35);
-  color: var(--accent-red-light);
-}
-
-.icon-box-mint {
-  background: rgba(56, 161, 105, 0.16);
-  border: 1px solid rgba(56, 161, 105, 0.35);
-  color: var(--accent-mint);
-}
-
-.icon-box-cyan {
-  background: rgba(6, 182, 212, 0.16);
-  border: 1px solid rgba(6, 182, 212, 0.35);
-  color: #38bdf8;
-}
-
-.icon-box-amber {
-  background: rgba(245, 158, 11, 0.16);
-  border: 1px solid rgba(245, 158, 11, 0.35);
-  color: #fbbf24;
-}
-
-.icon-box-purple {
-  background: rgba(168, 85, 247, 0.16);
-  border: 1px solid rgba(168, 85, 247, 0.35);
-  color: #c084fc;
-}
-
-.icon-box-slate {
-  background: rgba(148, 163, 184, 0.16);
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  color: #cbd5e1;
-}
-
-.faq-card-heading-box {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  min-width: 0;
-}
-
-.faq-card-badge {
-  font-size: 10.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0.15rem 0.45rem;
-  border-radius: 4px;
-  width: fit-content;
-  line-height: 1.2;
-}
-
-.badge-red {
-  background: rgba(217, 38, 46, 0.2);
-  color: var(--accent-red-light);
-}
-
-.badge-mint {
-  background: rgba(56, 161, 105, 0.2);
-  color: var(--accent-mint);
-}
-
-.badge-cyan {
-  background: rgba(6, 182, 212, 0.2);
-  color: #38bdf8;
-}
-
-.badge-amber {
-  background: rgba(245, 158, 11, 0.2);
-  color: #fbbf24;
-}
-
-.badge-purple {
-  background: rgba(168, 85, 247, 0.2);
-  color: #c084fc;
-}
-
-.badge-slate {
-  background: rgba(148, 163, 184, 0.2);
-  color: #cbd5e1;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
 .faq-card-title {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-md);
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
   line-height: 1.3;
 }
 
-.faq-card-role {
-  font-size: var(--font-size-sm);
+.faq-card-desc {
+  font-size: var(--font-size-base);
   color: var(--text-secondary);
-  line-height: 1.5;
+  line-height: 1.6;
+  margin: 0;
 }
 
-.faq-card-role strong {
-  color: var(--text-primary);
-  font-weight: 600;
+.faq-link {
+  color: #60a5fa;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
 }
 
-.faq-card-value {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-  line-height: 1.5;
-  background: rgba(255, 255, 255, 0.03);
-  border-left: 2px solid var(--accent-mint);
-  padding: 0.5rem 0.75rem;
-  border-radius: 0 4px 4px 0;
-}
-
-.faq-card-value strong {
-  color: var(--accent-mint);
-  font-weight: 600;
+.faq-link:hover {
+  color: #93c5fd;
 }
 
 .faq-modal-footer {
@@ -306,6 +183,7 @@
   gap: 0.5rem;
   font-size: var(--font-size-sm);
   color: var(--text-muted);
+  flex-wrap: wrap;
 }
 
 .faq-note-dot {
