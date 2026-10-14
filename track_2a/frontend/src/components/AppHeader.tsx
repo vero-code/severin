@@ -17,7 +17,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ telemetry, onOpenGuide }) 
         <div className="brand-titles">
           <h1>SEVERIN</h1>
           <span className="brand-separator" aria-hidden="true">–</span>
-          <p>Swiss Parliamentary Affairs Extraction Platform</p>
+          <p>Swiss Parliamentary Affairs Intelligence Platform</p>
         </div>
       </div>
 

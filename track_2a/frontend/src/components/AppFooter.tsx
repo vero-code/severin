@@ -4,12 +4,14 @@ export const AppFooter: React.FC = () => {
   return (
     <footer className="app-footer">
       <div className="footer-left">
-        <span className="footer-brand-title">SEVERIN</span>
-        <span className="footer-separator">•</span>
-        <span className="footer-desc">Swiss Parliamentary Affairs Intelligence Platform</span>
-        <span className="footer-separator">•</span>
-        <span className="footer-badge">Hack Apertus 2026 (Track 2A)</span>
-      </div>
+  <span>&copy; 2026</span>
+  <span className="footer-brand-title">SEVERIN</span>
+  <span className="footer-separator">•</span>
+  <span className="footer-desc">
+    Built for Hack Apertus 2026 (Track 2A: Academia Challenges → OpenParlData)
+  </span>
+</div>
+
 
       <div className="footer-right">
         <div className="footer-links">
@@ -24,7 +26,7 @@ export const AppFooter: React.FC = () => {
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
               <circle cx="12" cy="7" r="4" />
             </svg>
-            <span>Author: <strong>vero-code</strong></span>
+            <span>Author: <strong>Veronika Kashtanova</strong></span>
           </a>
 
           <span className="footer-separator">•</span>

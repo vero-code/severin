@@ -6,14 +6,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.35rem 1.25rem;
+  padding: 0.65rem 1.25rem;
   background-color: var(--bg-secondary);
   border-top: 1px solid var(--border-color);
   flex-shrink: 0;
-  font-size: 12px;
+  font-size: var(--font-size-base);
   color: var(--text-muted);
   box-sizing: border-box;
-  min-height: 32px;
+  min-height: 44px;
   line-height: 1;
 }
 
@@ -31,7 +31,6 @@
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--text-primary);
-  font-size: 11.5px;
 }
 
 .footer-desc {
@@ -49,8 +48,11 @@
 }
 
 .footer-separator {
-  color: var(--border-color);
-  font-size: 10px;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0.65;
+  user-select: none;
 }
 
 .footer-right {

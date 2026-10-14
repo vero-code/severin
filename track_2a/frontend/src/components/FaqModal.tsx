@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { FaqCardsGrid } from './FaqCardsGrid';
-import { FaqModalFooter } from './FaqModalFooter';
 
 interface FaqModalProps {
   isOpen: boolean;
@@ -54,7 +53,7 @@ export const FaqModal: React.FC<FaqModalProps> = ({ isOpen, onClose }) => {
           <FaqCardsGrid />
         </div>
 
-        <FaqModalFooter onClose={onClose} />
+        {/* <FaqModalFooter onClose={onClose} /> */}
       </div>
     </div>
   );
