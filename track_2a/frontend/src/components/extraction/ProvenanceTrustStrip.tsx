@@ -1,15 +1,114 @@
 import React from 'react';
-import type { ProvenanceReport, ActiveProvenance } from '../../types';
+import type { ProvenanceReport, ActiveProvenance, ExtractedAffair } from '../../types';
 import { normalizeSwissText } from '../../utils/textNormalization';
 
 interface ProvenanceTrustStripProps {
   provenanceReport: ProvenanceReport;
+  extractedAffair?: ExtractedAffair | null;
   activeProvenance?: ActiveProvenance | null;
   onHoverProvenance?: (prov: ActiveProvenance | null) => void;
 }
 
+function resolveFullProvenance(
+  field: string,
+  affair: ExtractedAffair | null | undefined
+): { snippet?: string; char_start?: number | null; char_end?: number | null; page_number?: number | null } | null {
+  if (!affair) return null;
+
+  if (field === 'title' && affair.title_provenance) {
+    return {
+      snippet: affair.title_provenance.source_text_snippet,
+      char_start: affair.title_provenance.char_start,
+      char_end: affair.title_provenance.char_end,
+      page_number: affair.title_provenance.page_number,
+    };
+  }
+
+  if (field === 'background_and_rationale' && affair.rationale_provenance) {
+    return {
+      snippet: affair.rationale_provenance.source_text_snippet,
+      char_start: affair.rationale_provenance.char_start,
+      char_end: affair.rationale_provenance.char_end,
+      page_number: affair.rationale_provenance.page_number,
+    };
+  }
+
+  const authorMatch = field.match(/^authors\[(\d+)\]/);
+  if (authorMatch) {
+    const idx = parseInt(authorMatch[1], 10);
+    const author = affair.authors?.[idx];
+    if (author?.provenance) {
+      return {
+        snippet: author.provenance.source_text_snippet,
+        char_start: author.provenance.char_start,
+        char_end: author.provenance.char_end,
+        page_number: author.provenance.page_number,
+      };
+    }
+  }
+
+  const qaQuestionMatch = field.match(/^questions_and_answers\[(\d+)\]\.question/);
+  if (qaQuestionMatch) {
+    const idx = parseInt(qaQuestionMatch[1], 10);
+    const prov = affair.questions_and_answers?.[idx]?.question?.provenance;
+    if (prov) {
+      return {
+        snippet: prov.source_text_snippet,
+        char_start: prov.char_start,
+        char_end: prov.char_end,
+        page_number: prov.page_number,
+      };
+    }
+  }
+
+  const qaAnswerMatch = field.match(/^questions_and_answers\[(\d+)\]\.answer/);
+  if (qaAnswerMatch) {
+    const idx = parseInt(qaAnswerMatch[1], 10);
+    const prov = affair.questions_and_answers?.[idx]?.answer?.provenance;
+    if (prov) {
+      return {
+        snippet: prov.source_text_snippet,
+        char_start: prov.char_start,
+        char_end: prov.char_end,
+        page_number: prov.page_number,
+      };
+    }
+  }
+
+  const finMatch = field.match(/^financial_details\[(\d+)\]/);
+  if (finMatch) {
+    const idx = parseInt(finMatch[1], 10);
+    const prov = affair.financial_details?.[idx]?.provenance;
+    if (prov) {
+      return {
+        snippet: prov.source_text_snippet,
+        char_start: prov.char_start,
+        char_end: prov.char_end,
+        page_number: prov.page_number,
+      };
+    }
+  }
+
+  const procMatch = field.match(/^procedural_events\[(\d+)\]/);
+  if (procMatch) {
+    const idx = parseInt(procMatch[1], 10);
+    const prov = affair.procedural_events?.[idx]?.provenance;
+    if (prov) {
+      return {
+        snippet: prov.source_text_snippet,
+        char_start: prov.char_start,
+        char_end: prov.char_end,
+        page_number: prov.page_number,
+      };
+    }
+  }
+
+  return null;
+}
+
 export const ProvenanceTrustStrip: React.FC<ProvenanceTrustStripProps> = ({
   provenanceReport,
+  extractedAffair,
   activeProvenance,
   onHoverProvenance,
 }) => {
@@ -97,12 +196,17 @@ export const ProvenanceTrustStrip: React.FC<ProvenanceTrustStripProps> = ({
                     ? 'Credit'
                     : d.field;
 
-                  const cleanSnippet = normalizeSwissText(d.snippet_preview || '');
+                  const fullProv = resolveFullProvenance(d.field, extractedAffair);
+                  const fullSnippet = fullProv?.snippet || d.source_text_snippet || d.snippet_preview || '';
+                  const cleanSnippet = normalizeSwissText(fullSnippet);
+
                   const isHighlighted =
                     (activeProvenance?.field && activeProvenance.field === d.field) ||
                     (activeProvenance?.page_number === d.page &&
                       Boolean(activeProvenance?.snippet) &&
-                      activeProvenance?.snippet === d.snippet_preview);
+                      (activeProvenance?.snippet === d.snippet_preview ||
+                        activeProvenance?.snippet === fullSnippet ||
+                        activeProvenance?.snippet === fullProv?.snippet));
 
                   return (
                     <tr
@@ -111,8 +215,10 @@ export const ProvenanceTrustStrip: React.FC<ProvenanceTrustStripProps> = ({
                       onMouseEnter={() =>
                         onHoverProvenance?.({
                           field: d.field,
-                          page_number: d.page,
-                          snippet: d.snippet_preview,
+                          page_number: fullProv?.page_number ?? d.page,
+                          snippet: fullProv?.snippet ?? d.source_text_snippet ?? d.snippet_preview,
+                          char_start: fullProv?.char_start ?? d.char_start,
+                          char_end: fullProv?.char_end ?? d.char_end,
                         })
                       }
                       onMouseLeave={() => onHoverProvenance?.(null)}

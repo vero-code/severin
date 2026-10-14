@@ -115,7 +115,10 @@ def verify_provenance(
             "page": updated_prov.page_number if updated_prov else None,
             "status": updated_prov.status.value if updated_prov else "not_found",
             "verified": ok,
-            "snippet_preview": (updated_prov.source_text_snippet[:50] + "...") if updated_prov else ""
+            "snippet_preview": (updated_prov.source_text_snippet[:50] + "...") if updated_prov else "",
+            "source_text_snippet": updated_prov.source_text_snippet if updated_prov else "",
+            "char_start": updated_prov.char_start if updated_prov else None,
+            "char_end": updated_prov.char_end if updated_prov else None,
         })
         return updated_prov
 

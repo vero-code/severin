@@ -147,6 +147,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
               {provenanceReport && (
                 <ProvenanceTrustStrip
                   provenanceReport={provenanceReport}
+                  extractedAffair={extractedAffair}
                   activeProvenance={activeProvenance}
                   onHoverProvenance={onHoverProvenance}
                 />

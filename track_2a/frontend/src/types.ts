@@ -160,6 +160,9 @@ export interface ProvenanceDetailItem {
   status: string;
   verified: boolean;
   snippet_preview: string;
+  source_text_snippet?: string;
+  char_start?: number | null;
+  char_end?: number | null;
 }
 
 export interface ActiveProvenance {

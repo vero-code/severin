@@ -345,28 +345,41 @@
   white-space: nowrap;
 }
 
+.audit-table tbody tr:hover .audit-cell-idx,
+.audit-table tbody tr.active-highlight .audit-cell-idx {
+  color: #E2E8F0;
+}
+
 .audit-cell-field {
   font-weight: 600;
-  color: var(--accent-mint);
+  color: #F1F5F9;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: 0.75rem;
+  transition: color 0.12s ease;
 }
 
-.audit-cell-page {
-  text-align: center;
-  white-space: nowrap;
+.audit-table tbody tr:hover .audit-cell-field,
+.audit-table tbody tr.active-highlight .audit-cell-field {
+  color: var(--accent-mint);
 }
 
 .audit-cell-quote {
-  color: #E2E8F0;
+  color: #94A3B8;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 0.76rem;
   font-family: var(--font-mono, monospace);
-  opacity: 0.92;
+  opacity: 0.9;
+  transition: color 0.12s ease, opacity 0.12s ease;
+}
+
+.audit-table tbody tr:hover .audit-cell-quote,
+.audit-table tbody tr.active-highlight .audit-cell-quote {
+  color: var(--accent-mint);
+  opacity: 1;
 }
 
 .audit-badge-pill {
