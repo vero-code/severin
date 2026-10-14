@@ -47,18 +47,11 @@ app.add_middleware(
 
 @app.middleware("http")
 async def log_requests_middleware(request, call_next):
-    # Exclude high-frequency background telemetry polling
-    is_telemetry = request.url.path.startswith("/api/telemetry")
-    if not is_telemetry:
-        query_str = f"?{request.url.query}" if request.url.query else ""
-        print(f"[HTTP] >>> {request.method} {request.url.path}{query_str}", flush=True)
     response = await call_next(request)
     # Prevent the browser from serving stale cached PDF/HTML responses inside the iframe
     if request.url.path.startswith("/api/pdf-proxy"):
         response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
         response.headers["Pragma"] = "no-cache"
-    if not is_telemetry:
-        print(f"[HTTP] <<< {response.status_code} {request.method} {request.url.path}", flush=True)
     return response
 
 client = OpenParlDataClient(timeout=30)
@@ -118,7 +111,7 @@ def search_affairs(
 ):
     """Query parliamentary affairs with filters and pagination."""
     try:
-        print(f"[AFFAIRS] Query: body_key='{body_key}', search='{search}', limit={limit}, mode='{search_mode}'", flush=True)
+        logger.info(f"Query affairs: body_key='{body_key}', search='{search}', limit={limit}, mode='{search_mode}'")
         result = client.get_affairs(
             body_key=body_key,
             search=search,
@@ -128,7 +121,7 @@ def search_affairs(
             expand=expand
         )
         total_found = len(result.get("data", [])) if isinstance(result, dict) else 0
-        print(f"[AFFAIRS] Retrieved {total_found} affairs from OpenParlData", flush=True)
+        logger.info(f"Retrieved {total_found} affairs from OpenParlData")
         return result
     except Exception as e:
         logger.error(f"Error querying affairs: {e}")
@@ -139,7 +132,7 @@ def search_affairs(
 def get_affair(affair_id: int):
     """Retrieve full detail for a single parliamentary affair."""
     try:
-        print(f"[AFFAIR] Fetching detail for affair #{affair_id}", flush=True)
+        logger.info(f"Fetching detail for affair #{affair_id}")
         data = client.get_affair_by_id(affair_id=affair_id)
         return data
     except Exception as e:
@@ -273,7 +266,6 @@ def _render_html_portal_notice(
   </div>
 </body>
 </html>"""
-    print(f"[PDF-PROXY] Non-PDF detected for '{filename}' -> Serving styled HTML portal notice ('{title}')", flush=True)
     logger.info(f"[PDF-PROXY] Non-PDF detected for '{filename}' -> Serving styled HTML portal notice ('{title}')")
     return StreamingResponse(io.BytesIO(html_content.encode("utf-8")), media_type="text/html")
 
@@ -305,7 +297,6 @@ def proxy_pdf(
                 with open(sample_path, "rb") as f:
                     content = f.read(4096)
                 return _render_html_portal_notice(content, sample, url)
-            print(f"[PDF-PROXY] Serving binary PDF sample: '{sample}' as '{safe_filename}'", flush=True)
             logger.info(f"[PDF-PROXY] Serving binary PDF sample: '{sample}' as '{safe_filename}'")
             return FileResponse(
                 sample_path,
@@ -325,7 +316,6 @@ def proxy_pdf(
                 with open(local_sample, "rb") as f:
                     content = f.read(4096)
                 return _render_html_portal_notice(content, sample_file, url)
-            print(f"[PDF-PROXY] Serving binary PDF from manifest: '{sample_file}' as '{safe_filename}'", flush=True)
             logger.info(f"[PDF-PROXY] Serving binary PDF from manifest: '{sample_file}' as '{safe_filename}'")
             return FileResponse(
                 local_sample,
@@ -347,7 +337,6 @@ def proxy_pdf(
         if not resp.content.startswith(b"%PDF"):
             return _render_html_portal_notice(resp.content[:4096], safe_filename, url)
 
-        print(f"[PDF-PROXY] Streaming remote binary PDF: '{safe_filename}' from {url}", flush=True)
         logger.info(f"[PDF-PROXY] Streaming remote binary PDF: '{safe_filename}' from {url}")
         return StreamingResponse(
             io.BytesIO(resp.content),
@@ -375,21 +364,18 @@ def parse_pdf(
         if sample:
             sample_path = SAMPLE_DIR / sample
             if not sample_path.exists():
-                print(f"[PARSE-PDF] Sample PDF not found: {sample}", flush=True)
                 logger.error(f"[PARSE-PDF] Sample PDF not found: {sample}")
                 raise HTTPException(status_code=404, detail=f"Sample PDF not found: {sample}")
             with open(sample_path, "rb") as f:
                 if not f.read(10).startswith(b"%PDF"):
-                    print(f"[PARSE-PDF] Rejected non-PDF sample '{sample}' (cantonal web portal HTML)", flush=True)
                     logger.warning(f"[PARSE-PDF] Rejected non-PDF sample '{sample}' (cantonal web portal HTML)")
                     raise HTTPException(
                         status_code=422,
                         detail="This cantonal document links to an interactive web portal URL (HTML), not a static PDF document. Click 'Open PDF' in the header to view the live portal."
                     )
-            print(f"[PARSE-PDF] Extracting text pages from sample '{sample}' ...", flush=True)
+            logger.info(f"[PARSE-PDF] Extracting text pages from sample '{sample}' ...")
             pages = extract_pdf_pages(sample_path)
             total_chars = sum(p["char_count"] for p in pages)
-            print(f"[PARSE-PDF] Successfully parsed {len(pages)} pages ({total_chars:,} chars) from sample '{sample}'", flush=True)
             logger.info(f"[PARSE-PDF] Successfully parsed {len(pages)} pages ({total_chars:,} chars) from sample '{sample}'")
             return {
                 "url": sample,
@@ -403,16 +389,14 @@ def parse_pdf(
             if local_sample.exists():
                 with open(local_sample, "rb") as f:
                     if not f.read(10).startswith(b"%PDF"):
-                        print(f"[PARSE-PDF] Rejected non-PDF manifest sample '{URL_TO_SAMPLE_MAP[url.strip()]}' (cantonal web portal HTML)", flush=True)
                         logger.warning(f"[PARSE-PDF] Rejected non-PDF manifest sample '{URL_TO_SAMPLE_MAP[url.strip()]}' (cantonal web portal HTML)")
                         raise HTTPException(
                             status_code=422,
                             detail="This cantonal document links to an interactive web portal URL (HTML), not a static PDF document. Click 'Open PDF' in the header to view the live portal."
                         )
-                print(f"[PARSE-PDF] Extracting text pages from manifest sample '{URL_TO_SAMPLE_MAP[url.strip()]}' ...", flush=True)
+                logger.info(f"[PARSE-PDF] Extracting text pages from manifest sample '{URL_TO_SAMPLE_MAP[url.strip()]}' ...")
                 pages = extract_pdf_pages(local_sample)
                 total_chars = sum(p["char_count"] for p in pages)
-                print(f"[PARSE-PDF] Successfully parsed {len(pages)} pages ({total_chars:,} chars) from manifest sample '{URL_TO_SAMPLE_MAP[url.strip()]}'", flush=True)
                 logger.info(f"[PARSE-PDF] Successfully parsed {len(pages)} pages ({total_chars:,} chars) from manifest sample '{URL_TO_SAMPLE_MAP[url.strip()]}'")
                 return {
                     "url": url,
@@ -426,12 +410,11 @@ def parse_pdf(
         if not (url.startswith("https://") or url.startswith("http://")):
             raise HTTPException(status_code=400, detail="Invalid URL protocol")
 
-        print(f"[PARSE-PDF] Fetching remote PDF from URL: {url} ...", flush=True)
+        logger.info(f"[PARSE-PDF] Fetching remote PDF from URL: {url} ...")
         resp = requests.get(url, stream=True, timeout=30)
         resp.raise_for_status()
 
         if not resp.content.startswith(b"%PDF"):
-            print(f"[PARSE-PDF] Rejected remote document from {url} (received HTML)", flush=True)
             logger.warning(f"[PARSE-PDF] Rejected remote document from {url} (received HTML)")
             raise HTTPException(
                 status_code=422,
@@ -451,7 +434,6 @@ def parse_pdf(
                 tmp_path.unlink()
 
         total_chars = sum(p["char_count"] for p in pages)
-        print(f"[PARSE-PDF] Successfully parsed {len(pages)} pages ({total_chars:,} chars) from remote URL: {url}", flush=True)
         logger.info(f"[PARSE-PDF] Successfully parsed {len(pages)} pages ({total_chars:,} chars) from remote URL: {url}")
         return {
             "url": url,
@@ -514,14 +496,12 @@ def extract_document(req: ExtractRequest):
         if target_pdf:
             with open(target_pdf, "rb") as f:
                 if not f.read(10).startswith(b"%PDF"):
-                    print(f"[EXTRACT] Rejected extraction: '{target_pdf.name}' is an HTML portal page, not a binary PDF", flush=True)
                     logger.warning(f"[EXTRACT] Rejected extraction: '{target_pdf.name}' is an HTML portal page, not a binary PDF")
                     raise HTTPException(
                         status_code=422,
                         detail="Source document is an interactive cantonal web portal page (HTML) rather than a static PDF document. Apertus conservative extraction requires a PDF binary source."
                     )
 
-        print(f"[EXTRACT] Starting Apertus conservative extraction on '{target_pdf.name}' (canton={req.canton_hint}) ...", flush=True)
         logger.info(f"[EXTRACT] Starting Apertus conservative extraction on '{target_pdf.name}' (canton={req.canton_hint})")
         affair, report = extract_affair_from_pdf(
             pdf_path=target_pdf,
@@ -529,7 +509,6 @@ def extract_document(req: ExtractRequest):
             affair_id_hint=req.affair_id_hint
         )
         score_pct = (report.get("provenance_score", 0.0) if isinstance(report, dict) else getattr(report, "provenance_score", 0.0)) * 100
-        print(f"[EXTRACT] Completed extraction for '{target_pdf.name}' with provenance score: {score_pct:.1f}%", flush=True)
         logger.info(f"[EXTRACT] Completed extraction for '{target_pdf.name}' with provenance score: {score_pct:.1f}%")
 
         return {
@@ -544,7 +523,7 @@ def extract_document(req: ExtractRequest):
         err_msg = str(ve)
         if "No extractable text" in err_msg:
             target_name = target_pdf.name if target_pdf else "document"
-            print(f"[EXTRACT] Rejected extraction for scanned PDF '{target_name}': 0 text characters found", flush=True)
+            logger.warning(f"[EXTRACT] Rejected extraction for scanned PDF '{target_name}': 0 text characters found")
             raise HTTPException(
                 status_code=422,
                 detail="Source document is a scanned raster PDF with no embedded digital text layer (0 text characters). Apertus conservative extraction requires digital text or an upstream OCR engine (e.g. Docling/Tesseract) to prevent hallucinations."
