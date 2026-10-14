@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import severinLogo from './assets/logo.png';
-import { TelemetryBar } from './components/TelemetryBar';
+import { AppHeader } from './components/AppHeader';
 import { SourceSelectorPanel } from './components/SourceSelectorPanel';
 import { DocumentStudioPanel } from './components/DocumentStudioPanel';
 import { ExtractionStudioPanel } from './components/ExtractionStudioPanel';
+import { FaqModal } from './components/FaqModal';
+import { AppFooter } from './components/AppFooter';
 import { getText, getAffairDocs } from './constants';
 import type {
   ParliamentaryAffairItem,
@@ -43,6 +44,9 @@ export function App() {
   const activeProvenance = hoveredProvenance || selectedProvenance;
   const [textTabHint, setTextTabHint] = useState<boolean>(false);
   const hintTimeoutRef = useRef<any>(null);
+
+  // Platform Guide & Architecture FAQ modal
+  const [showFaqModal, setShowFaqModal] = useState<boolean>(false);
 
   // Curated nationwide sample PDFs context
   const [samplePdfs, setSamplePdfs] = useState<SamplePdfItem[]>([]);
@@ -352,19 +356,8 @@ export function App() {
 
   return (
     <div className="app-container">
-      {/* Header */}
-      <header className="app-header">
-        <div className="brand">
-          <img src={severinLogo} alt="SEVERIN Logo" className="brand-logo" />
-          <div className="brand-titles">
-            <h1>SEVERIN</h1>
-            <p>Swiss Parliamentary Affairs Extraction Platform</p>
-          </div>
-        </div>
-
-        {/* Live CSCS Apertus Telemetry Bar with Hover Table */}
-        <TelemetryBar telemetry={telemetry} />
-      </header>
+      {/* Header Component */}
+      <AppHeader telemetry={telemetry} onOpenGuide={() => setShowFaqModal(true)} />
 
       {/* Main Content */}
       <main className="app-main">
@@ -447,6 +440,12 @@ export function App() {
           />
         </div>
       </main>
+
+      {/* Footer Attribution & Links */}
+      <AppFooter />
+
+      {/* Platform Guide & Architecture FAQ Modal */}
+      <FaqModal isOpen={showFaqModal} onClose={() => setShowFaqModal(false)} />
     </div>
   );
 }
