@@ -189,6 +189,36 @@ def test_live_extraction_if_key_available():
     print("=" * 60)
 
 
+def test_scanned_pdf_vision_extraction():
+    """
+    Test extraction from scanned raster PDF (Canton Obwalden OW_339491_925376.pdf).
+    Verifies that zero-text scanned PDFs trigger Apertus Native Vision OCR and
+    achieve verified citation provenance.
+    """
+    ow_pdf = ROOT_DIR / "data" / "sample_pdfs" / "OW_339491_925376.pdf"
+    if not ow_pdf.exists():
+        print(f"\n[INFO] Scanned PDF test skipped: {ow_pdf} not found.")
+        return
+
+    print("\n" + "=" * 60)
+    print(f"Testing Scanned PDF Apertus Vision Extraction: {ow_pdf.name}...")
+    print("=" * 60)
+
+    affair, report = extract_affair_from_pdf(
+        pdf_path=ow_pdf,
+        canton_hint="OW"
+    )
+
+    print(f"Scanned Affair Title: {affair.title}")
+    print(f"Canton / Body:        {affair.canton_or_body}")
+    print(f"Provenance Score:     {report['provenance_score'] * 100:.1f}% ({report['verified_citations']}/{report['total_citations']})")
+
+    assert affair.title, "Extracted scanned affair title must not be empty!"
+    assert affair.canton_or_body == "OW"
+    assert report["provenance_score"] >= 0.8, f"Expected >= 80% provenance score on scanned PDF, got {report['provenance_score']}"
+    print("PASSED: test_scanned_pdf_vision_extraction")
+
+
 if __name__ == "__main__":
     print("=" * 60)
     print("Testing Conservative Extractor & Provenance Verifier (Track 2A)...")
@@ -196,6 +226,8 @@ if __name__ == "__main__":
     test_system_prompt_rules()
     test_algorithmic_provenance_verification()
     test_live_extraction_if_key_available()
+    test_scanned_pdf_vision_extraction()
     print("=" * 60)
     print("ALL EXTRACTOR TESTS PASSED!")
     print("=" * 60)
+

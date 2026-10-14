@@ -528,8 +528,9 @@ def extract_document(req: ExtractRequest):
             canton_hint=req.canton_hint,
             affair_id_hint=req.affair_id_hint
         )
-        print(f"[EXTRACT] Completed extraction for '{target_pdf.name}' with provenance score: {report.provenance_score:.1f}%", flush=True)
-        logger.info(f"[EXTRACT] Completed extraction for '{target_pdf.name}' with provenance score: {report.provenance_score:.1f}%")
+        score_pct = (report.get("provenance_score", 0.0) if isinstance(report, dict) else getattr(report, "provenance_score", 0.0)) * 100
+        print(f"[EXTRACT] Completed extraction for '{target_pdf.name}' with provenance score: {score_pct:.1f}%", flush=True)
+        logger.info(f"[EXTRACT] Completed extraction for '{target_pdf.name}' with provenance score: {score_pct:.1f}%")
 
         return {
             "affair": affair.model_dump(),
@@ -539,6 +540,17 @@ def extract_document(req: ExtractRequest):
 
     except HTTPException:
         raise
+    except ValueError as ve:
+        err_msg = str(ve)
+        if "No extractable text" in err_msg:
+            target_name = target_pdf.name if target_pdf else "document"
+            print(f"[EXTRACT] Rejected extraction for scanned PDF '{target_name}': 0 text characters found", flush=True)
+            raise HTTPException(
+                status_code=422,
+                detail="Source document is a scanned raster PDF with no embedded digital text layer (0 text characters). Apertus conservative extraction requires digital text or an upstream OCR engine (e.g. Docling/Tesseract) to prevent hallucinations."
+            )
+        logger.error(f"Validation error during extraction: {ve}")
+        raise HTTPException(status_code=422, detail=str(ve))
     except Exception as e:
         logger.error(f"Extraction failed: {e}")
         raise HTTPException(status_code=500, detail=f"Extraction failed: {str(e)}")

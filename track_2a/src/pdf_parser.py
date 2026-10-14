@@ -5,6 +5,8 @@ and character offsets for conservative human verification.
 Track 2A - Hack Apertus 2026.
 """
 
+import os
+import json
 import logging
 import re
 import unicodedata
@@ -108,9 +110,123 @@ def clean_page_text(text: str) -> str:
     return cleaned.strip()
 
 
+def ocr_pdf_with_apertus_vision(pdf_path: Path, max_pages: int = 5) -> List[Dict[str, Any]]:
+    """
+    Transcribe scanned or image-only PDF pages natively using Swiss-AI Apertus 1.5-8B Vision.
+    Checks persistent disk cache under data/ocr_cache/{pdf_name}.json first.
+    If uncached and CSCS_INFERENCE_API_KEY is available, invokes Apertus Vision on Alps GH200.
+    """
+    ocr_cache_dir = Path(__file__).resolve().parent.parent / "data" / "ocr_cache"
+    cache_file = ocr_cache_dir / f"{pdf_path.name}.json"
+
+    # 1. Return persistent OCR cache if available
+    if cache_file.exists():
+        try:
+            with open(cache_file, "r", encoding="utf-8") as f:
+                cached = json.load(f)
+                pages = cached.get("pages", [])
+                if pages:
+                    logger.info(f"[VISION-OCR] Loaded {len(pages)} transcribed pages from cache for '{pdf_path.name}'")
+                    return pages
+        except Exception as e:
+            logger.warning(f"[VISION-OCR] Error reading OCR cache for {pdf_path.name}: {e}")
+
+    # 2. Check if CSCS API key is available for live vision OCR
+    api_key = os.getenv("CSCS_INFERENCE_API_KEY")
+    if not api_key:
+        logger.info(f"[VISION-OCR] No CSCS_INFERENCE_API_KEY set; skipping live vision transcription for '{pdf_path.name}'")
+        return []
+
+    try:
+        from PIL import Image
+        import io
+        import base64
+        import requests
+
+        reader = PdfReader(str(pdf_path))
+        transcribed_pages: List[Dict[str, Any]] = []
+
+        pages_to_process = list(enumerate(reader.pages))[:max_pages]
+        for idx, page in pages_to_process:
+            page_num = idx + 1
+            if not page.images:
+                continue
+
+            # Extract the primary full-page scanned image
+            img_obj = page.images[0]
+            im = Image.open(io.BytesIO(img_obj.data))
+
+            # Resize if dimensions exceed 2048 to optimize latency and bandwidth
+            max_dim = 2048
+            if max(im.size) > max_dim:
+                scale = max_dim / max(im.size)
+                new_size = (int(im.size[0] * scale), int(im.size[1] * scale))
+                im = im.resize(new_size, Image.Resampling.LANCZOS)
+
+            if im.mode != "RGB":
+                im = im.convert("RGB")
+
+            buf = io.BytesIO()
+            im.save(buf, format="JPEG", quality=85)
+            b64_data = base64.b64encode(buf.getvalue()).decode("utf-8")
+
+            payload = {
+                "model": "swiss-ai/Apertus-v1.5-8B",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Transcribe all readable text from this scanned Swiss parliamentary document page accurately in the original language. Provide a faithful transcription without commentary."
+                            },
+                            {
+                                "type": "image_url",
+                                "image_url": {"url": f"data:image/jpeg;base64,{b64_data}"}
+                            }
+                        ]
+                    }
+                ],
+                "max_tokens": 1500,
+                "temperature": 0.0
+            }
+
+            resp = requests.post(
+                "https://api.inference.cscs.ch/v1/chat/completions",
+                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                json=payload,
+                timeout=60
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                text = clean_page_text(data["choices"][0]["message"]["content"])
+                transcribed_pages.append({
+                    "page_number": page_num,
+                    "text": text,
+                    "char_count": len(text)
+                })
+                logger.info(f"[VISION-OCR] Transcribed page {page_num} of '{pdf_path.name}' ({len(text)} chars)")
+            else:
+                logger.warning(f"[VISION-OCR] CSCS API returned HTTP {resp.status_code} on page {page_num}: {resp.text}")
+
+        if transcribed_pages:
+            total_chars = sum(p["char_count"] for p in transcribed_pages)
+            ocr_cache_dir.mkdir(parents=True, exist_ok=True)
+            with open(cache_file, "w", encoding="utf-8") as f:
+                json.dump({"file_name": pdf_path.name, "pages": transcribed_pages, "total_chars": total_chars}, f, indent=2, ensure_ascii=False)
+            logger.info(f"[VISION-OCR] Saved {len(transcribed_pages)} pages ({total_chars:,} chars) to {cache_file.name}")
+            return transcribed_pages
+
+    except Exception as e:
+        logger.error(f"[VISION-OCR] Failed to transcribe scanned PDF '{pdf_path.name}': {e}")
+
+    return []
+
+
 def extract_pdf_pages(pdf_path: Union[str, Path]) -> List[Dict[str, Any]]:
     """
     Extract text from a PDF file page by page.
+    Automatically falls back to Apertus Native Vision OCR for scanned or bitmap PDFs.
 
     :param pdf_path: Path to the binary PDF file.
     :return: List of dictionaries with structure:
@@ -151,6 +267,15 @@ def extract_pdf_pages(pdf_path: Union[str, Path]) -> List[Dict[str, Any]]:
                     "text": "",
                     "char_count": 0
                 })
+
+        # Check if PDF is a scanned document (0 extractable digital characters)
+        total_extracted = sum(p["char_count"] for p in pages_data)
+        if total_extracted == 0 and num_pages > 0:
+            logger.info(f"PDF '{path.name}' has 0 extractable digital characters. Invoking Apertus Native Vision OCR...")
+            ocr_pages = ocr_pdf_with_apertus_vision(path, max_pages=num_pages)
+            if ocr_pages and any(p["char_count"] > 0 for p in ocr_pages):
+                logger.info(f"Successfully recovered {len(ocr_pages)} pages via Apertus Native Vision OCR for '{path.name}'")
+                return ocr_pages
 
         logger.info(f"Successfully parsed {len(pages_data)} pages from {path.name}")
         return pages_data
