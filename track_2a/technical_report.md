@@ -106,6 +106,16 @@ Under CSCS pay-per-use tariffs:
   - French-speaking: Genève educational support inquiry (`GE_340969_927404.pdf`), Vaud, Valais, Neuchâtel
   - Italian-speaking: Ticino energy board inquiry (`TI_341386_928764.pdf`)
   - Trilingual / Romansh: Graubünden climate and wildlife inquiry (`GR_337559_920605.pdf`)
+
+#### 4.1 Nationwide Ingestion Audit: The Three Modalities of Swiss Parliamentary Data
+A comprehensive binary and typographic audit across all 27 jurisdictional sample files revealed that real-world parliamentary open data in Switzerland does not consist uniformly of clean digital PDFs:
+
+| Modality Classification | Cantons / Jurisdictions | Share | Technical Characteristics & Extraction Viability |
+|---|---|---|---|
+| **1. Born-Digital Text PDFs** | 23 bodies (CHE, ZH, BE, UR, SZ, NW, GL, ZG, SO, BS, BL, SH, AI, SG, AG, TG, GR, VS, FR, GE, NE, JU, TI) | **85.2%** (23/27) | Contains valid embedded digital font tables (`char_count`: 737 to 41,271 per document). **100% extractable** via Apertus pipeline with verifiable provenance. |
+| **2. Pure Raster Scans** | Canton Obwalden (`OW_339491_925376.pdf`) | **3.7%** (1/27) | 5 pages of pure bitmap images (`1 image/page, 0 text chars`). Requires upstream OCR engine (e.g. Docling/Tesseract) before semantic extraction can begin. |
+| **3. Disguised Web Portals** | Cantons Lucerne (`LU`), Appenzell Ausserrhoden (`AR`), Vaud (`VD`) | **11.1%** (3/27) | Files named `.pdf` but containing raw `<!DOCTYPE html>` payloads scraped from cantonal consultation webapps and parliament portals. |
+
 - **Disk Footprint:** The entire `track_2a/data/` directory measures **19.78 MB**, remaining well below the strict 100 MB competition limit.
 - **Licensing & Privacy:** All underlying documents are published under **CC-BY 4.0** or official Swiss Open Government Data (OGD) terms. The dataset contains solely public parliamentary records; no private personal information or non-redistributable materials were ingested.
 
@@ -215,6 +225,18 @@ Our algorithmic verifier honestly flagged the unnormalized citation as unverifie
 
 #### Case Study C: Multilingual JSON Nesting Idiosyncrasies in 8B Models
 During live French (`GE`) and Italian (`TI`) extraction, the 8B model occasionally placed top-level affair fields inside the first author dictionary (`authors[0]`) or flattened question items. Rather than weakening Pydantic's `extra="forbid"` rule (which would allow hallucinations to pass undetected), SEVERIN implements a deterministic **Defensive Normalizer** that hoists misplaced keys and structures question pairs prior to validation. This retains strict schema enforcement without discarding valid model outputs.
+
+#### Case Study D: The "Ghost PDF" Phenomenon in OpenParlData (LU, AR, VD & OW)
+A qualitative breakthrough emerged from our empirical validation across all 27 jurisdictional test files: **14.8% of cantonal records (4/27) cannot be processed by a pure text-layer PDF pipeline**:
+1. **The Scanned Image Barrier (Canton Obwalden, `OW_339491_925376.pdf`)**:
+   - `OW` provided a 5-page PDF containing exclusively full-page raster scans (`images: 1 per page`, `char_count: 0`).
+   - *System Response:* Rather than invoking the LLM on empty strings (which risks generating hallucinated metadata from title hints alone), SEVERIN's page parser detects zero extracted characters and rejects ungroundable extraction. In production, this defines a strict routing gate to an OCR preprocessor (e.g. Docling or Tesseract).
+2. **The Disguised Web Portals (Cantons LU, AR, VD)**:
+   - In 3 out of 27 cases (11.1%), the scraped files with a `.pdf` extension actually begin with `<!DOCTYPE html>`:
+     - **LU (`LU_339324_924638.pdf`)**: A cantonal *Vernehmlassungsverfahren* web form with interactive submission fields (`Angaben zur Person`, questionnaire options) rather than the draft bill itself.
+     - **AR (`AR_340850_927539.pdf`)**: A Single Page Application (SPA) shell containing only React/webpack bootstrapping scripts (`npm start` boilerplate, 135 visible characters).
+     - **VD (`VD_341097_927589.pdf`)**: A Grand Conseil parliamentary debate page containing ~99,500 characters of live debate transcripts and audio links, which was erroneously scraped under an affair title regarding external IT consultants (DRUIDE directive).
+   - *System Response & Ethical Grounding:* Serving these files as `application/pdf` caused Chrome's built-in PDF viewer to crash with `"Failed to load PDF document"`. SEVERIN's streaming proxy (`src/server.py`) inspects file headers for the `%PDF-` signature. For non-PDF payloads, it dynamically transforms the response into a styled, dark-mode **Cantonal Web Portal Notice** with direct source links. When extraction is requested, SEVERIN rejects it with an explicit `HTTP 422 Unprocessable Entity` citing non-PDF HTML content, fully satisfying the competition requirement to *"clearly distinguish extracted content from generated/inferred content; where information can't be reliably extracted, make that transparent rather than guess"*.
 
 ### 6.3 Technical Limitations & Production Boundaries
 To ensure scientific integrity and provide OpenParlData with an honest deployment roadmap, we document three fundamental technical boundaries:
