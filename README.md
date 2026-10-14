@@ -2,7 +2,7 @@
 > **Hack Apertus 2026 • Track 2A: OpenParlData Challenge**  
 > *Extracting Swiss Parliamentary Affairs from Heterogeneous PDFs into One Common Structure with Verifiable Provenance*
 
-[![Python 3.11](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
+[![Python 3.14](https://img.shields.io/badge/Python-3.14-blue.svg)](https://www.python.org/)
 [![Apertus 1.5-8B](https://img.shields.io/badge/Model-Apertus--1.5--8B-red.svg)](https://huggingface.co/swiss-ai/Apertus-v1.5-8B)
 [![CSCS Alps](https://img.shields.io/badge/Hardware-NVIDIA_GH200_Alps-green.svg)](https://www.cscs.ch/)
 [![Pydantic v2](https://img.shields.io/badge/Pydantic-v2-e92063.svg)](https://docs.pydantic.dev/)
@@ -75,15 +75,16 @@ Evaluated across all Swiss linguistic regions on real-world cantonal and federal
 
 | Jurisdiction | Linguistic Region | Document Type | Provenance Match | Verified Citations | Latency | Tokens | Cost (CHF) |
 |---|---|---|---|---|---|---|---|
-| **CHE** | Federal / National (DE) | `initiative` | **92.9%** | 13/14 | 10.1s | 6,944 | `0.000115` |
-| **ZH** | Zürich / Deutschschweiz (DE) | `postulate` | **100.0%** | 3/3 | 3.2s | 5,353 | `0.000027` |
-| **GE** | Genève / Suisse romande (FR) | `question` | **100.0%** | 2/2 | 7.7s | 6,473 | `0.000060` |
-| **TI** | Ticino / Svizzera italiana (IT) | `interpellation` | **100.0%** | 5/5 | 3.0s | 5,051 | `0.000023` |
-| **GR** | Graubünden / Trilingual (DE/IT/RM) | `question` | **100.0%** | 3/3 | 6.0s | 5,820 | `0.000046` |
+| **CHE** | Federal / National (DE) | `initiative` | **100.0%** | 14/14 | 10.05s | 6,944 | `0.000064` |
+| **ZH** | Zürich / Deutschschweiz (DE) | `postulate` | **100.0%** | 3/3 | 3.22s | 5,353 | `0.000020` |
+| **GE** | Genève / Suisse romande (FR) | `question` | **100.0%** | 2/2 | 7.70s | 6,467 | `0.000051` |
+| **TI** | Ticino / Svizzera italiana (IT) | `interpellation` | **100.0%** | 5/5 | 3.03s | 5,051 | `0.000020` |
+| **GR** | Graubünden / Trilingual (DE/IT/RM) | `question` | **100.0%** | 3/3 | 6.03s | 5,820 | `0.000039` |
 
-- **Average Verifiable Provenance Match**: **98.6%** (mathematically verified verbatim against physical pages)
-- **Average Round-Trip Latency**: **6.0s**
-- **Economic Feasibility**: **~0.00005 CHF per affair** (Alps GH200 PagedAttention prefix cache serves ~4,200 prompt tokens for free, projecting to **<20 CHF** for the entire 300,000 OpenParlData corpus).
+- **Average Verifiable Provenance Match**: **100.0%** (27/27 citations mathematically verified verbatim against physical PDF pages)
+- **Average Round-Trip Latency**: **6.01s**
+- **Cumulative Evaluation Cost**: **0.000194 CHF** across all 5 test jurisdictions (~0.000039 CHF per affair with Alps GH200 prefix cache hits).
+- **Economic Feasibility**: Alps GH200 PagedAttention prefix cache serves ~4,200 prompt tokens for free, projecting to **< 20 CHF** for the entire 300,000 OpenParlData corpus.
 
 ### 📂 Dataset Structure & Runtime Artifacts
 
@@ -126,6 +127,20 @@ severin/
 │   │   └── benchmark_cache/          # Authentic model extractions for offline dry-run verification
 │   └── tests/                        # Automated unit tests for schema, parser, and extractor
 ```
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer | Technologies | Role in SEVERIN |
+|---|---|---|
+| **AI Inference** | [Apertus 1.5-8B](https://huggingface.co/swiss-ai/Apertus-v1.5-8B) • [CSCS Alps](https://www.cscs.ch/) (GH200) | Deterministic extraction (`temp=0.0`), vLLM prefix caching |
+| **Backend** | [FastAPI](https://fastapi.tiangolo.com/) • Python 3.11 / 3.14 | REST API, OpenAPI 3.1 & Swagger documentation |
+| **Schema & Parsing** | [Pydantic v2](https://docs.pydantic.dev/) • [pypdf](https://pypdf.readthedocs.io/) | Strict schema (`extra="forbid"`), page-level provenance grounding |
+| **Frontend** | [React 19](https://react.dev/) • [TypeScript](https://www.typescriptlang.org/) • [Vite](https://vite.dev/) | 3-column studio SPA, PDF/Text viewer with citation highlights |
+| **Styling** | Vanilla CSS3 | Minimalist design tokens, Inter & JetBrains Mono typography |
+| **Data Source** | [OpenParlData](https://api.openparldata.ch) | Live API client for federal and cantonal parliamentary affairs |
+| **DevOps** | [Docker](https://www.docker.com/) • GNU Make | Multi-stage container, one-click `make run` reproducibility |
 
 ---
 
