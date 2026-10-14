@@ -383,6 +383,7 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
               rel="noreferrer"
               className="open-pdf-link"
               title={`Open ${safePdfFilename} in new browser tab`}
+              onClick={() => console.log('↗ [Document] Opened PDF in new tab:', { file: safePdfFilename, url: pdfProxyUrl })}
             >
               ↗ Open PDF
             </a>

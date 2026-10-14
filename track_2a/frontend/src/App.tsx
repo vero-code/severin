@@ -18,6 +18,9 @@ import type {
   ActiveProvenance,
 } from './types';
 
+// Per-page-load revision appended to iframe URLs so stale cached PDF responses are never reused
+const PROXY_CACHE_REV = Date.now().toString(36);
+
 export function App() {
   const [bodyKey, setBodyKey] = useState<string>('ZH');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -104,8 +107,9 @@ export function App() {
   }, []);
 
   const handleSelectSample = (filename: string) => {
+    console.log(`📄 [User Click] Sample card clicked: "${filename}"`);
     if (selectedSampleFile === filename) {
-      // Toggle off / deselect to return to clean state
+      console.log(`🔄 [Document Deselected] Cleared selection for "${filename}"`);
       setSelectedSampleFile('');
       setSampleDoc(null);
       setSampleAffairId(null);
@@ -123,42 +127,58 @@ export function App() {
     setHoveredProvenance(null);
     if (filename) {
       const sample = samplePdfs.find((s) => s.file_name === filename);
-      if (sample) {
-        setSampleCanton(sample.body_key);
-        setSampleDoc({
-          id: sample.doc_id,
-          title: getText(sample.title) || sample.doc_name,
-          url: sample.url,
-          type: 'pdf',
-        });
-        setSampleAffairId(sample.affair_id);
-        setSampleExtractedAffair(null);
-        setSampleProvenanceReport(null);
-        setSampleParsedPages([]);
-        setExtractError(null);
-        setDocTab('pdf');
-      }
+      const title = sample ? (getText(sample.title) || sample.doc_name) : filename;
+      const canton = sample ? sample.body_key : filename.split('_')[0] || 'CH';
+      console.log(`📄 [Document Selected] Sample: "${filename}" [${canton}] "${title}"`, {
+        canton,
+        file: filename,
+        title,
+        url: sample?.url,
+        affairId: sample?.affair_id,
+      });
+      setSampleCanton(canton);
+      setSampleDoc({
+        id: sample?.doc_id || 0,
+        title,
+        url: sample?.url || '',
+        type: 'pdf',
+      });
+      setSampleAffairId(sample?.affair_id || null);
+      setSampleExtractedAffair(null);
+      setSampleProvenanceReport(null);
+      setSampleParsedPages([]);
+      setExtractError(null);
+      setDocTab('pdf');
     }
   };
 
   const fetchParsedText = async (docUrl?: string) => {
+    const targetFile = currentSampleFile;
+    const targetUrl = docUrl || activeDoc?.url || '';
+    console.log(`📑 [Parsing PDF Text] Initiating page extraction...`, { sample: targetFile, url: targetUrl });
     setIsParsing(true);
     setParseError(null);
     try {
-      const query = currentSampleFile
-        ? `sample=${encodeURIComponent(currentSampleFile)}`
-        : `url=${encodeURIComponent(docUrl || activeDoc?.url || '')}`;
+      const query = targetFile
+        ? `sample=${encodeURIComponent(targetFile)}`
+        : `url=${encodeURIComponent(targetUrl)}`;
       const resp = await fetch(`/api/parse-pdf?${query}`);
       if (!resp.ok) {
-        throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
+        const errJson = await resp.json().catch(() => ({}));
+        throw new Error(errJson.detail || `HTTP ${resp.status}: ${resp.statusText}`);
       }
       const data: ParsePdfResponse = await resp.json();
+      console.log(`✅ [PDF Parsed] Successfully loaded ${data.pages?.length || 0} pages (${data.total_chars?.toLocaleString() || 0} chars)`, {
+        pages: data.pages?.length,
+        chars: data.total_chars,
+      });
       if (isSampleMode) {
         setSampleParsedPages(data.pages || []);
       } else {
         setApiParsedPages(data.pages || []);
       }
     } catch (err: any) {
+      console.error(`❌ [PDF Parse Failed]:`, err.message);
       setParseError(err.message || 'Failed to extract text from PDF');
     } finally {
       setIsParsing(false);
@@ -167,6 +187,7 @@ export function App() {
 
   const handleCopyPageText = (pageNum: number, text: string) => {
     if (!text) return;
+    console.log(`📋 [User Action] Copied text from Page ${pageNum} to clipboard (${text.length} chars)`);
     navigator.clipboard.writeText(text);
     setCopiedPage(pageNum);
     setTimeout(() => setCopiedPage(null), 1500);
@@ -179,6 +200,7 @@ export function App() {
   };
 
   const handleSetDocTab = (tab: 'pdf' | 'text') => {
+    console.log(`🗂️ [Tab Switched] Active document viewer tab: "${tab.toUpperCase()}"`);
     setDocTab(tab);
     if (tab === 'text') {
       setTextTabHint(false);
@@ -191,6 +213,7 @@ export function App() {
   const handleHoverProvenance = (prov: ActiveProvenance | null) => {
     setHoveredProvenance(prov);
     if (prov) {
+      console.log(`🎯 [Provenance Grounding] Field: "${prov.field || 'field'}", Page: ${prov.page_number}, Snippet: "${prov.snippet?.slice(0, 70)}..."`, prov);
       if (docTab !== 'text') {
         setDocTab('text');
       }
@@ -203,6 +226,12 @@ export function App() {
 
   const handleExtract = async () => {
     if (!activeDoc?.url && !currentSampleFile) return;
+    console.log(`🤖 [Apertus Extraction] Triggered extraction pipeline...`, {
+      sample: currentSampleFile,
+      url: activeDoc?.url,
+      canton: currentBodyKey,
+      affairId: currentAffairId,
+    });
     setIsExtracting(true);
     setExtractError(null);
     try {
@@ -222,6 +251,11 @@ export function App() {
       }
 
       const data = await resp.json();
+      console.log(`✨ [Apertus Extraction Complete] Extraction succeeded!`, {
+        affair: data.affair,
+        provenanceReport: data.provenance_report,
+        score: data.provenance_report?.provenance_score,
+      });
       if (isSampleMode) {
         setSampleExtractedAffair(data.affair);
         setSampleProvenanceReport(data.provenance_report);
@@ -242,6 +276,7 @@ export function App() {
         fetchTelemetry();
       }
     } catch (err: any) {
+      console.error(`❌ [Extraction Failed]:`, err.message);
       setExtractError(err.message || 'Failed to extract affair with Apertus');
     } finally {
       setIsExtracting(false);
@@ -249,6 +284,13 @@ export function App() {
   };
 
   const handleSelectDoc = (doc: DocumentItem) => {
+    const docTitle = getText(doc.title) || `Doc #${doc.id}`;
+    console.log(`📄 [Document Selected] Live API Document: #${doc.id} "${docTitle}"`, {
+      id: doc.id,
+      title: docTitle,
+      url: doc.url,
+      type: doc.type,
+    });
     setApiDoc(doc);
     setApiParsedPages([]);
     setParseError(null);
@@ -265,6 +307,7 @@ export function App() {
   const fetchAffairs = async () => {
     setLoading(true);
     setErrorMsg(null);
+    console.log(`🔍 [OpenParlData Search] Searching affairs for canton="${bodyKey}", query="${searchQuery}", mode="${searchMode}"`);
     try {
       const params = new URLSearchParams({
         body_key: bodyKey,
@@ -282,6 +325,7 @@ export function App() {
       }
       const result = await response.json();
       const dataList = result.data || [];
+      console.log(`🏛️ [OpenParlData Search] Loaded ${dataList.length} affairs`);
       setAffairs(dataList);
       if (dataList.length > 0) {
         const firstWithDocs = dataList.find((a: any) => getAffairDocs(a).length > 0) || dataList[0];
@@ -300,6 +344,7 @@ export function App() {
         setApiParsedPages([]);
       }
     } catch (err: any) {
+      console.error(`❌ [OpenParlData Search Failed]:`, err.message);
       setErrorMsg(err.message || 'Failed to fetch affairs');
     } finally {
       setLoading(false);
@@ -307,8 +352,17 @@ export function App() {
   };
 
   const handleSelectAffair = (affair: ParliamentaryAffairItem) => {
-    setSelectedApiAffairId(affair.id);
+    const affairTitle = getText(affair.title) || `Affair #${affair.id}`;
     const docs = getAffairDocs(affair);
+    console.log(`🏛️ [Affair Selected] Affair #${affair.id} (${affair.short_id || affair.body_key}) "${affairTitle}" [${docs.length} docs]`, {
+      id: affair.id,
+      shortId: affair.short_id,
+      canton: affair.body_key,
+      title: affairTitle,
+      docsCount: docs.length,
+      docs,
+    });
+    setSelectedApiAffairId(affair.id);
     if (docs.length > 0) {
       handleSelectDoc(docs[0]);
       setDocTab('pdf');
@@ -322,7 +376,7 @@ export function App() {
   const rawTitle = activeDoc ? getText(activeDoc.title) || `doc_${activeDoc.id}` : 'document';
   const cleanTitle = rawTitle.replace(/[^a-zA-Z0-9_\u00C0-\u017F\u0400-\u04FF\s.-]/g, '_').trim().replace(/\s+/g, '_');
   const safePdfFilename = `${currentBodyKey ? `${currentBodyKey}_` : ''}${cleanTitle.toLowerCase().endsWith('.pdf') ? cleanTitle : `${cleanTitle}.pdf`}`;
-  const pdfProxyUrl = `/api/pdf-proxy/${encodeURIComponent(safePdfFilename)}?url=${encodeURIComponent(activeDoc?.url || '')}${currentSampleFile ? `&sample=${encodeURIComponent(currentSampleFile)}` : ''}`;
+  const pdfProxyUrl = `/api/pdf-proxy/${encodeURIComponent(safePdfFilename)}?url=${encodeURIComponent(activeDoc?.url || '')}${currentSampleFile ? `&sample=${encodeURIComponent(currentSampleFile)}` : ''}&rev=${PROXY_CACHE_REV}`;
 
   return (
     <div className="app-container">
