@@ -62,6 +62,7 @@ export function App() {
 
   // Live OpenParlData API context
   const [apiDoc, setApiDoc] = useState<DocumentItem | null>(null);
+  const [selectedApiAffairBody, setSelectedApiAffairBody] = useState<string>('ZH');
   const [apiExtractedAffair, setApiExtractedAffair] = useState<ExtractedAffair | null>(null);
   const [apiProvenanceReport, setApiProvenanceReport] = useState<ProvenanceReport | null>(null);
   const [apiParsedPages, setApiParsedPages] = useState<PdfPageItem[]>([]);
@@ -73,7 +74,8 @@ export function App() {
   const isSampleMode = controlMode === 'samples';
   const activeDoc = isSampleMode ? sampleDoc : apiDoc;
   const currentSampleFile = isSampleMode ? selectedSampleFile : '';
-  const currentBodyKey = isSampleMode ? sampleCanton : bodyKey;
+  const selectedAffair = affairs.find((a) => a.id === selectedApiAffairId);
+  const currentBodyKey = isSampleMode ? sampleCanton : (selectedAffair?.body_key || selectedApiAffairBody);
   const currentAffairId = isSampleMode ? sampleAffairId : selectedApiAffairId;
   const extractedAffair = isSampleMode ? sampleExtractedAffair : apiExtractedAffair;
   const provenanceReport = isSampleMode ? sampleProvenanceReport : apiProvenanceReport;
@@ -292,6 +294,7 @@ export function App() {
       if (dataList.length > 0) {
         const firstWithDocs = dataList.find((a: any) => getAffairDocs(a).length > 0) || dataList[0];
         setSelectedApiAffairId(firstWithDocs.id);
+        setSelectedApiAffairBody(firstWithDocs.body_key);
         const docs = getAffairDocs(firstWithDocs);
         if (docs.length > 0) {
           handleSelectDoc(docs[0]);
@@ -316,6 +319,7 @@ export function App() {
   const handleSelectAffair = (affair: ParliamentaryAffairItem) => {
     const docs = getAffairDocs(affair);
     setSelectedApiAffairId(affair.id);
+    setSelectedApiAffairBody(affair.body_key);
     if (docs.length > 0) {
       handleSelectDoc(docs[0]);
       setDocTab('pdf');

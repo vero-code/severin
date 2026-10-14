@@ -45,7 +45,7 @@
   transition: all 0.15s ease;
 }
 
-.affair-card:hover {
+.affair-card:not(.selected):hover {
   background-color: var(--bg-card-hover);
   border-color: rgba(167, 243, 208, 0.45);
   box-shadow: 0 0 10px rgba(167, 243, 208, 0.15);
@@ -58,7 +58,8 @@
 }
 
 .affair-card.selected:hover {
-  border-color: rgba(167, 243, 208, 0.45);
+  border-color: #EF4444;
+  box-shadow: 0 0 0 1px #EF4444, 0 4px 20px rgba(239, 68, 68, 0.35);
 }
 
 .affair-header {
@@ -98,7 +99,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.75rem;
+  font-size: 14px;
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
   margin-bottom: 0.4rem;
@@ -126,9 +127,9 @@
   background-color: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.09);
   color: var(--text-secondary);
-  padding: 0.38rem 0.6rem;
+  padding: 0.4rem 0.65rem;
   border-radius: var(--radius-sm, 4px);
-  font-size: 0.75rem;
+  font-size: 14px;
   line-height: 1.35;
   cursor: pointer;
   text-decoration: none;
