@@ -322,26 +322,6 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
             >
               [{currentBodyKey}] {getText(activeDoc.title) || `Doc #${activeDoc.id}`}
             </span>
-            {docTab === 'text' && activeProvenance?.page_number && (
-              <span className="provenance-active-indicator" title={activeProvenance.snippet || undefined}>
-                <span className="provenance-dot" />
-                Target
-                {onClearProvenance && (
-                  <button
-                    type="button"
-                    className="btn-clear-provenance"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onClearProvenance();
-                    }}
-                    title="Clear highlight"
-                    aria-label="Clear highlight"
-                  >
-                    ✕
-                  </button>
-                )}
-              </span>
-            )}
           </div>
         )}
 

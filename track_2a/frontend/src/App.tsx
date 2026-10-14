@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { AppHeader } from './components/AppHeader';
 import { SourceSelectorPanel } from './components/SourceSelectorPanel';
 import { DocumentStudioPanel } from './components/DocumentStudioPanel';
@@ -43,7 +43,6 @@ export function App() {
   const [hoveredProvenance, setHoveredProvenance] = useState<ActiveProvenance | null>(null);
   const activeProvenance = hoveredProvenance || selectedProvenance;
   const [textTabHint, setTextTabHint] = useState<boolean>(false);
-  const hintTimeoutRef = useRef<any>(null);
 
   // Platform Guide & Architecture FAQ modal
   const [showFaqModal, setShowFaqModal] = useState<boolean>(false);
@@ -173,44 +172,6 @@ export function App() {
     setTimeout(() => setCopiedPage(null), 1500);
   };
 
-  const handleLocateProvenance = (prov: ActiveProvenance) => {
-    // If clicking the same item that's already selected, toggle it off!
-    if (
-      selectedProvenance &&
-      selectedProvenance.page_number === prov.page_number &&
-      selectedProvenance.field === prov.field &&
-      selectedProvenance.snippet === prov.snippet
-    ) {
-      setSelectedProvenance(null);
-      setHoveredProvenance(null);
-      return;
-    }
-
-    setSelectedProvenance(prov);
-    setHoveredProvenance(null);
-
-    // Pre-fetch text pages in the background if not yet loaded so they are instantly ready
-    if (parsedPages.length === 0 && (activeDoc?.url || currentSampleFile)) {
-      fetchParsedText(activeDoc?.url);
-    }
-
-    if (docTab !== 'pdf') {
-      setDocTab('text');
-    } else {
-      // User clicked on a provenance badge/tag while in PDF mode!
-      // Gently glow the Text tab button so they know where to find the verified text excerpt
-      if (hintTimeoutRef.current) {
-        clearTimeout(hintTimeoutRef.current);
-      }
-      setTextTabHint(false);
-      setTimeout(() => {
-        setTextTabHint(true);
-        hintTimeoutRef.current = setTimeout(() => {
-          setTextTabHint(false);
-        }, 2500);
-      }, 20);
-    }
-  };
 
   const handleClearProvenance = () => {
     setSelectedProvenance(null);
@@ -229,6 +190,15 @@ export function App() {
 
   const handleHoverProvenance = (prov: ActiveProvenance | null) => {
     setHoveredProvenance(prov);
+    if (prov) {
+      if (docTab !== 'text') {
+        setDocTab('text');
+      }
+      setTextTabHint(false);
+      if (parsedPages.length === 0 && (activeDoc?.url || currentSampleFile)) {
+        fetchParsedText(activeDoc?.url);
+      }
+    }
   };
 
   const handleExtract = async () => {
@@ -436,7 +406,6 @@ export function App() {
             onSetRawJson={setShowRawJson}
             activeProvenance={activeProvenance}
             onHoverProvenance={handleHoverProvenance}
-            onLocateProvenance={handleLocateProvenance}
           />
         </div>
       </main>

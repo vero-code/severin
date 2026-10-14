@@ -13,7 +13,6 @@ interface ExtractionStudioPanelProps {
   onSetRawJson?: (show: boolean) => void;
   activeProvenance?: ActiveProvenance | null;
   onHoverProvenance?: (prov: ActiveProvenance | null) => void;
-  onLocateProvenance?: (prov: ActiveProvenance) => void;
 }
 import { normalizeSwissText } from '../utils/textNormalization';
 
@@ -31,7 +30,6 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
   onSetRawJson,
   activeProvenance,
   onHoverProvenance,
-  onLocateProvenance,
 }) => {
   const [copiedJson, setCopiedJson] = React.useState(false);
   const [copiedRationale, setCopiedRationale] = React.useState(false);
@@ -145,13 +143,6 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
             <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-size-sm)', maxWidth: '440px', lineHeight: '1.6' }}>
               Parsing document structure, extracting schema fields, and verifying citation provenance.
             </p>
-            <div className="studio-hero-features" style={{ marginTop: '1.25rem' }}>
-              <span className="studio-feature-pill studio-pill-active">
-                <span className="studio-pill-dot" /> Live Inference
-              </span>
-              <span className="studio-feature-pill">Deterministic (T=0.0)</span>
-              <span className="studio-feature-pill">Strict Pydantic</span>
-            </div>
           </div>
         )}
 
@@ -249,14 +240,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                   char_end: extractedAffair.title_provenance!.char_end,
                 }) : undefined}
                 onMouseLeave={isTitleInteractive ? () => onHoverProvenance?.(null) : undefined}
-                onClick={isTitleInteractive ? () => onLocateProvenance?.({
-                  field: 'title',
-                  page_number: extractedAffair.title_provenance!.page_number,
-                  snippet: extractedAffair.title_provenance!.source_text_snippet,
-                  char_start: extractedAffair.title_provenance!.char_start,
-                  char_end: extractedAffair.title_provenance!.char_end,
-                }) : undefined}
-                title={isTitleInteractive ? 'Click to locate title in document (or hover to highlight)' : undefined}
+                title={isTitleInteractive ? 'Hover to inspect title citation in text' : undefined}
               >
                 {extractedAffair.title}
               </div>
@@ -307,13 +291,6 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                       <div
                         key={idx}
                         className={`author-dir-row ${author.provenance ? 'interactive-author-row' : ''}`}
-                        onClick={author.provenance ? () => onLocateProvenance?.({
-                          field: `author: ${normalizeGlyphs(author.name)}`,
-                          page_number: author.provenance!.page_number,
-                          snippet: author.provenance!.source_text_snippet,
-                          char_start: author.provenance!.char_start,
-                          char_end: author.provenance!.char_end,
-                        }) : undefined}
                         onMouseEnter={author.provenance ? () => onHoverProvenance?.({
                           field: `author: ${normalizeGlyphs(author.name)}`,
                           page_number: author.provenance!.page_number,
@@ -322,7 +299,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                           char_end: author.provenance!.char_end,
                         }) : undefined}
                         onMouseLeave={author.provenance ? () => onHoverProvenance?.(null) : undefined}
-                        style={{ cursor: author.provenance ? 'pointer' : 'default' }}
+                        title={author.provenance ? `Hover to inspect citation on page ${author.provenance.page_number}` : undefined}
                       >
                         <div className="author-dir-left">
                           <span className="author-dir-idx">{idx + 1}.</span>
@@ -367,14 +344,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                         char_end: extractedAffair.rationale_provenance!.char_end,
                       })}
                       onMouseLeave={() => onHoverProvenance?.(null)}
-                      onClick={() => onLocateProvenance?.({
-                        field: 'background_and_rationale',
-                        page_number: extractedAffair.rationale_provenance!.page_number,
-                        snippet: extractedAffair.rationale_provenance!.source_text_snippet,
-                        char_start: extractedAffair.rationale_provenance!.char_start,
-                        char_end: extractedAffair.rationale_provenance!.char_end,
-                      })}
-                      title="Click to view citation (or hover to highlight)"
+                      title="Hover to inspect citation in document text"
                     >
                       Page {extractedAffair.rationale_provenance.page_number}
                     </span>
@@ -432,12 +402,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                             snippet: qa.question.provenance!.source_text_snippet,
                           })}
                           onMouseLeave={() => onHoverProvenance?.(null)}
-                          onClick={() => onLocateProvenance?.({
-                            field: `question #${qa.question.number || (idx + 1)}`,
-                            page_number: qa.question.provenance!.page_number,
-                            snippet: qa.question.provenance!.source_text_snippet,
-                          })}
-                          title="Click to locate question citation"
+                          title="Hover to inspect question citation"
                         >
                           p. {qa.question.provenance.page_number}
                         </span>
@@ -449,19 +414,14 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                         {qa.answer.provenance && (
                           <span
                             className="citation-page-tag interactive-tag"
-                            style={{ marginLeft: '0.5rem', cursor: 'pointer' }}
+                            style={{ marginLeft: '0.5rem' }}
                             onMouseEnter={() => onHoverProvenance?.({
                               field: `answer #${qa.question.number || (idx + 1)}`,
                               page_number: qa.answer!.provenance!.page_number,
                               snippet: qa.answer!.provenance!.source_text_snippet,
                             })}
                             onMouseLeave={() => onHoverProvenance?.(null)}
-                            onClick={() => onLocateProvenance?.({
-                              field: `answer #${qa.question.number || (idx + 1)}`,
-                              page_number: qa.answer!.provenance!.page_number,
-                              snippet: qa.answer!.provenance!.source_text_snippet,
-                            })}
-                            title="Click to locate answer citation"
+                            title="Hover to inspect answer citation"
                           >
                             p. {qa.answer.provenance.page_number}
                           </span>
@@ -509,12 +469,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                             snippet: fin.provenance!.source_text_snippet,
                           })}
                           onMouseLeave={() => onHoverProvenance?.(null)}
-                          onClick={() => onLocateProvenance?.({
-                            field: `finance: ${fin.purpose || 'credit'}`,
-                            page_number: fin.provenance!.page_number,
-                            snippet: fin.provenance!.source_text_snippet,
-                          })}
-                          title="Click to locate financial citation"
+                          title="Hover to inspect financial citation"
                         >
                           p. {fin.provenance.page_number}
                         </div>
@@ -557,9 +512,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                         className={`audit-log-item ${isHighlighted ? 'active-highlight' : ''}`}
                         onMouseEnter={() => onHoverProvenance?.({ field: d.field, page_number: d.page, snippet: d.snippet_preview })}
                         onMouseLeave={() => onHoverProvenance?.(null)}
-                        onClick={() => onLocateProvenance?.({ field: d.field, page_number: d.page, snippet: d.snippet_preview })}
-                        title="Click to jump to source in document (PDF / Text)"
-                        style={{ cursor: 'pointer' }}
+                        title="Hover to inspect verified source citation"
                       >
                         <div className="audit-item-header">
                           <div className="audit-field-info">
@@ -573,9 +526,6 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                             <span className={`audit-status-badge ${d.verified ? 'audit-status-ok' : 'audit-status-fail'}`}>
                               {d.verified ? '✓ VERIFIED' : d.status.toUpperCase()}
-                            </span>
-                            <span className="audit-locate-icon" title="Jump to source in document">
-                              ↗
                             </span>
                           </div>
                         </div>
