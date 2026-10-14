@@ -6,8 +6,8 @@
   --bg-primary: #1A1C27; /* Background */
   --bg-secondary: #222B35; /* Header */
   --bg-panel: #181D26;
-  --bg-panel-header: #1D1D25; /* Studio Panel Headers */
-  --panel-header-height: 52px; /* Unified height for all 3 studio column headers */
+  --bg-panel-header: #1D1D25; /* Panel Headers */
+  --panel-header-height: 52px; /* Unified height for all 3 column headers */
   --bg-card: #181D26;
   --bg-card-hover: #1F2633;
   --bg-pdf: #FFFFFF;

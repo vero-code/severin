@@ -94,7 +94,24 @@ export const SourceSelectorPanel: React.FC<SourceSelectorPanelProps> = ({
                     {getText(s.title) || s.doc_name}
                   </div>
                   <div className="sample-item-meta">
-                    📄 {s.file_name}
+                    {s.is_portal ? (
+                      <span className="sample-portal-tag" title="Cantonal web consultation form (scraped HTML)">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 5, flexShrink: 0 }}>
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="2" y1="12" x2="22" y2="12"></line>
+                          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                        </svg>
+                        Web Portal (HTML) · {s.file_name}
+                      </span>
+                    ) : (
+                      <span className="sample-pdf-tag">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 5, flexShrink: 0 }}>
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                          <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        {s.file_name}
+                      </span>
+                    )}
                   </div>
                 </div>
               );

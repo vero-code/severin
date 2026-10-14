@@ -52,14 +52,14 @@
 }
 
 .affair-card.selected {
-  border-color: var(--accent-red);
+  border-color: rgba(239, 68, 68, 0.65);
   background: linear-gradient(135deg, rgba(74, 21, 29, 0.45) 0%, #1F2633 100%);
-  box-shadow: 0 0 0 1px var(--accent-red), 0 4px 16px rgba(217, 38, 46, 0.2);
+  box-shadow: 0 0 14px rgba(217, 38, 46, 0.16);
 }
 
 .affair-card.selected:hover {
   border-color: #EF4444;
-  box-shadow: 0 0 0 1px #EF4444, 0 4px 20px rgba(239, 68, 68, 0.35);
+  box-shadow: 0 0 18px rgba(239, 68, 68, 0.28);
 }
 
 .affair-header {
@@ -153,11 +153,18 @@
 
 .doc-btn.selected,
 .doc-btn.active {
-  background-color: rgba(217, 38, 46, 0.22);
-  border-color: var(--accent-red);
-  color: #fff;
+  background-color: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.45);
+  color: #FFFFFF;
   font-weight: 500;
-  box-shadow: 0 0 10px rgba(217, 38, 46, 0.25);
+  box-shadow: 0 2px 8px rgba(217, 38, 46, 0.15);
+}
+
+.doc-btn.selected:hover,
+.doc-btn.active:hover {
+  background-color: rgba(239, 68, 68, 0.22);
+  border-color: rgba(239, 68, 68, 0.65);
+  color: #FFFFFF;
 }
 
 .doc-btn-icon {

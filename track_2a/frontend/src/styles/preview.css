@@ -435,3 +435,95 @@
   50% { border-color: rgba(167, 243, 208, 0.7); }
 }
 
+/* ============================================================================
+   Web Consultation Portal Notice Card (Non-PDF documents)
+   ============================================================================ */
+.portal-notice-card {
+  background: #161a22;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 1.75rem 1.75rem;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.portal-notice-icon {
+  width: 42px;
+  height: 42px;
+  margin: 0 auto 12px auto;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+}
+
+.portal-notice-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.portal-notice-doc-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: #e2e8f0;
+  margin-bottom: 12px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.portal-notice-desc {
+  font-size: 14px;
+  color: #94a3b8;
+  line-height: 1.5;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 10px 12px;
+  text-align: left;
+  margin-bottom: 0;
+}
+
+.portal-notice-actions {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.btn-portal-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #f1f5f9;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 13px;
+  padding: 7px 16px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-portal-action:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.portal-notice-disclaimer {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+

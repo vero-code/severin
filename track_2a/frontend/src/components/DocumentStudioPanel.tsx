@@ -21,6 +21,8 @@ interface DocumentStudioPanelProps {
   activeProvenance?: ActiveProvenance | null;
   textTabHint?: boolean;
   onClearProvenance?: () => void;
+  isWebPortal?: boolean;
+  portalUrl?: string;
 }
 
 export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
@@ -40,8 +42,12 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
   onCopyPageText,
   activeProvenance,
   textTabHint = false,
+  isWebPortal = false,
+  portalUrl,
 }) => {
   const hasDocument = Boolean(activeDoc?.url || currentSampleFile);
+  const portalDomain = portalUrl ? (portalUrl.match(/https?:\/\/(?:www\.)?([^/]+)/)?.[1] || 'lu.ch') : 'lu.ch';
+  const activeDocTitle = (activeDoc?.title ? getText(activeDoc.title) : '') || 'Änderung des Gesetzes über die Ergänzungsleistungen zur AHV/IV (SRL Nr. 881)';
 
   useEffect(() => {
     if (activeProvenance?.page_number && docTab === 'text' && parsedPages.length > 0) {
@@ -347,17 +353,20 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
             className={`preview-tab-btn ${docTab === 'pdf' ? 'active' : ''}`}
             onClick={() => onSetDocTab('pdf')}
           >
-            PDF
+            {isWebPortal ? 'Portal' : 'PDF'}
           </button>
           <button
             className={`preview-tab-btn ${docTab === 'text' ? 'active' : ''} ${textTabHint ? 'tab-hint-glow' : ''}`}
             onClick={() => {
+              if (isWebPortal) return;
               onSetDocTab('text');
               if (parsedPages.length === 0) {
                 onFetchParsedText(activeDoc?.url);
               }
             }}
-            title={textTabHint ? 'Citation ready in Text view (click to view)' : undefined}
+            disabled={isWebPortal}
+            title={isWebPortal ? 'Text extraction is unavailable for web portal consultation forms' : textTabHint ? 'Citation ready in Text view (click to view)' : undefined}
+            style={isWebPortal ? { opacity: 0.45, cursor: 'not-allowed' } : undefined}
           >
             Text
             {textTabHint && <span className="tab-hint-dot" />}
@@ -376,15 +385,21 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
         )}
 
         <div className="panel-header-actions">
-          {activeDoc?.url && (
+          {activeDoc?.url && !isWebPortal && (
             <a
               href={pdfProxyUrl}
               target="_blank"
               rel="noreferrer"
               className="open-pdf-link"
               title={`Open ${safePdfFilename} in new browser tab`}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
             >
-              ↗ Open PDF
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                <polyline points="15 3 21 3 21 9" />
+                <line x1="10" y1="14" x2="21" y2="3" />
+              </svg>
+              <span>Open PDF</span>
             </a>
           )}
         </div>
@@ -408,6 +423,44 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
               ? 'Select an affair document to preview.'
               : 'Select a cantonal sample to preview.'}
           </p>
+        </div>
+      ) : isWebPortal ? (
+        <div className="preview-placeholder">
+          <div className="portal-notice-card">
+            <div className="portal-notice-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+              </svg>
+            </div>
+            <h3 className="portal-notice-title">Web Consultation Portal</h3>
+            <div className="portal-notice-doc-title">
+              {activeDocTitle}
+            </div>
+            <p className="portal-notice-desc">
+              This parliamentary affair is published directly on the cantonal web portal rather than as a static PDF document.
+            </p>
+            {portalUrl && (
+              <div className="portal-notice-actions">
+                <a
+                  href={portalUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-portal-action"
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                    <polyline points="15 3 21 3 21 9" />
+                    <line x1="10" y1="14" x2="21" y2="3" />
+                  </svg>
+                  Open Cantonal Portal ({portalDomain})
+                </a>
+                <div className="portal-notice-disclaimer">
+                  Note: Cantonal government firewalls may restrict access from non-Swiss IP addresses, or the external page may be unavailable / archived.
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       ) : docTab === 'pdf' ? (
         <iframe
@@ -433,30 +486,131 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
           <p className="preview-hero-desc">Extracting raw text pages and character counts via pypdf</p>
         </div>
       ) : parseError ? (
-        <div className="preview-placeholder">
-          <div
-            style={{
-              padding: '1.25rem',
-              backgroundColor: 'rgba(239, 68, 68, 0.15)',
-              border: '1px solid #ef4444',
-              borderRadius: '8px',
-              color: '#fca5a5',
-              maxWidth: '440px',
-              textAlign: 'center',
-            }}
-          >
-            <p style={{ fontWeight: 600, marginBottom: '0.4rem' }}>⚠️ Parsing Failed</p>
-            <p style={{ fontSize: 'var(--font-size-sm)', marginBottom: '0.75rem' }}>{parseError}</p>
-            {activeDoc?.url && (
-              <button
-                className="btn-primary"
-                onClick={() => onFetchParsedText(activeDoc.url)}
+        (() => {
+          const isPortalDoc = parseError.toLowerCase().includes('web portal') || parseError.toLowerCase().includes('html');
+          if (isPortalDoc) {
+            return (
+              <div className="preview-placeholder">
+                <div
+                  style={{
+                    backgroundColor: '#161a22',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: '8px',
+                    padding: '1.5rem 1.75rem',
+                    maxWidth: '460px',
+                    textAlign: 'center',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      margin: '0 auto 10px auto',
+                      background: 'rgba(255, 255, 255, 0.04)',
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#94a3b8',
+                    }}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                    </svg>
+                  </div>
+                  <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#ffffff', marginBottom: '6px', lineHeight: 1.3 }}>
+                    Web Consultation Document
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: '14px',
+                      color: '#94a3b8',
+                      lineHeight: 1.5,
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      border: '1px solid rgba(255, 255, 255, 0.06)',
+                      borderRadius: '6px',
+                      padding: '10px 12px',
+                      textAlign: 'left',
+                      marginBottom: '16px',
+                    }}
+                  >
+                    This parliamentary affair is published directly on the cantonal web portal rather than as a static PDF with paginated text.
+                  </p>
+                  <button
+                    className="btn-secondary"
+                    style={{
+                      fontSize: '14px',
+                      padding: '7px 16px',
+                      background: 'rgba(255, 255, 255, 0.04)',
+                      color: '#94a3b8',
+                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => onSetDocTab('pdf')}
+                  >
+                    View Web Document
+                  </button>
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <div className="preview-placeholder">
+              <div
+                style={{
+                  padding: '1.5rem 1.75rem',
+                  backgroundColor: '#161a22',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  borderRadius: '8px',
+                  color: '#fca5a5',
+                  maxWidth: '440px',
+                  textAlign: 'center',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+                }}
               >
-                Retry Parsing
-              </button>
-            )}
-          </div>
-        </div>
+                <div
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    margin: '0 auto 8px auto',
+                    background: 'rgba(239, 68, 68, 0.12)',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#ef4444',
+                  }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                </div>
+                <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#ffffff', marginBottom: '6px' }}>
+                  Parsing Failed
+                </h3>
+                <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '14px', lineHeight: 1.45 }}>
+                  {parseError}
+                </p>
+                {activeDoc?.url && (
+                  <button
+                    className="btn-primary"
+                    style={{ fontSize: '14px', padding: '6px 14px' }}
+                    onClick={() => onFetchParsedText(activeDoc.url)}
+                  >
+                    Retry Parsing
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })()
       ) : parsedPages.length === 0 ? (
         <div className="preview-placeholder">
           <div className="preview-hero-icon">

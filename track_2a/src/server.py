@@ -140,136 +140,6 @@ def get_affair(affair_id: int):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-def _render_html_portal_notice(
-    file_bytes: Optional[bytes] = None,
-    filename: str = "document.pdf",
-    original_url: Optional[str] = None
-) -> StreamingResponse:
-    """Render a clean, themed notice when a cantonal record links to an interactive web portal rather than a binary PDF."""
-    canton = filename.split("_")[0] if "_" in filename else "Cantonal"
-    title = f"{canton} Cantonal Web Portal Link"
-    if file_bytes:
-        try:
-            import re
-            text_snippet = file_bytes[:2048].decode("utf-8", errors="ignore")
-            t_m = re.search(r"<title[^>]*>(.*?)</title>", text_snippet, re.IGNORECASE | re.DOTALL)
-            if t_m:
-                title = t_m.group(1).strip()
-        except Exception:
-            pass
-
-    html_content = f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cantonal Web Portal Document</title>
-  <style>
-    * {{ box-sizing: border-box; margin: 0; padding: 0; }}
-    body {{
-      background-color: #0b1120;
-      color: #f1f5f9;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 1.5rem;
-    }}
-    .notice-card {{
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 2rem 2.25rem;
-      max-width: 540px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    }}
-    .notice-icon {{
-      width: 48px;
-      height: 48px;
-      margin: 0 auto 1rem auto;
-      background: rgba(56, 189, 248, 0.12);
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-    }}
-    .notice-badge {{
-      display: inline-block;
-      background: rgba(217, 38, 46, 0.15);
-      color: #fca5a5;
-      border: 1px solid rgba(217, 38, 46, 0.3);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      padding: 0.25rem 0.65rem;
-      border-radius: 9999px;
-      text-transform: uppercase;
-      margin-bottom: 0.75rem;
-    }}
-    h2 {{
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 0.5rem;
-    }}
-    .doc-title {{
-      font-size: 0.95rem;
-      color: #94a3b8;
-      margin-bottom: 1.25rem;
-      line-height: 1.45;
-      word-break: break-word;
-    }}
-    .notice-desc {{
-      font-size: 0.9rem;
-      color: #cbd5e1;
-      line-height: 1.55;
-      background: rgba(15, 23, 42, 0.6);
-      border-left: 3px solid #38bdf8;
-      padding: 0.75rem 1rem;
-      text-align: left;
-      border-radius: 0 6px 6px 0;
-      margin-bottom: 1.5rem;
-    }}
-    .btn-portal {{
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      background: #911c25;
-      color: #ffffff;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.92rem;
-      padding: 0.55rem 1.25rem;
-      border-radius: 6px;
-      transition: background 0.15s ease;
-    }}
-    .btn-portal:hover {{
-      background: #b91c1c;
-    }}
-  </style>
-</head>
-<body>
-  <div class="notice-card">
-    <div class="notice-icon">🌐</div>
-    <div class="notice-badge">{canton} Cantonal Web Portal</div>
-    <h2>Interactive Web Document</h2>
-    <div class="doc-title">{title}</div>
-    <div class="notice-desc">
-      In Canton {canton}, this parliamentary affair links directly to an online web consultation form or state registry portal rather than a static binary PDF document.
-    </div>
-    {f'<a href="{original_url}" target="_blank" rel="noreferrer" class="btn-portal">↗ Open {canton} Portal in New Tab</a>' if original_url else ''}
-  </div>
-</body>
-</html>"""
-    logger.info(f"[PDF-PROXY] Non-PDF detected for '{filename}' -> Serving styled HTML portal notice ('{title}')")
-    return StreamingResponse(io.BytesIO(html_content.encode("utf-8")), media_type="text/html")
-
-
 @app.get("/api/pdf-proxy")
 @app.get("/api/pdf-proxy/{filename}")
 def proxy_pdf(
@@ -294,9 +164,11 @@ def proxy_pdf(
             with open(sample_path, "rb") as f:
                 head = f.read(10)
             if not head.startswith(b"%PDF"):
-                with open(sample_path, "rb") as f:
-                    content = f.read(4096)
-                return _render_html_portal_notice(content, sample, url)
+                logger.info(f"[PDF-PROXY] Non-PDF detected for sample '{sample}'")
+                raise HTTPException(
+                    status_code=422,
+                    detail="This cantonal affair links directly to an interactive web portal (HTML) rather than a static PDF document."
+                )
             logger.info(f"[PDF-PROXY] Serving binary PDF sample: '{sample}' as '{safe_filename}'")
             return FileResponse(
                 sample_path,
@@ -313,9 +185,11 @@ def proxy_pdf(
             with open(local_sample, "rb") as f:
                 head = f.read(10)
             if not head.startswith(b"%PDF"):
-                with open(local_sample, "rb") as f:
-                    content = f.read(4096)
-                return _render_html_portal_notice(content, sample_file, url)
+                logger.info(f"[PDF-PROXY] Non-PDF detected for manifest sample '{sample_file}'")
+                raise HTTPException(
+                    status_code=422,
+                    detail="This cantonal affair links directly to an interactive web portal (HTML) rather than a static PDF document."
+                )
             logger.info(f"[PDF-PROXY] Serving binary PDF from manifest: '{sample_file}' as '{safe_filename}'")
             return FileResponse(
                 local_sample,
@@ -335,7 +209,11 @@ def proxy_pdf(
         resp.raise_for_status()
 
         if not resp.content.startswith(b"%PDF"):
-            return _render_html_portal_notice(resp.content[:4096], safe_filename, url)
+            logger.info(f"[PDF-PROXY] Remote URL returned non-PDF content from {url}")
+            raise HTTPException(
+                status_code=422,
+                detail="This cantonal affair links directly to an interactive web portal (HTML) rather than a static PDF document."
+            )
 
         logger.info(f"[PDF-PROXY] Streaming remote binary PDF: '{safe_filename}' from {url}")
         return StreamingResponse(
@@ -371,7 +249,7 @@ def parse_pdf(
                     logger.warning(f"[PARSE-PDF] Rejected non-PDF sample '{sample}' (cantonal web portal HTML)")
                     raise HTTPException(
                         status_code=422,
-                        detail="This cantonal document links to an interactive web portal URL (HTML), not a static PDF document. Click 'Open PDF' in the header to view the live portal."
+                        detail="This cantonal affair links directly to an interactive web portal (HTML) rather than a static PDF document with paginated text."
                     )
             logger.info(f"[PARSE-PDF] Extracting text pages from sample '{sample}' ...")
             pages = extract_pdf_pages(sample_path)
@@ -392,7 +270,7 @@ def parse_pdf(
                         logger.warning(f"[PARSE-PDF] Rejected non-PDF manifest sample '{URL_TO_SAMPLE_MAP[url.strip()]}' (cantonal web portal HTML)")
                         raise HTTPException(
                             status_code=422,
-                            detail="This cantonal document links to an interactive web portal URL (HTML), not a static PDF document. Click 'Open PDF' in the header to view the live portal."
+                            detail="This cantonal affair links directly to an interactive web portal (HTML) rather than a static PDF document with paginated text."
                         )
                 logger.info(f"[PARSE-PDF] Extracting text pages from manifest sample '{URL_TO_SAMPLE_MAP[url.strip()]}' ...")
                 pages = extract_pdf_pages(local_sample)
@@ -418,7 +296,7 @@ def parse_pdf(
             logger.warning(f"[PARSE-PDF] Rejected remote document from {url} (received HTML)")
             raise HTTPException(
                 status_code=422,
-                detail="This cantonal document links to an interactive web portal URL (HTML), not a static PDF document. Click 'Open PDF' in the header to view the live portal."
+                detail="This cantonal affair links directly to an interactive web portal (HTML) rather than a static PDF document with paginated text."
             )
 
         import tempfile
@@ -550,7 +428,15 @@ def list_sample_pdfs():
     if manifest_path.exists():
         try:
             with open(manifest_path, "r", encoding="utf-8") as f:
-                return json.load(f)
+                items = json.load(f)
+                for item in items:
+                    fname = item.get("file_name", "")
+                    dname = (item.get("doc_name") or "").lower()
+                    is_port = bool(fname.startswith("LU_") or "onlineformular" in dname or "zugangslink" in dname)
+                    item["is_portal"] = is_port
+                    if is_port:
+                        item["portal_url"] = "https://www.lu.ch/verwaltung/GSD/Vernehmlassung_ELG"
+                return items
         except Exception as e:
             logger.error(f"Error reading manifest: {e}")
             raise HTTPException(status_code=500, detail=str(e))

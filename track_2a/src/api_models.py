@@ -111,3 +111,5 @@ class SamplePdfItem(BaseModel):
     doc_name: Optional[str] = Field(None, description="Document title/type")
     url: Optional[str] = Field(None, description="Remote source PDF URL")
     size_bytes: Optional[int] = Field(None, description="File size in bytes")
+    is_portal: Optional[bool] = Field(default=False, description="Flag indicating if the document is an HTML web portal")
+    portal_url: Optional[str] = Field(default=None, description="External portal URL if the document is a web consultation")

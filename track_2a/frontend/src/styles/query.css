@@ -439,7 +439,7 @@ select.form-control option {
   text-align: left;
 }
 
-.sample-item-card:hover {
+.sample-item-card:not(.selected):hover {
   background-color: var(--bg-card-hover);
   border-color: rgba(167, 243, 208, 0.45);
   box-shadow: 0 0 10px rgba(167, 243, 208, 0.15);
@@ -447,13 +447,14 @@ select.form-control option {
 }
 
 .sample-item-card.selected {
-  border-color: var(--border-panel);
-  background: linear-gradient(135deg, rgba(74, 21, 29, 0.55) 0%, #1F2633 100%);
+  border-color: rgba(239, 68, 68, 0.65);
+  background: linear-gradient(135deg, rgba(74, 21, 29, 0.45) 0%, #1F2633 100%);
+  box-shadow: 0 0 14px rgba(217, 38, 46, 0.16);
 }
 
 .sample-item-card.selected:hover {
-  border-color: rgba(167, 243, 208, 0.45);
-  box-shadow: 0 0 10px rgba(167, 243, 208, 0.15);
+  border-color: #EF4444;
+  box-shadow: 0 0 18px rgba(239, 68, 68, 0.28);
 }
 
 .sample-item-header {
@@ -482,6 +483,26 @@ select.form-control option {
 .sample-item-meta {
   font-size: var(--font-size-sm);
   color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sample-portal-tag {
+  display: inline-flex;
+  align-items: center;
+  color: #94a3b8;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sample-pdf-tag {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-muted);
+  font-size: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

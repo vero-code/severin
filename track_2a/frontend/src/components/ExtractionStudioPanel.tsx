@@ -26,6 +26,7 @@ export interface ExtractionStudioPanelProps {
   onSetRawJson?: (show: boolean) => void;
   activeProvenance?: ActiveProvenance | null;
   onHoverProvenance?: (prov: ActiveProvenance | null) => void;
+  isWebPortal?: boolean;
 }
 
 export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
@@ -40,6 +41,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
   onSetRawJson,
   activeProvenance,
   onHoverProvenance,
+  isWebPortal = false,
 }) => {
   const handleSelectView = (view: 'cards' | 'json') => {
     if (view === 'cards' && showRawJson) {
@@ -83,14 +85,21 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
             type="button"
             className={`btn-extract ${isExtracting ? 'btn-extract-loading' : ''}`}
             onClick={onExtract}
-            disabled={isExtracting || !canExtract}
+            disabled={isExtracting || !canExtract || isWebPortal}
+            style={
+              isWebPortal
+                ? { opacity: 0.45, cursor: 'not-allowed', background: '#273142', color: '#94a3b8', border: '1px solid rgba(255, 255, 255, 0.1)' }
+                : undefined
+            }
             title={
-              canExtract
+              isWebPortal
+                ? 'Apertus citation extraction requires a static binary PDF document with verifiable physical pages (unavailable for online consultation portals)'
+                : canExtract
                 ? 'Run conservative extraction with Swiss-AI Apertus 1.5-8B on CSCS Alps Supercomputer'
                 : 'Select a document first'
             }
           >
-            {isExtracting ? 'Extracting...' : extractedAffair ? 'Re-run' : 'Extract with Apertus'}
+            {isExtracting ? 'Extracting...' : isWebPortal ? 'PDF Required' : extractedAffair ? 'Re-run' : 'Extract with Apertus'}
           </button>
         </div>
       </div>
@@ -134,7 +143,51 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
         )}
 
         {/* Idle / Initial State */}
-        {!isExtracting && !extractError && !extractedAffair && <ExtractionIdleHero />}
+        {!isExtracting && !extractError && !extractedAffair && (
+          isWebPortal ? (
+            <div className="preview-placeholder">
+              <div
+                style={{
+                  backgroundColor: '#161a22',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: '8px',
+                  padding: '1.75rem 1.75rem',
+                  maxWidth: '440px',
+                  textAlign: 'center',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+                }}
+              >
+                <div
+                  style={{
+                    width: '42px',
+                    height: '42px',
+                    margin: '0 auto 12px auto',
+                    background: 'rgba(255, 255, 255, 0.04)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#94a3b8',
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                  </svg>
+                </div>
+                <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#ffffff', marginBottom: '8px' }}>
+                  Extraction Unavailable
+                </h3>
+                <p style={{ fontSize: '14px', color: '#94a3b8', lineHeight: 1.5, margin: 0 }}>
+                  Apertus 1.5-8B conservative extraction requires a static binary PDF to compute verified citation provenance. Online consultation forms do not provide paginated physical pages.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <ExtractionIdleHero />
+          )
+        )}
 
         {/* Extracted Dossier */}
         {!isExtracting &&

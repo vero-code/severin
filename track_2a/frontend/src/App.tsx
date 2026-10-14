@@ -335,6 +335,15 @@ export function App() {
   const safePdfFilename = `${currentBodyKey ? `${currentBodyKey}_` : ''}${cleanTitle.toLowerCase().endsWith('.pdf') ? cleanTitle : `${cleanTitle}.pdf`}`;
   const pdfProxyUrl = `/api/pdf-proxy/${encodeURIComponent(safePdfFilename)}?url=${encodeURIComponent(activeDoc?.url || '')}${currentSampleFile ? `&sample=${encodeURIComponent(currentSampleFile)}` : ''}&rev=${PROXY_CACHE_REV}`;
 
+  // Check if current document is an interactive cantonal web portal
+  const selectedSample = samplePdfs.find((s) => s.file_name === currentSampleFile);
+  const isWebPortal = Boolean(
+    (selectedSample && (selectedSample.is_portal || selectedSample.file_name?.startsWith('LU_'))) ||
+    (currentSampleFile && currentSampleFile.startsWith('LU_')) ||
+    (parseError && parseError.toLowerCase().includes('web portal'))
+  );
+  const portalUrl = selectedSample?.portal_url || (isWebPortal ? 'https://www.lu.ch/verwaltung/GSD/Vernehmlassung_ELG' : undefined);
+
   return (
     <div className="app-container">
       {/* Header Component */}
@@ -353,9 +362,17 @@ export function App() {
               color: '#fca5a5',
               marginBottom: '1rem',
               fontSize: 'var(--font-size-base)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
             }}
           >
-            ⚠️ {errorMsg}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span>{errorMsg}</span>
           </div>
         )}
 
@@ -403,6 +420,8 @@ export function App() {
             activeProvenance={activeProvenance}
             textTabHint={textTabHint}
             onClearProvenance={handleClearProvenance}
+            isWebPortal={isWebPortal}
+            portalUrl={portalUrl}
           />
 
           {/* Column 3: Apertus 1.5-8B Studio */}
@@ -410,7 +429,7 @@ export function App() {
             isExtracting={isExtracting}
             extractError={extractError}
             onExtract={handleExtract}
-            canExtract={Boolean(activeDoc?.url || currentSampleFile)}
+            canExtract={Boolean((activeDoc?.url || currentSampleFile) && !isWebPortal)}
             extractedAffair={extractedAffair}
             provenanceReport={provenanceReport}
             showRawJson={showRawJson}
@@ -418,6 +437,7 @@ export function App() {
             onSetRawJson={setShowRawJson}
             activeProvenance={activeProvenance}
             onHoverProvenance={handleHoverProvenance}
+            isWebPortal={isWebPortal}
           />
         </div>
       </main>

@@ -37,6 +37,7 @@
   letter-spacing: -0.01em;
   color: var(--text-primary);
   flex-shrink: 0;
+  font-size: var(--font-size-md);
 }
 
 .footer-desc {

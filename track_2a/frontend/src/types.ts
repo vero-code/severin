@@ -200,6 +200,8 @@ export interface SamplePdfItem {
   doc_name: string;
   url: string;
   size_bytes: number;
+  is_portal?: boolean;
+  portal_url?: string;
 }
 
 
