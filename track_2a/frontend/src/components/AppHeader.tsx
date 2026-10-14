@@ -16,6 +16,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ telemetry, onOpenGuide }) 
         <img src={severinLogo} alt="SEVERIN Logo" className="brand-logo" />
         <div className="brand-titles">
           <h1>SEVERIN</h1>
+          <span className="brand-separator" aria-hidden="true">–</span>
           <p>Swiss Parliamentary Affairs Extraction Platform</p>
         </div>
       </div>

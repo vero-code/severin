@@ -19,8 +19,8 @@
 }
 
 .studio-panel-header .btn-extract {
-  padding: 0.35rem 0.75rem;
-  font-size: var(--font-size-sm);
+  padding: 0.38rem 0.95rem;
+  font-size: var(--font-size-base);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -96,7 +96,7 @@
 }
 
 .studio-hero-desc {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
   color: var(--text-secondary);
   line-height: 1.6;
   margin-bottom: 0;
@@ -477,6 +477,12 @@
   transform: translateY(-1px);
 }
 
+.extracted-empty-msg {
+  font-size: var(--font-size-base);
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
 
 .qa-card {
   background: rgba(18, 22, 31, 0.6);

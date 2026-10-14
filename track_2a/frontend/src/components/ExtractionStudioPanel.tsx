@@ -93,7 +93,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
     <div className="studio-extraction-panel">
       <div className="studio-panel-header">
         <div className="panel-header-title">
-          <span>Apertus Studio</span>
+          <span>Apertus Dossier</span>
         </div>
 
         <div className="panel-header-actions">
@@ -169,7 +169,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
             <p style={{ marginTop: '0.4rem', fontSize: 'var(--font-size-sm)' }}>{extractError}</p>
             <button
               className="btn-primary"
-              style={{ marginTop: '0.75rem', fontSize: 'var(--font-size-sm)', padding: '0.4rem 0.8rem' }}
+              style={{ marginTop: '0.75rem', fontSize: 'var(--font-size-base)', padding: '0.5rem 1.1rem' }}
               onClick={onExtract}
             >
               Retry Extraction
@@ -406,7 +406,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                   {extractedAffair.background_and_rationale}
                 </p>
               ) : (
-                <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', margin: 0 }}>
+                <p className="extracted-empty-msg">
                   No background or rationale text present in this document.
                 </p>
               )}
@@ -475,7 +475,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                   </div>
                 ))
               ) : (
-                <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', margin: 0 }}>
+                <p className="extracted-empty-msg">
                   No parliamentary questions present in this document.
                 </p>
               )}
@@ -523,7 +523,7 @@ export const ExtractionStudioPanel: React.FC<ExtractionStudioPanelProps> = ({
                   ))}
                 </div>
               ) : (
-                <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', margin: 0 }}>
+                <p className="extracted-empty-msg">
                   No financial expenditures or credits requested in this affair.
                 </p>
               )}

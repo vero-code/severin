@@ -37,9 +37,9 @@
   --badge-text: #FC8181;
 
   /* 3. Typography & Sizing Scale */
-  --font-size-sm: 14px;   /* Smallest text: badges, pills, tabs, metadata tags */
-  --font-size-base: 16px; /* Regular body text: paragraphs, inputs, buttons, tables */
-  --font-size-md: 18px;   /* Subheadings: card titles, section headers, h2, h3 */
+  --font-size-sm: 14px;   /* Smallest text */
+  --font-size-base: 16px; /* Regular body text */
+  --font-size-md: 18px;   /* Subheadings */
   --font-size-lg: 24px;   /* Main titles */
 
   --text-primary: #F7FAFC;
@@ -98,12 +98,8 @@
   background: transparent;
 }
 
-button, input, select, textarea {
-  font-family: inherit;
-  font-size: inherit;
-}
-
-html, body {
+html {
+  font-size: 16px;
   height: 100%;
   overflow: hidden;
 }
@@ -117,6 +113,11 @@ body {
   height: 100vh;
   max-height: 100vh;
   overflow: hidden;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: var(--font-size-base);
 }
 
 .app-container {
