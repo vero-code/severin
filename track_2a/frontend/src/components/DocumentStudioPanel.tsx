@@ -47,7 +47,6 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
 }) => {
   const hasDocument = Boolean(activeDoc?.url || currentSampleFile);
   const portalDomain = portalUrl ? (portalUrl.match(/https?:\/\/(?:www\.)?([^/]+)/)?.[1] || 'lu.ch') : 'lu.ch';
-  const activeDocTitle = (activeDoc?.title ? getText(activeDoc.title) : '') || 'Änderung des Gesetzes über die Ergänzungsleistungen zur AHV/IV (SRL Nr. 881)';
 
   useEffect(() => {
     if (activeProvenance?.page_number && docTab === 'text' && parsedPages.length > 0) {
@@ -427,18 +426,9 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
       ) : isWebPortal ? (
         <div className="preview-placeholder">
           <div className="portal-notice-card">
-            <div className="portal-notice-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-              </svg>
-            </div>
-            <h3 className="portal-notice-title">Web Consultation Portal</h3>
-            <div className="portal-notice-doc-title">
-              {activeDocTitle}
-            </div>
-            <p className="portal-notice-desc">
-              This parliamentary affair is published directly on the cantonal web portal rather than as a static PDF document.
+            <h3 className="portal-notice-title">Not a PDF Document</h3>
+            <p className="portal-notice-subtitle">
+              This affair is an online web form, so it cannot be previewed here.
             </p>
             {portalUrl && (
               <div className="portal-notice-actions">
@@ -453,10 +443,10 @@ export const DocumentStudioPanel: React.FC<DocumentStudioPanelProps> = ({
                     <polyline points="15 3 21 3 21 9" />
                     <line x1="10" y1="14" x2="21" y2="3" />
                   </svg>
-                  Open Cantonal Portal ({portalDomain})
+                  Open ({portalDomain})
                 </a>
                 <div className="portal-notice-disclaimer">
-                  Note: Cantonal government firewalls may restrict access from non-Swiss IP addresses, or the external page may be unavailable / archived.
+                  Note: The external page may be unavailable / archived.
                 </div>
               </div>
             )}
