@@ -18,6 +18,7 @@ interface SourceSelectorPanelProps {
   affairs: ParliamentaryAffairItem[];
   loading: boolean;
   selectedApiAffairId: number | null;
+  selectedApiDocId?: number | null;
   onFetchAffairs: () => void;
   onSelectAffair: (affair: ParliamentaryAffairItem) => void;
   onSelectDoc: (doc: DocumentItem) => void;
@@ -39,6 +40,7 @@ export const SourceSelectorPanel: React.FC<SourceSelectorPanelProps> = ({
   affairs,
   loading,
   selectedApiAffairId,
+  selectedApiDocId,
   onFetchAffairs,
   onSelectAffair,
   onSelectDoc,
@@ -177,28 +179,40 @@ export const SourceSelectorPanel: React.FC<SourceSelectorPanelProps> = ({
                     {getText(affair.title)}
                   </h4>
                   <div className="affair-meta">
-                    {affair.begin_date && <span>{affair.begin_date}</span>}
-                    {docsList.length > 0 && <span>{docsList.length} docs</span>}
+                    {affair.begin_date && (
+                      <span className="affair-date">{affair.begin_date.split('T')[0]}</span>
+                    )}
+                    {docsList.length > 0 && (
+                      <span className="affair-docs-count">{docsList.length} docs</span>
+                    )}
                   </div>
                   {docsList.length > 0 && (
-                    <div className="docs-tag-list" style={{ marginTop: '0.4rem' }}>
-                      {docsList.map((doc) => (
-                        <button
-                          key={doc.id}
-                          className="doc-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onSetSelectedApiAffairId(affair.id);
-                            onSelectDoc(doc);
-                          }}
-                        >
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '4px', verticalAlign: '-1px' }}>
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                            <polyline points="14 2 14 8 20 8" />
-                          </svg>
-                          {getText(doc.title) || `Doc ${doc.id}`}
-                        </button>
-                      ))}
+                    <div className="docs-tag-list">
+                      {docsList.map((doc) => {
+                        const rawDocTitle = getText(doc.title) || `Doc #${doc.id}`;
+                        const displayDocTitle = rawDocTitle.replace(/\.pdf$/i, '').replace(/_/g, ' ');
+                        const isDocSelected = selectedApiDocId === doc.id;
+                        return (
+                          <button
+                            key={doc.id}
+                            className={`doc-btn ${isDocSelected ? 'selected' : ''}`}
+                            title={rawDocTitle}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onSetSelectedApiAffairId(affair.id);
+                              onSelectDoc(doc);
+                            }}
+                          >
+                            <span className="doc-btn-icon">
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                              </svg>
+                            </span>
+                            <span className="doc-btn-title">{displayDocTitle}</span>
+                          </button>
+                        );
+                      })}
                     </div>
                   )}
                 </div>

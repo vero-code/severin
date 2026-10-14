@@ -373,6 +373,7 @@ export function App() {
             affairs={affairs}
             loading={loading}
             selectedApiAffairId={selectedApiAffairId}
+            selectedApiDocId={apiDoc?.id}
             onFetchAffairs={fetchAffairs}
             onSelectAffair={handleSelectAffair}
             onSelectDoc={handleSelectDoc}
