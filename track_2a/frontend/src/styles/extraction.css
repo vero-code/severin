@@ -123,14 +123,12 @@
 }
 
 /* ============================================================================
-   Provenance Trust Strip (Compact Grounding Header)
+   Provenance Trust Strip (Interactive Grounding Accordion Header)
    ============================================================================ */
 
 .provenance-trust-strip {
   display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.5rem 0.85rem;
+  flex-direction: column;
   background: rgba(167, 243, 208, 0.08);
   border: 1px solid rgba(167, 243, 208, 0.28);
   border-radius: var(--radius-md);
@@ -138,7 +136,14 @@
   color: #E2E8F0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   flex-shrink: 0;
-  flex-wrap: wrap;
+  overflow: hidden;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.provenance-trust-strip.expanded {
+  background: rgba(15, 23, 42, 0.95);
+  border-color: rgba(167, 243, 208, 0.45);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
 }
 
 .provenance-trust-strip.strip-warning {
@@ -147,10 +152,40 @@
   color: #FECACA;
 }
 
+.provenance-trust-strip.strip-warning.expanded {
+  background: rgba(30, 20, 25, 0.95);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.trust-strip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  padding: 0.55rem 0.85rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s ease;
+}
+
+.trust-strip-header:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.trust-strip-main {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 .trust-strip-icon {
   font-weight: 600;
   font-size: 0.95rem;
-  color: var(--accent-mint);
+  /* color: var(--accent-mint); */
   display: inline-flex;
   align-items: center;
 }
@@ -161,7 +196,7 @@
 
 .trust-strip-score {
   font-weight: 600;
-  color: var(--accent-mint);
+  /* color: var(--accent-mint); */
   letter-spacing: 0.01em;
 }
 
@@ -177,8 +212,184 @@
 .trust-strip-text {
   color: var(--text-secondary);
   font-size: var(--font-size-sm);
-  flex: 1;
-  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trust-strip-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.trust-strip-toggle-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent-mint);
+  background: rgba(167, 243, 208, 0.1);
+  border: 1px solid rgba(167, 243, 208, 0.25);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.02em;
+  transition: all 0.15s ease;
+}
+
+.trust-strip-header:hover .trust-strip-toggle-label {
+  background: rgba(167, 243, 208, 0.18);
+  border-color: rgba(167, 243, 208, 0.4);
+}
+
+.strip-warning .trust-strip-toggle-label {
+  color: #FCA5A5;
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.strip-warning .trust-strip-header:hover .trust-strip-toggle-label {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.trust-strip-details {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.75rem 0.85rem 0.85rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  max-height: 380px;
+  overflow-y: auto;
+  animation: fadeInDown 0.2s ease-out;
+}
+
+.trust-strip-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #94A3B8;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  letter-spacing: 0.02em;
+}
+
+.trust-strip-hint {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 400;
+}
+
+/* ============================================================================
+   Provenance Verification Audit Table View
+   ============================================================================ */
+.audit-table-wrapper {
+  overflow-x: hidden;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(11, 17, 32, 0.75);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+  margin-top: 0.25rem;
+}
+
+.audit-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  text-align: left;
+}
+
+.audit-table th {
+  padding: 0.45rem 0.65rem;
+  font-weight: 600;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94A3B8;
+  background: rgba(15, 23, 42, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  white-space: nowrap;
+}
+
+.audit-table td {
+  padding: 0.4rem 0.65rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: middle;
+}
+
+.audit-table tbody tr {
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.audit-table tbody tr:hover {
+  background-color: rgba(167, 243, 208, 0.08);
+}
+
+.audit-table tbody tr.active-highlight {
+  background-color: rgba(167, 243, 208, 0.16);
+}
+
+.audit-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.audit-cell-idx {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono, monospace);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.audit-cell-field {
+  font-weight: 600;
+  color: var(--accent-mint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.75rem;
+}
+
+.audit-cell-page {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.audit-cell-quote {
+  color: #E2E8F0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.76rem;
+  font-family: var(--font-mono, monospace);
+  opacity: 0.92;
+}
+
+.audit-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.12rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.audit-badge-pill.status-ok {
+  background: rgba(167, 243, 208, 0.12);
+  color: var(--accent-mint);
+  border: 1px solid rgba(167, 243, 208, 0.25);
+}
+
+.audit-badge-pill.status-fail {
+  background: rgba(239, 68, 68, 0.15);
+  color: #FCA5A5;
+  border: 1px solid rgba(239, 68, 68, 0.35);
 }
 
 .provenance-pill {
@@ -251,18 +462,29 @@
 .affair-title-text {
   font-size: var(--font-size-md);
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--accent-mint);
   line-height: 1.45;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.65rem;
+  background: rgba(167, 243, 208, 0.08);
+  border: 1px solid rgba(167, 243, 208, 0.28);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.65rem;
+  display: inline-block;
+  max-width: 100%;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
 }
 
 .affair-title-text.interactive-title {
   cursor: pointer;
-  transition: color 0.15s ease;
 }
 
 .affair-title-text.interactive-title:hover {
-  color: var(--accent-mint);
+  background: rgba(167, 243, 208, 0.18);
+  border-color: var(--accent-mint);
+  color: #FFFFFF;
+  box-shadow: 0 0 10px rgba(167, 243, 208, 0.35);
+  transform: translateY(-1px);
 }
 
 .badge-verified {
@@ -626,6 +848,28 @@
   color: var(--accent-mint);
 }
 
+.btn-citation-icon {
+  background: rgba(167, 243, 208, 0.08);
+  border: 1px solid rgba(167, 243, 208, 0.28);
+  color: var(--accent-mint);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.btn-citation-icon:hover {
+  background: rgba(167, 243, 208, 0.2);
+  border-color: var(--accent-mint);
+  color: #ffffff;
+}
+
 .json-inspector-pre {
   flex: 1;
   min-height: 0;
@@ -695,13 +939,70 @@
 }
 
 /* ============================================================================
-   Provenance Verification Audit Log Feed
+   Provenance Verification Audit Log Feed & Accordion
    ============================================================================ */
+.audit-card-toggle {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.5rem;
+  margin: -0.35rem -0.5rem 0.75rem -0.5rem;
+}
+
+.audit-card-toggle.collapsed {
+  margin-bottom: 0;
+  border-bottom: none;
+  padding-bottom: 0.35rem;
+}
+
+.audit-card-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.audit-chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.audit-chevron.expanded {
+  transform: rotate(90deg);
+}
+
+.audit-toggle-hint {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  margin-left: 0.35rem;
+  transition: color 0.15s ease;
+}
+
+.audit-card-toggle:hover .audit-toggle-hint {
+  color: var(--accent-mint);
+}
+
 .audit-log-list {
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
   margin-top: 0.5rem;
+  animation: fadeInDown 0.2s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .audit-log-item {
