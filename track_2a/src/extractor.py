@@ -290,6 +290,8 @@ def normalize_extracted_dict(raw_dict: Any) -> Dict[str, Any]:
                         name_str = name_str.split(":")[-1].strip()
                     if "," in name_str and any(char.isdigit() for char in name_str):
                         name_str = name_str.split(",")[0].strip()
+                    if "(" in name_str and not name_str.startswith("("):
+                        name_str = name_str.split("(")[0].strip()
 
                     author_dict = {
                         "name": name_str,
@@ -540,18 +542,36 @@ def extract_affair_from_pdf(
         response_format={"type": "json_object"},
         task=task_label,
         canton=target_canton,
-        max_tokens=4096
+        max_tokens=6144
     )
 
     raw_content = response_dict.get("content", "")
     cleaned_json = clean_llm_json_response(raw_content)
+    finish_reason = response_dict.get("finish_reason")
 
     # 4. Parse and validate against Pydantic schema
+    raw_dict = None
     try:
         raw_dict = json.loads(cleaned_json)
-    except json.JSONDecodeError as e:
-        logger.error(f"Failed to parse LLM JSON response: {e}\nRaw Content:\n{raw_content[:500]}")
-        raise ValueError(f"Model returned invalid JSON: {e}")
+    except json.JSONDecodeError as primary_err:
+        # Attempt defensive recovery of trailing unclosed structures
+        candidate = cleaned_json.rstrip().rstrip(",")
+        for suffix in ["}", "]}", "}}", "]}}", "\"}"]:
+            try:
+                raw_dict = json.loads(candidate + suffix)
+                logger.info(f"Defensive JSON recovery succeeded with suffix '{suffix}'")
+                break
+            except Exception:
+                pass
+
+        if raw_dict is None:
+            logger.error(f"Failed to parse LLM JSON response: {primary_err}\nRaw Content:\n{raw_content[:500]}")
+            if finish_reason == "length":
+                raise ValueError(
+                    f"Model output exceeded token limit and was truncated (finish_reason='length'). "
+                    f"Raw error: {primary_err}"
+                )
+            raise ValueError(f"Model returned invalid JSON: {primary_err}")
 
     raw_dict = normalize_extracted_dict(raw_dict)
 

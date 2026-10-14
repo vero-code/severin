@@ -24,14 +24,20 @@ Your task is to analyze raw, page-demarcated Swiss parliamentary documents (PDFs
    - If an optional field is not explicitly present in the document, you MUST return null (or an empty list [] for array fields).
    - NEVER invent political parties (party_or_fraction), submitter names, credit amounts (amount_chf), or dates if they are not written in the text.
 
-2. MANDATORY VERIFIABLE PROVENANCE:
+2. QUESTIONS AND ANSWERS IN PARLIAMENTARY SUBMISSIONS (CRITICAL):
+   - In Swiss parliamentary affairs (Vorstoss, Interpellation, Anfrage, Motion), initial submission documents contain ONLY questions addressed to the executive (Regierungsrat / Bundesrat).
+   - If the government response is NOT present in this document, the `answer` field MUST BE null!
+   - NEVER invent, simulate, summarize, or fabricate executive answers! If there is no explicit section titled 'Antwort des Regierungsrates' or 'Réponse du Conseil d'État', `answer` is strictly null.
+   - Extract each question into the `questions_and_answers` array with its question number, text, and provenance.
+
+3. MANDATORY VERIFIABLE PROVENANCE:
    - For EVERY non-null extracted fact (title, rationale, author, financial credit, question, answer, event), you MUST provide a provenance object:
      * "page_number": integer (1-indexed physical PDF page number where this information appears, matching the `--- [PAGE X] ---` demarcation).
-     * "source_text_snippet": an EXACT, VERBATIM quote substring from that page text (concise: 1 to 3 sentences or up to 250 characters, sufficient to uniquely anchor the claim).
+     * "source_text_snippet": an EXACT, VERBATIM quote substring from that page text (concise: 1 to 2 sentences or 30 to 180 characters, sufficient to uniquely anchor the claim).
    - The snippet MUST be a direct quote copy-pasted from the text. Do NOT rephrase, do NOT correct spelling, do NOT translate.
    - If you cannot point to an exact verbatim quote in the text for a fact, DO NOT EXTRACT IT (set the field to null or omit it).
 
-3. LANGUAGE & VOCABULARY INTEGRITY:
+4. LANGUAGE & VOCABULARY INTEGRITY:
    - Retain the original document language (German, French, Italian, or Romansh) for substantive text fields: title, background_and_rationale, questions, answers, and source_text_snippet.
    - Normalize controlled enumeration codes to English standard enums:
      * level: "federal", "cantonal", or "municipal"
@@ -39,10 +45,13 @@ Your task is to analyze raw, page-demarcated Swiss parliamentary documents (PDFs
      * language: "de", "fr", "it", "rm", or "en"
      * canton_or_body: standard 2-letter canton code (e.g., "ZH", "AG", "GE", "TI", "GR") or "CHE" for federal.
 
-4. OUTPUT FORMAT:
+5. ROOT LEVEL OUTPUT FORMAT (NO WRAPPERS OR MISPLACED FIELDS):
    - Return strictly valid JSON conforming to the ParliamentaryAffair schema.
-   - Do NOT include any markdown explanations, commentary, or text outside the JSON object.
    - Do NOT wrap the JSON inside an outer key like {"ParliamentaryAffair": ...} and do NOT include "$schema". Return the ParliamentaryAffair fields directly at the root level of the JSON object.
+   - "authors" array contains ONLY author objects: [{"name": "...", "role": "author", ...}]. NEVER put submission_date, rationale, or questions inside authors!
+   - "background_and_rationale" is a root-level field of the affair.
+   - "questions_and_answers" is a root-level array of the affair.
+   - Return valid JSON only, no markdown commentary outside the JSON.
 """
 
 
