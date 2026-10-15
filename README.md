@@ -37,6 +37,9 @@ export CSCS_INFERENCE_API_KEY="your_cscs_key_here"
 # 2. Primary Entrypoint via GNU Make (from repository root):
 make build      # Build Docker container image
 make run        # Run benchmark & start web platform
+make test       # Run all 6 automated test suites
+make benchmark  # Run cross-cantonal benchmark (auto-detects key)
+make dry-run    # Run 100% offline verification benchmark
 
 # Alternative: Direct Docker Compose
 cd track_2a
