@@ -6,7 +6,7 @@
 - **Track:** Track 2A — OpenParlData Challenge
 - **Event:** Online
 - **Team:** SEVERIN — Veronika Kashtanova
-- **Demo:** Local Web Platform (`make run` • http://localhost:8000) • [GitHub Repository](https://github.com/vero-code/severin)
+- **Demo:** [Link to Video](https://youtu.be/DCDZ0DLv-Tw)
 
 ---
 

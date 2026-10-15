@@ -11,6 +11,10 @@
 [![React 19](https://img.shields.io/badge/Frontend-React_19_TS-61dafb.svg)](https://react.dev/)
 [![Docker](https://img.shields.io/badge/Docker-Multi--Stage-2496ED.svg)](https://www.docker.com/)
 
+> 📺 **Demo Video:**
+>
+> [![SEVERIN Demo Video](https://img.youtube.com/vi/DCDZ0DLv-Tw/hqdefault.jpg)](https://youtu.be/DCDZ0DLv-Tw)
+
 ---
 
 ## Overview
