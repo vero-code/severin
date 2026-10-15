@@ -197,8 +197,6 @@ Through SEVERIN's unified Pydantic schema and conservative extraction pipeline, 
    - *Extracted Substance:* Demands immediate executive transparency from the Council of State (*Consiglio di Stato*) regarding excessive compensation and bonuses paid to the board of cantonal electricity utility AET during price instability.
    - *Provenance:* Page 1, verbatim quotation confirmed (`4/4 citations verified, 100% match`).
 
-**Civic Impact:**
-SEVERIN unifies multi-lingual executive oversight into a single querying interface. Civic watchdogs, journalists, and parliamentarians can now execute cross-cantonal queries—such as comparing crisis responses or board compensation oversight—in seconds, backed by verifiable citations directly linked to official parliamentary gazette pages.
 
 ---
 
