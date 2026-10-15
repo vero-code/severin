@@ -10,15 +10,21 @@
 
 ## 🚀 Quickstart (Jury Reproducibility)
 
-Run the full end-to-end pipeline with a single command from the project root:
+Run the full end-to-end pipeline via Docker using GNU Make (primary jury entrypoint):
 
 ```bash
 # Optional: Set CSCS Alps API key for live inference
 # (If omitted, automatically executes in 100% offline dry-run mode)
 export CSCS_INFERENCE_API_KEY="your_cscs_key_here"
 
-# Start the full pipeline (executes benchmark + launches web platform)
+# Primary Entrypoint via GNU Make:
+make build
 make run
+
+# Alternative: Direct Docker Compose:
+cd track_2a
+docker compose build
+docker compose up
 ```
 
 Once started:

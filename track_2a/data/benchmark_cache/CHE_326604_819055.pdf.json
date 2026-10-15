@@ -1,8 +1,8 @@
 {
   "affair": {
     "affair_id": 326604,
-    "short_id": "Eidgenössische Volksinitiative  «Nein zum F-35»",
-    "title": "Eidgenössische Volksinitiative  «Nein zum F-35»",
+    "short_id": "Volksinitiative  \"Nein zum F-35\"",
+    "title": "Eidgenössische Volksinitiative \"Nein zum F-35\"",
     "canton_or_body": "CHE",
     "level": "federal",
     "affair_type": "initiative",
@@ -13,7 +13,7 @@
         "name": "Künzi Daniel",
         "role": "author",
         "party_or_fraction": null,
-        "canton_or_municipality": "GE",
+        "canton_or_municipality": null,
         "provenance": {
           "page_number": 1,
           "source_text_snippet": "Künzi Daniel, Passage Daniel Baud-Bovy 10, 1205 Gen ève;",
@@ -21,285 +21,31 @@
           "char_end": 1951,
           "status": "extracted"
         }
-      },
-      {
-        "name": "Sax Jacques",
-        "role": "author",
-        "party_or_fraction": null,
-        "canton_or_municipality": "LA",
-        "provenance": {
-          "page_number": 1,
-          "source_text_snippet": "Sax Jacques, Chemin de Renens 52D, 1004 Lausan ne;",
-          "char_start": 1952,
-          "char_end": 2002,
-          "status": "extracted"
-        }
-      },
-      {
-        "name": "Weil Anjuška",
-        "role": "author",
-        "party_or_fraction": null,
-        "canton_or_municipality": "ZH",
-        "provenance": {
-          "page_number": 1,
-          "source_text_snippet": "Weil Anjuška, Goldbrunnenstrasse 131, 8055 Zürich;",
-          "char_start": 2003,
-          "char_end": 2053,
-          "status": "extracted"
-        }
-      },
-      {
-        "name": "Castellari Cli o Alba",
-        "role": "author",
-        "party_or_fraction": null,
-        "canton_or_municipality": "TI",
-        "provenance": {
-          "page_number": 1,
-          "source_text_snippet": "Castellari Cli o Alba, Via Carona 33, 6912 Pazzallo;",
-          "char_start": 2054,
-          "char_end": 2106,
-          "status": "extracted"
-        }
-      },
-      {
-        "name": "Hofer André",
-        "role": "author",
-        "party_or_fraction": null,
-        "canton_or_municipality": "NE",
-        "provenance": {
-          "page_number": 1,
-          "source_text_snippet": "Hofer André, Sous Banbois 5, 2515 Prêles;",
-          "char_start": 2107,
-          "char_end": 2148,
-          "status": "extracted"
-        }
-      },
-      {
-        "name": "Gilardi Paolo",
-        "role": "author",
-        "party_or_fraction": null,
-        "canton_or_municipality": "GE",
-        "provenance": {
-          "page_number": 1,
-          "source_text_snippet": "Gilardi Paolo, Rue Jacques-Grosselin 6, 1227 Carouge;",
-          "char_start": 2149,
-          "char_end": 2202,
-          "status": "extracted"
-        }
-      },
-      {
-        "name": "Ebel Marianne",
-        "role": "author",
-        "party_or_fraction": null,
-        "canton_or_municipality": "NE",
-        "provenance": {
-          "page_number": 1,
-          "source_text_snippet": "Ebel Marianne, Chemin des Grands-Pins 19, 2000 Neuchâtel",
-          "char_start": 2203,
-          "char_end": 2259,
-          "status": "extracted"
-        }
-      },
-      {
-        "name": "Dolivo Jean-Michel",
-        "role": "author",
-        "party_or_fraction": null,
-        "canton_or_municipality": "VD",
-        "provenance": {
-          "page_number": 1,
-          "source_text_snippet": "Dolivo Jean-Michel, Avenue Alexandre-Vinet 14, 1004 Lausanne;",
-          "char_start": 2262,
-          "char_end": 2323,
-          "status": "extracted"
-        }
-      },
-      {
-        "name": "Kiener Nellen Margareta",
-        "role": "author",
-        "party_or_fraction": null,
-        "canton_or_municipality": "BE",
-        "provenance": {
-          "page_number": 1,
-          "source_text_snippet": "Kiener Nellen Margareta, Dorfstrasse 32, 3065 Bolligen;",
-          "char_start": 2324,
-          "char_end": 2379,
-          "status": "extracted"
-        }
-      },
-      {
-        "name": "Majno-Hurst Pietro",
-        "role": "author",
-        "party_or_fraction": null,
-        "canton_or_municipality": "TI",
-        "provenance": {
-          "page_number": 1,
-          "source_text_snippet": "Majno-Hurst Pietro, Via Naccio 2, 6614 Brissago;",
-          "char_start": 2380,
-          "char_end": 2428,
-          "status": "extracted"
-        }
-      },
-      {
-        "name": "Sergi Giuseppe",
-        "role": "author",
-        "party_or_fraction": null,
-        "canton_or_municipality": "TI",
-        "provenance": {
-          "page_number": 1,
-          "source_text_snippet": "Sergi Giuseppe, Via Luigi Colombi 1, 6500 Bellinzona;",
-          "char_start": 2429,
-          "char_end": 2482,
-          "status": "extracted"
-        }
-      },
-      {
-        "name": "De Battista Régis",
-        "role": "author",
-        "party_or_fraction": null,
-        "canton_or_municipality": "GE",
-        "provenance": {
-          "page_number": 1,
-          "source_text_snippet": "De Battista Régis, Chemin des Esserts 3, 1213 Petit-Lancy",
-          "char_start": 2483,
-          "char_end": 2540,
-          "status": "extracted"
-        }
       }
     ],
     "addressed_to": null,
-    "background_and_rationale": "Die unterzeichneten stimmberechtigten Schweizer Bürgerinnen und Bürger stellen hiermit, gestützt auf Art. 34, 136, 139 und 194 der Bundesverfassung und nach dem Bundesgesetz vom 17. Dezember 1976 über die politischen Rechte, Art. 68ff., folgendes Begehren: Die Bundesverfassung wird wie folgt geändert: Art. 197 Ziff. 17 17. Übergangsbestimmungen zu Art. 60 (Organisation, Ausbildung und Ausrüstung der Armee) 1 Der Bund beschafft keine Kampfflugzeuge des Typs F-35. 2 Das Armeebudget wird entsprechend angepasst. 3 Diese Bestimmungen treten am 1. Januar 2040 ausser Kraft. 1 SR 101 2 Die endgültige Ziffer dieser Übergangsbestimmung wird nach der Volksabstimmung von der Bundeskanzlei festgelegt.",
+    "background_and_rationale": "Die unterzeichneten stimmberechtigten Schweizer Bürgerinnen und Bürger stellen hiermit, gestützt auf Art. 34, 136, 139 und 194 der Bundesverfassung und nach dem Bundesgesetz vom 17. Dezember 1976 über die politischen Rechte, Art. 68ff., folgendes Begehren: Die Bundesverfassung wird wie folgt geändert: Art. 197 Ziff. 17 1 Der Bund beschafft keine Kampfflugzeuge des Typs F-35. 2 Das Armeebudget wird entsprechend angepasst. 3 Diese Bestimmungen treten am 1. Januar 2040 ausser Kraft. 1 SR 101 2 Die endgültige Ziffer dieser Übergangsbestimmung wird nach der Volksabstimmung von der Bundeskanzlei festgelegt.",
     "questions_and_answers": [],
     "financial_details": [],
     "procedural_events": [],
     "title_provenance": {
       "page_number": 1,
-      "source_text_snippet": "Eidgenössische Volksinitiative  «Nein zum F-35» (im Bundesblatt veröffentlicht am 28. April 2026).",
+      "source_text_snippet": "Eidgenössische Volksinitiative  \"Nein zum F-35\" (im Bundesblatt veröffentlicht am 28. April 2026).",
       "char_start": 71,
       "char_end": 169,
       "status": "extracted"
     },
     "rationale_provenance": {
       "page_number": 1,
-      "source_text_snippet": "Die unterzeichneten stimmberechtigten Schweizer Bürgerinnen und Bürger stellen hiermit, gestützt auf Art. 34, 136, 139 und 194 der Bundesverfassung und nach dem Bundesgesetz vom 17. Dezember 1976 über die politischen Rechte, Art. 68ff., folgendes Begehren: Die Bundesverfassung wird wie folgt geändert: Art. 197 Ziff. 17 17. Übergangsbestimmungen zu Art. 60 (Organisation, Ausbildung und Ausrüstung der Armee) 1 Der Bund beschafft keine Kampfflugzeuge des Typs F-35. 2 Das Armeebudget wird entsprechend angepasst. 3 Diese Bestimmungen treten am 1. Januar 2040 ausser Kraft. 1 SR 101 2 Die endgültige Ziffer dieser Übergangsbestimmung wird nach der Volksabstimmung von der Bundeskanzlei festgelegt.",
+      "source_text_snippet": "Die unterzeichneten stimmberechtigten Schweizer Bür gerinnen und Bürger stellen hiermit, gestützt auf A rt. 34, 136, 139 und 194 der\nBundesverfassung und nach dem Bundesgesetz vom 17. Dezember 1976 über die politischen Rechte, Art. 68ff., folgendes Begehren:\n\nDie Bundesverfassung 1 wird wie folgt geändert:\n\nArt. 197 Ziff. 17 2\n17. Übergangsbestimmungen zu Art. 60 (Organisation, Ausbildung und Ausrüstung der Armee)\n1 Der Bund beschafft keine Kampfflugzeuge des Typs F-35.\n2 Das Armeebudget wird entsprechend angepasst.\n3 Diese Bestimmungen treten am 1. Januar 2040 ausser Kraft.\n\n1 SR 101\n2 Die endgültige Ziffer dieser Übergangsbestimmung wird nach der Volksabstimmung von der Bundeskanzlei festgelegt",
       "char_start": 170,
-      "char_end": 876,
+      "char_end": 875,
       "status": "extracted"
     }
   },
   "report": {
-    "total_citations": 14,
-    "verified_citations": 13,
-    "failed_citations": 1,
-    "provenance_score": 0.929,
-    "details": [
-      {
-        "field": "title",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Eidgenössische Volksinitiative  «Nein zum F-35» (i..."
-      },
-      {
-        "field": "background_and_rationale",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Die unterzeichneten stimmberechtigten Schweizer Bü..."
-      },
-      {
-        "field": "authors[0].Künzi Daniel",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Künzi Daniel, Passage Daniel Baud-Bovy 10, 1205 Ge..."
-      },
-      {
-        "field": "authors[1].Sax Jacques",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Sax Jacques, Chemin de Renens 52D, 1004 Lausan ne;..."
-      },
-      {
-        "field": "authors[2].Weil Anju\u0011ka",
-        "page": 1,
-        "status": "not_found",
-        "verified": false,
-        "snippet_preview": "Weil Anju\u0011ka, Goldbrunnenstrasse 131, 8055 Zürich;..."
-      },
-      {
-        "field": "authors[3].Castellari Cli o Alba",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Castellari Cli o Alba, Via Carona 33, 6912 Pazzall..."
-      },
-      {
-        "field": "authors[4].Hofer André",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Hofer André, Sous Banbois 5, 2515 Prêles;..."
-      },
-      {
-        "field": "authors[5].Gilardi Paolo",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Gilardi Paolo, Rue Jacques-Grosselin 6, 1227 Carou..."
-      },
-      {
-        "field": "authors[6].Ebel Marianne",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Ebel Marianne, Chemin des Grands-Pins 19, 2000 Neu..."
-      },
-      {
-        "field": "authors[7].Dolivo Jean-Michel",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Dolivo Jean-Michel, Avenue Alexandre-Vinet 14, 100..."
-      },
-      {
-        "field": "authors[8].Kiener Nellen Margareta",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Kiener Nellen Margareta, Dorfstrasse 32, 3065 Boll..."
-      },
-      {
-        "field": "authors[9].Majno-Hurst Pietro",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Majno-Hurst Pietro, Via Naccio 2, 6614 Brissago;..."
-      },
-      {
-        "field": "authors[10].Sergi Giuseppe",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Sergi Giuseppe, Via Luigi Colombi 1, 6500 Bellinzo..."
-      },
-      {
-        "field": "authors[11].De Battista Régis",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "De Battista Régis, Chemin des Esserts 3, 1213 Peti..."
-      }
-    ]
-  },
-  "latency_sec": 10.051,
-  "tokens_prompt": 5339,
-  "tokens_completion": 1605,
-  "tokens_cached": 5312,
-  "cost_chf": 6.4e-05,
-  "provenance_report": {
-    "total_citations": 14,
-    "verified_citations": 14,
+    "total_citations": 3,
+    "verified_citations": 3,
     "failed_citations": 0,
     "provenance_score": 1.0,
     "details": [
@@ -308,99 +54,43 @@
         "page": 1,
         "status": "extracted",
         "verified": true,
-        "snippet_preview": "Eidgenössische Volksinitiative  «Nein zum F-35» (i..."
+        "snippet_preview": "Eidgenössische Volksinitiative  \"Nein zum F-35\" (i...",
+        "source_text_snippet": "Eidgenössische Volksinitiative  \"Nein zum F-35\" (im Bundesblatt veröffentlicht am 28. April 2026).",
+        "char_start": 71,
+        "char_end": 169
       },
       {
         "field": "background_and_rationale",
         "page": 1,
         "status": "extracted",
         "verified": true,
-        "snippet_preview": "Die unterzeichneten stimmberechtigten Schweizer Bü..."
+        "snippet_preview": "Die unterzeichneten stimmberechtigten Schweizer Bü...",
+        "source_text_snippet": "Die unterzeichneten stimmberechtigten Schweizer Bür gerinnen und Bürger stellen hiermit, gestützt auf A rt. 34, 136, 139 und 194 der\nBundesverfassung und nach dem Bundesgesetz vom 17. Dezember 1976 über die politischen Rechte, Art. 68ff., folgendes Begehren:",
+        "char_start": 170,
+        "char_end": 428
       },
       {
         "field": "authors[0].Künzi Daniel",
         "page": 1,
         "status": "extracted",
         "verified": true,
-        "snippet_preview": "Künzi Daniel, Passage Daniel Baud-Bovy 10, 1205 Ge..."
-      },
+        "snippet_preview": "Künzi Daniel, Passage Daniel Baud-Bovy 10, 1205 Ge...",
+        "source_text_snippet": "Künzi Daniel, Passage Daniel Baud-Bovy 10, 1205 Gen ève;",
+        "char_start": 1895,
+        "char_end": 1951
+      }
+    ],
+    "pages": [
       {
-        "field": "authors[1].Sax Jacques",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Sax Jacques, Chemin de Renens 52D, 1004 Lausan ne;..."
-      },
-      {
-        "field": "authors[2].Weil Anjuška",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Weil Anjuška, Goldbrunnenstrasse 131, 8055 Zürich;..."
-      },
-      {
-        "field": "authors[3].Castellari Cli o Alba",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Castellari Cli o Alba, Via Carona 33, 6912 Pazzall..."
-      },
-      {
-        "field": "authors[4].Hofer André",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Hofer André, Sous Banbois 5, 2515 Prêles;..."
-      },
-      {
-        "field": "authors[5].Gilardi Paolo",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Gilardi Paolo, Rue Jacques-Grosselin 6, 1227 Carou..."
-      },
-      {
-        "field": "authors[6].Ebel Marianne",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Ebel Marianne, Chemin des Grands-Pins 19, 2000 Neu..."
-      },
-      {
-        "field": "authors[7].Dolivo Jean-Michel",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Dolivo Jean-Michel, Avenue Alexandre-Vinet 14, 100..."
-      },
-      {
-        "field": "authors[8].Kiener Nellen Margareta",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Kiener Nellen Margareta, Dorfstrasse 32, 3065 Boll..."
-      },
-      {
-        "field": "authors[9].Majno-Hurst Pietro",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Majno-Hurst Pietro, Via Naccio 2, 6614 Brissago;..."
-      },
-      {
-        "field": "authors[10].Sergi Giuseppe",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "Sergi Giuseppe, Via Luigi Colombi 1, 6500 Bellinzo..."
-      },
-      {
-        "field": "authors[11].De Battista Régis",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "De Battista Régis, Chemin des Esserts 3, 1213 Peti..."
+        "page_number": 1,
+        "text": "Association citoyen.ne.s NON aux F-35, case postale 169, 1211 Genève 8\nEidgenössische Volksinitiative  \"Nein zum F-35\" (im Bundesblatt veröffentlicht am 28. April 2026).\nDie unterzeichneten stimmberechtigten Schweizer Bür gerinnen und Bürger stellen hiermit, gestützt auf A rt. 34, 136, 139 und 194 der\nBundesverfassung und nach dem Bundesgesetz vom 17. Dezember 1976 über die politischen Rechte, Art. 68ff., folgendes Begehren:\n\nDie Bundesverfassung 1 wird wie folgt geändert:\n\nArt. 197 Ziff. 17 2\n17. Übergangsbestimmungen zu Art. 60 (Organisation, Ausbildung und Ausrüstung der Armee)\n1 Der Bund beschafft keine Kampfflugzeuge des Typs F-35.\n2 Das Armeebudget wird entsprechend angepasst.\n3 Diese Bestimmungen treten am 1. Januar 2040 ausser Kraft.\n\n1 SR 101\n2 Die endgültige Ziffer dieser Übergangsbestimmung wird nach der Volksabstimmung von der Bundeskanzlei festgelegt.\n\n\n!\nWer bei einer Unterschriftensammlung besticht oder sich bestechen lässt oder wer das Ergebnis einer\nUnterschriftensammlung für ein Volksbegehren fälscht, wird nach Art. 281 beziehungsweise nach Art.\n282 des Strafgesetzbuches mit Freiheitsstrafe bis zu drei Jahren oder Geldstrafe bestraft. !\nAuf dieser Liste können nur Stimmberechtigte unterz eichnen, die in der genannten politischen Gemeinde in eidgenössischen Angelegenheiten\nstimmberechtigt sind. Bürgerinnen und Bürger, die das Begehren unterstützen, mögen es handschriftlich unterzeichnen.\nKanton  Postleitzahl  Politische Gemeinde\n\n\n Name\n(eigenhändig und möglichst in\nBlockschrift)\nVornamen\n(eigenhändig und möglichst\nin Blockschrift)\nGeburtsdatum\n(Tag/Monat/Jahr)\nWohnadresse\n(Strasse und Hausnummer)\nEigenhändige\nUnterschrift\nKontrolle\n(leer\nlassen)\n1\n2\n3\n\n\nDas Initiativkomitee, bestehend aus nachstehenden Urheberinnen und Urhebern, ist berechtigt, diese Volksinitiative mit absoluter Mehrheit seiner\nnoch stimmberechtigten Mitglieder zurückzuziehen:\nKünzi Daniel, Passage Daniel Baud-Bovy 10, 1205 Gen ève; Sax Jacques, Chemin de Renens 52D, 1004 Lausan ne; Weil Anjuška,\nGoldbrunnenstrasse 131, 8055 Zürich; Castellari Cli o Alba, Via Carona 33, 6912 Pazzallo; Hofer André, Sous Banbois 5, 2515 Prêles; Gilardi\nPaolo, Rue Jacques-Grosselin 6, 1227 Carouge; Ebel Marianne, Chemin des Grands-Pins 19, 2000 Neuchâtel ; Dolivo Jean-Michel, Avenue\nAlexandre-Vinet 14, 1004 Lausanne; Kiener Nellen Margareta, Dorfstrasse 32, 3065 Bolligen; Majno-Hurst Pietro, Via Naccio 2, 6614 Brissago;\nSergi Giuseppe, Via Luigi Colombi 1, 6500 Bellinzona; De Battista Régis, Chemin des Esserts 3, 1213 Petit-Lancy\nAblauf der Sammelfrist: 28. Oktober 2027.\nDie unterzeichnete Amtsperson bescheinigt hiermit, dass obenstehende .... (Anzahl) Unterzeichnerinnen und Unterzeichner der Volksinitiative in\neidgenössischen Angelegenheiten stimmberechtigt sind und ihre politischen Rechte in der erwähnten Gemeinde ausüben.\nDie zur Bescheinigung zuständige Amtsperson (eigenhändige Unterschrift und amtliche Eigenschaft)  Amtsstempel\nOrt:\nDatum:\nUnterschrift:\nAmtliche\nEigenschaft:\n\n\n\n!\nWenn Sie das Anliegen dieser Volksinitiative unterstützen möchten, können Sie diese Unterschriftenliste ausdrucken, ausfüllen, in\neinen Briefumschlag stecken und möglichst früh vor dem 28. Oktober 2027 senden an:\nAssociation citoyen.ne.s NON aux F-35, case postale 169, 1211 Genève 8.\nEs müssen nicht alle Zeilen ausgefüllt sein. !",
+        "char_count": 3336
       }
     ]
-  }
+  },
+  "latency_sec": 6.01,
+  "tokens_prompt": 5583,
+  "tokens_completion": 839,
+  "tokens_cached": 0,
+  "cost_chf": 8.9e-05
 }

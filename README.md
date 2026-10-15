@@ -1,6 +1,7 @@
 # SEVERIN — Swiss Parliamentary Affairs Extraction Platform
 > **Hack Apertus 2026 • Track 2A: OpenParlData Challenge**  
-> *Extracting Swiss Parliamentary Affairs from Heterogeneous PDFs into One Common Structure with Verifiable Provenance*
+> *Extracting Swiss Parliamentary Affairs from Heterogeneous PDFs into One Common Structure with Verifiable Provenance*  
+> **Key Deliverables:** [Technical Report](track_2a/technical_report.md) • [System Architecture](track_2a/docs/architecture.md) • [Architecture Diagram](track_2a/docs/architecture.svg) • [Data Directory](track_2a/data/) • [Source Code](track_2a/src/)
 
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
 [![Apertus 1.5-8B](https://img.shields.io/badge/Model-Apertus--1.5--8B-red.svg)](https://huggingface.co/swiss-ai/Apertus-v1.5-8B)
@@ -24,27 +25,33 @@ Switzerland's parliamentary system (Federal Assembly, 26 Cantonal Parliaments, a
 
 ---
 
-## 🚀 Quickstart (Jury Entrypoint)
+## 🚀 Quickstart (Jury Reproducibility)
 
-SEVERIN runs turn-key on any clean machine via Docker with a single command from the project root:
+SEVERIN runs on any clean machine via Docker. The primary turnkey entrypoint for the jury is GNU Make:
 
 ```bash
-# Optional: provide CSCS API key for live Alps GH200 inference
-# (If omitted, automatically executes in 100% offline dry-run mode)
+# 1. Provide CSCS API key
+# (If omitted, automatically runs in 100% offline dry-run mode)
 export CSCS_INFERENCE_API_KEY="your_cscs_key_here"
 
-# Start the full pipeline (builds multi-stage container & runs benchmark)
-make run
+# 2. Primary Entrypoint via GNU Make (from repository root):
+make build      # Build Docker container image
+make run        # Run benchmark & start web platform
+
+# Alternative: Direct Docker Compose
+cd track_2a
+docker compose build
+docker compose up
 ```
 
 Once started:
 1. The container executes the automated cross-cantonal benchmark.
 2. The interactive web platform is available at **[http://localhost:8000](http://localhost:8000)**.
-3. Stop the container anytime with `make clean` (or `Ctrl+C`).
+3. Stop the container anytime with `docker compose down` (or `make clean` from root).
 
 ---
 
-## 📖 API Documentation (Swagger & OpenAPI)
+## 📖 API Documentation
 
 When the SEVERIN platform is running, interactive OpenAPI/Swagger documentation is served directly by FastAPI:
 
@@ -57,19 +64,20 @@ When the SEVERIN platform is running, interactive OpenAPI/Swagger documentation 
 
 ### Key API Endpoints
 
-- `POST /api/extract` — Conservative extraction using Swiss-AI Apertus 1.5-8B on CSCS Alps GH200 with mathematical provenance verification against source PDF.
-- `GET /api/sample-pdfs` — List 27 curated nationwide Swiss cantonal sample PDFs from manifest.
+- `POST /api/extract` — Conservative extraction using Apertus 1.5-8B on CSCS Alps GH200 with page-anchored provenance verification against source PDF.
+- `GET /api/schema` — Export JSON Schema for the unified `ParliamentaryAffair` Pydantic v2 model.
+- `GET /api/sample-pdfs` — List 27 curated Swiss cantonal sample PDFs from manifest.
 - `GET /api/bodies` — List indexed Swiss parliamentary bodies (cantons, federal assembly, cities).
 - `GET /api/affairs` — Search OpenParlData parliamentary affairs with filters and pagination.
 - `GET /api/affairs/{affair_id}` — Retrieve full detail and document attachments for a single parliamentary affair.
-- `GET /api/parse-pdf?url=...` — Download remote PDF and return page-by-page text with physical page offsets.
-- `GET /api/pdf-proxy?url=...` — Stream remote PDF to bypass browser iframe CORS restrictions.
-- `GET /api/telemetry` — Live cumulative CSCS inference telemetry (prompt/completion tokens, cache hit rates, micro-CHF cost counters).
+- `GET /api/parse-pdf?url=...` — Parse PDF page-by-page returning text with physical page offsets.
+- `GET /api/pdf-proxy?url=...` — Stream PDF with inline disposition to avoid browser CORS restrictions.
+- `GET /api/telemetry` — Cumulative CSCS inference telemetry (prompt/completion tokens, cache hit rates, cost counters).
 - `GET /api/health` — Service health check.
 
 ---
 
-## 📊 Cross-Cantonal Benchmark Results (CSCS Alps GH200)
+## 📊 Cross-Cantonal Benchmark
 
 Evaluated across all Swiss linguistic regions on real-world cantonal and federal PDFs:
 
@@ -86,7 +94,7 @@ Evaluated across all Swiss linguistic regions on real-world cantonal and federal
 - **Benchmark Cost**: **0.000194 CHF** across all 5 benchmark targets (~0.000039 CHF per document).
 - **Prefix Caching**: CSCS Alps vLLM PagedAttention automatically caches ~4,500–5,300 prompt tokens (billed at 0.00 CHF under CSCS Academia pricing).
 
-### 📂 Dataset Structure & Runtime Artifacts
+### 📂 Dataset Structure
 
 Data files are located under `track_2a/data/` (**19.8 MB** total, within the 100 MB limit):
 
@@ -100,31 +108,32 @@ Data files are located under `track_2a/data/` (**19.8 MB** total, within the 100
 
 ---
 
-## 🏗️ Core Architecture & Pipeline Components
+## 🏗️ Core Architecture
+
+For complete system design, sequence diagrams, and data flows, see:
+- 📄 **[System Architecture Guide](track_2a/docs/architecture.md)** — Pipeline stages, schema mappings, and sequence diagrams.
+- 🖼️ **[Architecture Vector Diagram](track_2a/docs/architecture.svg)** — High-resolution system flow and hardware layout.
 
 ```
 severin/
-├── Makefile                          # Root dispatcher forwarding commands to track_2a
-├── track_2a/                         # Official Hack Apertus Track 2A workspace
-│   ├── Dockerfile                    # Multi-stage container (Node 20 build + Python 3.11 runtime)
-│   ├── docker-compose.yml            # Service orchestration with CSCS env mapping
-│   ├── Makefile                      # Track-level execution targets (run, clean, test, benchmark)
-│   ├── technical_report.md           # Official evaluation report for Track 2A jury
-│   ├── src/
-│   │   ├── schema.py                 # Pydantic v2 ParliamentaryAffair & Provenance models
-│   │   ├── enums.py                  # Controlled vocabularies (AffairType, Levels, Statuses)
-│   │   ├── prompts.py                # Conservative system prompt with Strict Rule of Absence
-│   │   ├── extractor.py              # Apertus extractor + verify_provenance() grounding engine
-│   │   ├── pdf_parser.py             # Page-level PDF text extractor with character offset indexing
-│   │   ├── cscs_client.py            # OpenAI-compatible CSCS client (temperature=0.0, live telemetry)
-│   │   ├── api_client.py             # OpenParlData REST API client
-│   │   ├── benchmark.py              # Automated cross-cantonal evaluation pipeline
-│   │   └── server.py                 # FastAPI backend mounting compiled React 19 SPA
-│   ├── frontend/                     # Modern React 19 + TypeScript SPA Explorer
-│   ├── data/
-│   │   ├── sample_pdfs/              # 27 curated nationwide PDF samples (all 26 cantons + CHE, ~19.8 MB)
-│   │   └── benchmark_cache/          # Authentic model extractions for offline dry-run verification
-│   └── tests/                        # Automated unit tests for schema, parser, and extractor
+├── Makefile                          # Root targets (run, build, clean)
+├── track_2a/                         # Challenge workspace
+│   ├── Dockerfile                    # Container definition
+│   ├── docker-compose.yml            # Compose configuration
+│   ├── Makefile                      # Track build & run targets
+│   ├── technical_report.md           # Technical report for jury
+│   ├── docs/                         # Architecture documentation
+│   │   ├── architecture.md           # Technical architecture
+│   │   └── architecture.svg          # Pipeline vector diagram
+│   ├── src/                          # Extraction pipeline & FastAPI backend
+│   ├── frontend/                     # React 19 + TypeScript SPA
+│   ├── data/                         # Evaluation data (<20 MB)
+│   │   ├── sample_pdfs/              # 27 cantonal & federal PDFs
+│   │   ├── benchmark_cache/          # Offline dry-run cache
+│   │   ├── benchmark_results.json    # Benchmark results
+│   │   ├── benchmark_summary.md      # Benchmark summary
+│   │   └── telemetry.json            # CSCS token & cost ledger
+│   └── tests/                        # Automated unit tests
 ```
 
 ---

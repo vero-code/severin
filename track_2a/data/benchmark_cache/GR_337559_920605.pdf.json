@@ -16,37 +16,55 @@
         "canton_or_municipality": "GR",
         "provenance": {
           "page_number": 1,
-          "source_text_snippet": "Chur, 29. August 2026\nKreiliger, Messmer, Spagnolatti, Bardill, Bieler, Bischof, Bisculm Jörg, Brüesch, Cahenzli-Philipp, Danuser, Dietrich, Ehrler, Huber, Kaiser, Kleeb, Mazzetta, Müller, Nicolay, Perl, Preisig, Rageth, Rusch Nigg, Schläpfer, Sunthar, Thöny, Tobler, Vassella, von Ballmoos, von Moos, Zogg",
-          "char_start": 0,
-          "char_end": 306,
+          "source_text_snippet": "Kreiliger, Messmer, Spagnolatti, Bardill, Bieler, Bischof, Bisculm Jörg, Brüesch, Cahenzli-Philipp, Danuser, Dietrich, Ehrler,\nHuber, Kaiser, Kleeb, Mazzetta, Müller, Nicolay, Perl, Preisig, Rageth, Rusch Nigg, Schläpfer, Sunthar, Thöny, Tobler,\nVassella, von Ballmoos, von Moos, Zogg",
+          "char_start": 1638,
+          "char_end": 1922,
           "status": "extracted"
         }
       }
     ],
     "addressed_to": null,
-    "background_and_rationale": "Graubünden ist wie der grösste Teil der Schweiz und Europas von Hitze und Trockenheit erfasst worden. Der Ursprung davon liegt bereits im vergangenen, ausserordentlich niederschlagsarmen Winter. Das Ausmass ist für die letzten Jahrhunderte beispiellos. Aus den Medien ist zu erfahren, dass der Kanton für diese Situation richtigerweise eine Gefährdungsanalyse vorgenommen und Massnahmen ergriffen hat. Das Regierungsprogramm 2025-2028 beinhaltet ebenfalls bereits Ziele und Massnahmen zur Bewältigung der Auswirkungen des Klimawandels. Neben dem Klimaschutz – d. h. die Reduktion der fossilen Energie – geht es um die Vorsorge vor Krisen und die Bewältigung von Ereignissen im Zusammenhang mit Hitzewellen, Wetterextremen, Trockenheit und Naturgefahren. Die Wissenschaft prognostiziert, dass sich der Alpenraum aufgrund seiner speziellen Lage etwa doppelt so stark erwärmt wie der globale Durchschnitt (vgl. «Switzerland against the climate clock», meet ETH/Youtube Oktober 2025). Dies betrifft auch Graubünden.",
+    "background_and_rationale": "Graubünden ist wie der grösste Teil der Schweiz und Europas von Hitze und Trockenheit erfasst worden. Der Ursprung davon liegt bereits im vergangenen, ausserordentlich niederschlagsarmen Winter. Das Ausmass ist für die letzten Jahrhunderte beispiellos. Aus den Medien ist zu erfahren, dass der Kanton für diese Situation richtigerweise eine Gefährdungsanalyse vorgenommen und Massnahmen ergriffen hat. Das Regierungsprogramm 2025-2028 beinhaltet ebenfalls bereits Ziele und Massnahmen zur Bewältigung der Auswirkungen des Klimawandels. Neben dem Klimaschutz - d. h. die Reduktion der fossilen Energie - geht es um die Vorsorge vor Krisen und die Bewältigung von Ereignissen im Zusammenhang mit Hitzewellen, Wetterextremen, Trockenheit und Naturgefahren. Die Wissenschaft prognostiziert, dass sich der Alpenraum aufgrund seiner speziellen Lage etwa doppelt so stark erwärmt wie der globale Durchschnitt (vgl. \"Switzerland against the climate clock\", meet ETH/Youtube Oktober 2025). Dies betrifft auch Graubünden.",
     "questions_and_answers": [
       {
         "question": {
-          "number": "1",
-          "text": "1. Angesichts der Erfahrungen dieses Winters und Sommers: Wie schätzt die Regierung die aktuelle Klimastrategie des Kantons ein?",
-          "provenance": null
+          "number": "1.",
+          "text": "Angesichts der Erfahrungen dieses Winters und Sommers: Wie schätzt die Regierung die aktuelle Klimastrategie des Kantons ein?",
+          "provenance": {
+            "page_number": 1,
+            "source_text_snippet": "Deshalb gelangen die Unterzeichnenden mit den folgenden Fragen an die Regierung:\n1. Angesichts der Erfahrungen dieses Winters und Sommers: Wie schätzt die Regierung die aktuelle Klimastrategie des Kan-\ntons ein?",
+            "char_start": 1119,
+            "char_end": 1330,
+            "status": "extracted"
+          }
         },
         "answer": null
       },
       {
         "question": {
-          "number": "2",
-          "text": "2. Erwägt oder plant sie weitere zusätzliche Ziele und Massnahmen, welche über das aktuelle Jahr hinausgehen?",
-          "provenance": null
+          "number": "2.",
+          "text": "Erwägt oder plant sie weitere zusätzliche Ziele und Massnahmen, welche über das aktuelle Jahr hinausgehen?",
+          "provenance": {
+            "page_number": 1,
+            "source_text_snippet": "2. Erwägt oder plant sie weitere zusätzliche Ziele und Massnahmen, welche über das aktuelle Jahr hinausgehen?",
+            "char_start": 1331,
+            "char_end": 1440,
+            "status": "extracted"
+          }
         },
         "answer": null
       },
       {
         "question": {
-          "number": "3",
-          "text": "3. Wie beurteilt die Regierung in dieser Hinsicht die Bereiche Alpwirtschaft, Landwirtschaft, Wasserverfügbarkeit, Wasserenergie, Tourismus, Schutzwald und Fischbestände?",
-          "provenance": null
+          "number": "3.",
+          "text": "Wie beurteilt die Regierung in dieser Hinsicht die Bereiche Alpwirtschaft, Landwirtschaft, Wasserverfügbarkeit, Wasserenergie, Tourismus, Schutzwald und Fischbestände?",
+          "provenance": {
+            "page_number": 1,
+            "source_text_snippet": "3. Wie beurteilt die Regierung in dieser Hinsicht die Bereiche Alpwirtschaft, Landwirtschaft, Wasserverfügbarkeit, Wasser-\nenergie, Tourismus, Schutzwald und Fischbestände?",
+            "char_start": 1441,
+            "char_end": 1613,
+            "status": "extracted"
+          }
         },
         "answer": null
       }
@@ -62,15 +80,15 @@
     },
     "rationale_provenance": {
       "page_number": 1,
-      "source_text_snippet": "Graubünden ist wie der grösste Teil der Schweiz und Europas von Hitze und Trockenheit erfasst worden. Der Ursprung davon liegt bereits im vergangenen, ausserordentlich niederschlagsarmen Winter. Das Ausmass ist für die letzten Jahrhunderte beispiellos. Aus den Medien ist zu erfahren, dass der Kanton für diese Situation richtigerweise eine Gefährdungsanalyse vorgenommen und Massnahmen ergriffen hat. Das Regierungsprogramm 2025-2028 beinhaltet ebenfalls bereits Ziele und Massnahmen zur Bewältigung der Auswirkungen des Klimawandels. Neben dem Klimaschutz – d. h. die Reduktion der fossilen Energie – geht es um die Vorsorge vor Krisen und die Bewältigung von Ereignissen im Zusammenhang mit Hitzewellen, Wetterextremen, Trockenheit und Naturgefahren. Die Wissenschaft prognostiziert, dass sich der Alpenraum aufgrund seiner speziellen Lage etwa doppelt so stark erwärmt wie der globale Durchschnitt (vgl. «Switzerland against the climate clock», meet ETH/Youtube Oktober 2025). Dies betrifft auch Graubünden.",
+      "source_text_snippet": "Graubünden ist wie der grösste Teil der Schweiz und Europas von Hitze und Trockenheit erfasst worden. Der Ursprung davon\nliegt bereits im vergangenen, ausserordentlich niederschlagsarmen Winter. Das Ausmass ist für die letzten Jahrhunderte bei-\nspiellos.\nAus den Medien ist zu erfahren, dass der Kanton für diese Situation richtigerweise eine Gefährdungsanalyse vorgenommen und\nMassnahmen ergriffen hat.\nDas Regierungsprogramm 2025-2028 beinhaltet ebenfalls bereits Ziele und Massnahmen zur Bewältigung der Auswirkungen\ndes Klimawandels. Neben dem Klimaschutz - d. h. die Reduktion der fossilen Energie - geht es um die Vorsorge vor Krisen\nund die Bewältigung von Ereignissen im Zusammenhang mit Hitzewellen, Wetterextremen, Trockenheit und Naturgefahren.\nDie Wissenschaft prognostiziert, dass sich der Alpenraum aufgrund seiner speziellen Lage etwa doppelt so stark erwärmt wie\nder globale Durchschnitt (vgl. \"Switzerland against the climate clock\", meet ETH/Youtube Oktober 2025). Dies betrifft auch\nGraubünden",
       "char_start": 104,
-      "char_end": 1115,
+      "char_end": 1116,
       "status": "extracted"
     }
   },
   "report": {
-    "total_citations": 3,
-    "verified_citations": 3,
+    "total_citations": 6,
+    "verified_citations": 6,
     "failed_citations": 0,
     "provenance_score": 1.0,
     "details": [
@@ -79,27 +97,73 @@
         "page": 1,
         "status": "extracted",
         "verified": true,
-        "snippet_preview": "Anfrage Kreiliger betreffend die Rekordhitze und -..."
+        "snippet_preview": "Anfrage Kreiliger betreffend die Rekordhitze und -...",
+        "source_text_snippet": "Anfrage Kreiliger betreffend die Rekordhitze und -trockenheit",
+        "char_start": 41,
+        "char_end": 102
       },
       {
         "field": "background_and_rationale",
         "page": 1,
         "status": "extracted",
         "verified": true,
-        "snippet_preview": "Graubünden ist wie der grösste Teil der Schweiz un..."
+        "snippet_preview": "Graubünden ist wie der grösste Teil der Schweiz un...",
+        "source_text_snippet": "Graubünden ist wie der grösste Teil der Schweiz und Europas von Hitze und Trockenheit erfasst worden. Der Ursprung davon\nliegt bereits im vergangenen, ausserordentlich niederschlagsarmen Winter. Das Ausmass ist für die letzten Jahrhunderte bei-\nspiellos.",
+        "char_start": 104,
+        "char_end": 358
       },
       {
         "field": "authors[0].Kreiliger",
         "page": 1,
         "status": "extracted",
         "verified": true,
-        "snippet_preview": "Chur, 29. August 2026\nKreiliger, Messmer, Spagnola..."
+        "snippet_preview": "Kreiliger, Messmer, Spagnolatti, Bardill, Bieler, ...",
+        "source_text_snippet": "Kreiliger, Messmer, Spagnolatti, Bardill, Bieler, Bischof, Bisculm Jörg, Brüesch, Cahenzli-Philipp, Danuser, Dietrich, Ehrler,\nHuber, Kaiser, Kleeb, Mazzetta, Müller, Nicolay, Perl, Preisig, Rageth, Rusch Nigg, Schläpfer, Sunthar, Thöny, Tobler,\nVassella, von Ballmoos, von Moos, Zogg",
+        "char_start": 1638,
+        "char_end": 1922
+      },
+      {
+        "field": "questions[0]",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Deshalb gelangen die Unterzeichnenden mit den folg...",
+        "source_text_snippet": "Deshalb gelangen die Unterzeichnenden mit den folgenden Fragen an die Regierung:\n1. Angesichts der Erfahrungen dieses Winters und Sommers: Wie schätzt die Regierung die aktuelle Klimastrategie des Kan-\ntons ein?",
+        "char_start": 1119,
+        "char_end": 1330
+      },
+      {
+        "field": "questions[1]",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "2. Erwägt oder plant sie weitere zusätzliche Ziele...",
+        "source_text_snippet": "2. Erwägt oder plant sie weitere zusätzliche Ziele und Massnahmen, welche über das aktuelle Jahr hinausgehen?",
+        "char_start": 1331,
+        "char_end": 1440
+      },
+      {
+        "field": "questions[2]",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "3. Wie beurteilt die Regierung in dieser Hinsicht ...",
+        "source_text_snippet": "3. Wie beurteilt die Regierung in dieser Hinsicht die Bereiche Alpwirtschaft, Landwirtschaft, Wasserverfügbarkeit, Wasser-\nenergie, Tourismus, Schutzwald und Fischbestände?",
+        "char_start": 1441,
+        "char_end": 1613
+      }
+    ],
+    "pages": [
+      {
+        "page_number": 1,
+        "text": "GROSSER RAT\nAugustsession 2026   2026-92\nAnfrage Kreiliger betreffend die Rekordhitze und -trockenheit\n\nGraubünden ist wie der grösste Teil der Schweiz und Europas von Hitze und Trockenheit erfasst worden. Der Ursprung davon\nliegt bereits im vergangenen, ausserordentlich niederschlagsarmen Winter. Das Ausmass ist für die letzten Jahrhunderte bei-\nspiellos.\nAus den Medien ist zu erfahren, dass der Kanton für diese Situation richtigerweise eine Gefährdungsanalyse vorgenommen und\nMassnahmen ergriffen hat.\nDas Regierungsprogramm 2025-2028 beinhaltet ebenfalls bereits Ziele und Massnahmen zur Bewältigung der Auswirkungen\ndes Klimawandels. Neben dem Klimaschutz - d. h. die Reduktion der fossilen Energie - geht es um die Vorsorge vor Krisen\nund die Bewältigung von Ereignissen im Zusammenhang mit Hitzewellen, Wetterextremen, Trockenheit und Naturgefahren.\nDie Wissenschaft prognostiziert, dass sich der Alpenraum aufgrund seiner speziellen Lage etwa doppelt so stark erwärmt wie\nder globale Durchschnitt (vgl. \"Switzerland against the climate clock\", meet ETH/Youtube Oktober 2025). Dies betrifft auch\nGraubünden.\n\nDeshalb gelangen die Unterzeichnenden mit den folgenden Fragen an die Regierung:\n1. Angesichts der Erfahrungen dieses Winters und Sommers: Wie schätzt die Regierung die aktuelle Klimastrategie des Kan-\ntons ein?\n2. Erwägt oder plant sie weitere zusätzliche Ziele und Massnahmen, welche über das aktuelle Jahr hinausgehen?\n3. Wie beurteilt die Regierung in dieser Hinsicht die Bereiche Alpwirtschaft, Landwirtschaft, Wasserverfügbarkeit, Wasser-\nenergie, Tourismus, Schutzwald und Fischbestände?\n\nChur, 29. August 2026\n\nKreiliger, Messmer, Spagnolatti, Bardill, Bieler, Bischof, Bisculm Jörg, Brüesch, Cahenzli-Philipp, Danuser, Dietrich, Ehrler,\nHuber, Kaiser, Kleeb, Mazzetta, Müller, Nicolay, Perl, Preisig, Rageth, Rusch Nigg, Schläpfer, Sunthar, Thöny, Tobler,\nVassella, von Ballmoos, von Moos, Zogg",
+        "char_count": 1922
       }
     ]
   },
-  "latency_sec": 6.03,
-  "tokens_prompt": 4833,
-  "tokens_completion": 987,
-  "tokens_cached": 4832,
-  "cost_chf": 3.9e-05
+  "latency_sec": 6.32,
+  "tokens_prompt": 5077,
+  "tokens_completion": 998,
+  "tokens_cached": 4480,
+  "cost_chf": 4.6e-05
 }

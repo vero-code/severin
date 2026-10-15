@@ -11,14 +11,14 @@
     "authors": [
       {
         "name": "Jacqueline Fehr",
-        "role": "regierungsrätin",
+        "role": "author",
         "party_or_fraction": null,
         "canton_or_municipality": "ZH",
         "provenance": {
           "page_number": 1,
-          "source_text_snippet": "Jacqueline Fehr Regierungsrätin Neumühlequai 10 Postfach 8090 Zürich",
-          "char_start": 0,
-          "char_end": 68,
+          "source_text_snippet": "Jacqueline Fehr\nRegierungsrätin\n\nNeumühlequai 10\nPostfach\n8090 Zürich",
+          "char_start": 51,
+          "char_end": 120,
           "status": "extracted"
         }
       }
@@ -37,7 +37,7 @@
     },
     "rationale_provenance": {
       "page_number": 1,
-      "source_text_snippet": "Die Unterstützungsangebote der Opferhilfe im Kanton Zürich werden immer häufiger in Anspruch genommen. Die steigenden Fallzahlen deuten auf eine Abnahme der Dunkelziffer hin, was grundsätzlich ein positives Zeichen ist. Doch die steigende Nachfrage und die zunehmenden Mehrfachbelastungen der Personen, die von Gewalt betroffen sind und Unterstützung benötigen, beanspruchen die bestehenden Strukturen. Um die Versorgung der Opfer auch in Zukunft sicherzustellen, muss die Kantonale Opferhilfeverordnung in verschiedener Hinsicht an die veränderten Rahmenbedingungen angepasst werden.",
+      "source_text_snippet": "Die Unterstützungsangebote der Opferhilfe im Kanton Zürich werden immer häufiger in\nAnspruch genommen. Die steigenden Fallzahlen deuten auf eine Abnahme der Dun-\nkelziffer hin, was grundsätzlich ein positives Zeichen ist. Doch die steigende Nachfrage\nund die zunehmenden Mehrfachbelastungen der Personen, die von Gewalt betroffen\nsind und Unterstützung benötigen, beanspruchen die bestehenden Strukturen. Um die\nVersorgung der Opfer auch in Zukunft sicherzustellen, muss die Kantonale Opferhil-\nfeverordnung in verschiedener Hinsicht an die veränderten Rahmenbedingungen ange-\npasst werden.",
       "char_start": 382,
       "char_end": 972,
       "status": "extracted"
@@ -54,27 +54,48 @@
         "page": 1,
         "status": "extracted",
         "verified": true,
-        "snippet_preview": "Änderung der Kantonalen Opferhilfeverordnung (KOHV..."
+        "snippet_preview": "Änderung der Kantonalen Opferhilfeverordnung (KOHV...",
+        "source_text_snippet": "Änderung der Kantonalen Opferhilfeverordnung (KOHV)",
+        "char_start": 284,
+        "char_end": 335
       },
       {
         "field": "background_and_rationale",
         "page": 1,
         "status": "extracted",
         "verified": true,
-        "snippet_preview": "Die Unterstützungsangebote der Opferhilfe im Kanto..."
+        "snippet_preview": "Die Unterstützungsangebote der Opferhilfe im Kanto...",
+        "source_text_snippet": "Die Unterstützungsangebote der Opferhilfe im Kanton Zürich werden immer häufiger in\nAnspruch genommen. Die steigenden Fallzahlen deuten auf eine Abnahme der Dun-\nkelziffer hin, was grundsätzlich ein positives Zeichen ist. Doch die steigende Nachfrage\nund die zunehmenden Mehrfachbelastungen der Personen, die von Gewalt betroffen\nsind und Unterstützung benötigen, beanspruchen die bestehenden Strukturen. Um die\nVersorgung der Opfer auch in Zukunft sicherzustellen, muss die Kantonale Opferhil-\nfeverordnung in verschiedener Hinsicht an die veränderten Rahmenbedingungen ange-\npasst werden.",
+        "char_start": 382,
+        "char_end": 972
       },
       {
         "field": "authors[0].Jacqueline Fehr",
         "page": 1,
         "status": "extracted",
         "verified": true,
-        "snippet_preview": "Jacqueline Fehr Regierungsrätin Neumühlequai 10 Po..."
+        "snippet_preview": "Jacqueline Fehr\nRegierungsrätin\n\nNeumühlequai 10\nP...",
+        "source_text_snippet": "Jacqueline Fehr\nRegierungsrätin\n\nNeumühlequai 10\nPostfach\n8090 Zürich",
+        "char_start": 51,
+        "char_end": 120
+      }
+    ],
+    "pages": [
+      {
+        "page_number": 1,
+        "text": "Kanton Zürich\nDirektion der Justiz und des Innern\n\nJacqueline Fehr\nRegierungsrätin\n\nNeumühlequai 10\nPostfach\n8090 Zürich\n\nSachbearbeiter: MLaw Tassio Suter\nJuristische/r Sekretär/in mbA\nDirektwahl +41 43 259 25 81\ntassio.suter@ji.zh.ch\n\nUnsere Referenz: 2026-3713/SU\n1. Oktober 2026\n\nÄnderung der Kantonalen Opferhilfeverordnung (KOHV)\nVernehmlassung\n\nSehr geehrte Damen und Herren\nDie Unterstützungsangebote der Opferhilfe im Kanton Zürich werden immer häufiger in\nAnspruch genommen. Die steigenden Fallzahlen deuten auf eine Abnahme der Dun-\nkelziffer hin, was grundsätzlich ein positives Zeichen ist. Doch die steigende Nachfrage\nund die zunehmenden Mehrfachbelastungen der Personen, die von Gewalt betroffen\nsind und Unterstützung benötigen, beanspruchen die bestehenden Strukturen. Um die\nVersorgung der Opfer auch in Zukunft sicherzustellen, muss die Kantonale Opferhil-\nfeverordnung in verschiedener Hinsicht an die veränderten Rahmenbedingungen ange-\npasst werden.\nGerne laden wir Sie ein, sich am Vernehmlassungsverfahren zu beteiligen und ersu-\nchen um Ihre Stellungnahme zur Verordnungsänderung bis zum 11. Januar 2027 (per\nAxioma oder per E-Mail an tassio.suter@ji.zh.ch). Sämtliche Vernehmlassungsunterla-\ngen sind auch online abrufbar (www.zh.ch -> Politik & Staat -> Gesetze & Beschlüsse -\n> Vernehmlassungen).\nWir danken Ihnen bereits heute für Ihre wertvolle Mitarbeit.\n\n\nFreundliche Grüsse\n\n\nJacqueline Fehr\n\n\nAn die Adressatinnen und Adressaten\ngemäss Verteiler",
+        "char_count": 1480
+      },
+      {
+        "page_number": 2,
+        "text": "Seite 2/2\n\n\nBeilage: - Vorentwurf mit erläuterndem Bericht\n\nVerteiler: - Direktionen des Regierungsrates und Staatskanzlei\n - Datenschutzbeauftragte des Kantons Zürich\n - Opferberatungsstellen im Kanton Zürich\n - Schutzunterkünfte im Kanton Zürich\n - Zürcher Anwaltsverband\n - Demokratische Juristinnen und Juristen",
+        "char_count": 315
       }
     ]
   },
-  "latency_sec": 3.221,
-  "tokens_prompt": 4844,
-  "tokens_completion": 509,
-  "tokens_cached": 4832,
-  "cost_chf": 2e-05
+  "latency_sec": 3.522,
+  "tokens_prompt": 5088,
+  "tokens_completion": 506,
+  "tokens_cached": 4480,
+  "cost_chf": 2.6e-05
 }

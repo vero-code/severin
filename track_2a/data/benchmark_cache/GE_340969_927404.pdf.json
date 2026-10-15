@@ -13,64 +13,98 @@
         "name": "Marc Falquet",
         "role": "author",
         "party_or_fraction": null,
-        "canton_or_municipality": null,
+        "canton_or_municipality": "GE",
         "provenance": {
           "page_number": 1,
-          "source_text_snippet": "Signataire : Marc Falquet\nDate de dépôt : 1er octobre 2026\nQuestion écrite\nCulture institutionnelle du service de protection des mineurs : va-t-on enfin en finir avec les pratiques coercitives et punitives pour évoluer vers un soutien pédagogique aux familles ?",
+          "source_text_snippet": "Signataire : Marc Falquet",
           "char_start": 58,
-          "char_end": 319,
+          "char_end": 83,
           "status": "extracted"
         }
       }
     ],
     "addressed_to": null,
-    "background_and_rationale": "Déjà en 2013, lors des débats budgétaires consacrés au service de protection des mineurs (SPMi), un député du parti UDC alertait notre Grand Conseil en ces termes : « Cela fait trente ans que j’entends parler des dysfonctionnements de ce service [ …]. Le problème, à mon avis, dans ce service, c’est plutôt son état d’esprit. On doit en finir avec ce système punitif ! Le SPMi a un esprit tendant vers la punition au lieu de tenter de régler les problèmes des familles. On ne peut pas opposer les familles aux enfants, on ne peut pas protéger les enfants et dissocier la famille. » Plus de dix ans plus tard, ce constat continue de résonner. En septembre 2024, une pétition munie de 184 signatures (P 2221) a été déposée devant ce Grand Conseil, demandant « une enquête et des contrôles sur les pratiques du service de protection des mineurs », évoquant expressément des « dysfonctionnements et abus » rapportés par de nombreux témoignages. En décembre 2025, le rapport RD 1649 sur le suivi de la motion 2671 « pour une réforme du système de protection de l’enfance garantissant les droits fondamentaux » reconnaissait lui-même, par la voix de la rédactrice de ce rapport, que « si le processus de réforme au sein du SPMi a été entamé, il est loin d’être terminé » – et ce alors que plus de 7000 enfants sont aujourd’hui encadrés par ce service. Entre-temps, un député socialiste relevait également que « le SPMi peut être trop facilement instrumentalisé » et le jugeait « trop radical dans le placement des enfants ou le retrait du droit de garde » lors de séparations conflictuelles. Le scandale du foyer spécialisé de Mancy, révélant de graves dysfonctionnements ayant conduit à une dénonciation pénale, a par ailleurs rappelé que les alertes des familles peinent parfois à être entendues à temps par l’institution. Ce faisceau de constats, formulés sur plusieurs décennies par des élu-e-s de sensibilités politiques différentes, et aujourd’hui relayés par plusieurs pétitions citoyennes et objets parlementaires, suggère qu’un problème de fond – davantage culturel qu’organisationnel – persiste au sein du dispositif genevois de protection des mineurs.",
+    "background_and_rationale": "Déjà en 2013, lors des débats budgétaires consacrés au service de protection des mineurs (SPMi), un député du parti UDC alertait notre Grand Conseil en ces termes : \" Cela fait trente ans que j'entends parler des dysfonctionnements de ce service [ …]. Le problème, à mon avis, dans ce service, c'est plutôt son état d'esprit. On doit en finir avec ce système punitif ! Le SPMi a un esprit tendant vers la punition au lieu de tenter de régler les problèmes des familles. On ne peut pas opposer les familles aux enfants, on ne peut pas protéger les enfants et dissocier la famille. \" Plus de dix ans plus tard, ce constat continue de résonner. En septembre 2024, une pétition munie de 184 signatures (P 2221) a été déposée devant ce Grand Conseil, demandant \" une enquête et des contrôles sur les pratiques du service de protection des mineurs \", évoquant expressément des \" dysfonctionnements et abus \" rapportés par de nombreux témoignages. En décembre 2025, le rapport RD 1649 sur le suivi de la motion 2671 \" pour une réforme du système de protection de l'enfance garantissant les droits fondamentaux \" reconnaissait lui-même, par la voix de la rédactrice de ce rapport, que \" si le processus de réforme au sein du SPMi a été entamé, il est loin d'être terminé \" - et ce alors que plus de 7000 enfants sont aujourd'hui encadrés par ce service. Entre-temps, un député socialiste relevait également que \" le SPMi peut être trop facilement instrumentalisé \" et le jugeait \" trop radical dans le placement des enfants ou le retrait du droit de garde \" lors de séparations conflictuelles. Le scandale du foyer spécialisé de Mancy, révélant de graves dysfonctionnements ayant conduit à une dénonciation pénale, a par ailleurs rappelé que les alertes des familles peinent parfois à être entendues à temps par l'institution. Ce faisceau de constats, formulés sur plusieurs décennies par des élu-e-s de sensibilités politiques différentes, et aujourd'hui relayés par plusieurs pétitions citoyennes et objets parlementaires, suggère qu'un problème de fond - davantage culturel qu'organisationnel - persiste au sein du dispositif genevois de protection des mineurs.",
     "questions_and_answers": [
       {
         "question": {
-          "number": "3",
-          "text": "Les enseignements tirés du scandale du foyer de Mancy ont-ils conduit à un audit plus large des pratiques d’évaluation et de décision au sein du dispositif de protection des mineurs, au-delà du seul établissement concerné ?",
-          "provenance": {
-            "page_number": 2,
-            "source_text_snippet": "3. Les enseignements tirés du scandale du foyer de Mancy ont-ils conduit à un audit plus large des pratiques d’évaluation et de décision au sein du dispositif de protection des mineurs, au-delà du seul établissement concerné ?",
-            "char_start": 0,
-            "char_end": 226,
-            "status": "extracted"
-          }
+          "number": "1.",
+          "text": "Le Conseil d'État dispose-t-il de statistiques permettant de comparer, sur les dix dernières années, la part des situations traitées par le SPMi ayant fait l'objet d'un accompagnement socio-éducatif à domicile plutôt que d'un retrait de garde ou d'un placement ? Cette proportion a-t-elle évolué ?",
+          "provenance": null
         },
         "answer": null
       }
     ],
     "financial_details": [],
     "procedural_events": [],
-    "title_provenance": null,
-    "rationale_provenance": null
+    "title_provenance": {
+      "page_number": 1,
+      "source_text_snippet": "GRAND CONSEIL\nde la République et canton de Genève\nQ 4165\nSignataire : Marc Falquet",
+      "char_start": 0,
+      "char_end": 83,
+      "status": "extracted"
+    },
+    "rationale_provenance": {
+      "page_number": 1,
+      "source_text_snippet": "Déjà en 2013, lors des débats budgétaires consacrés au s ervice de\nprotection des mineurs (SPMi), un député du parti UDC alertait notre Grand\nConseil en ces termes  : \" Cela fait trente ans que j 'entends parler des\ndysfonctionnements de ce service [ …]. Le problème, à mon avis, dans ce\nservice, c' est plutôt son état d 'esprit. On doit en finir avec ce système\npunitif ! Le SPMi a un esprit tendant vers la punition au lieu de tenter de\nrégler les problèmes des familles. On ne peut pas opposer les familles aux\nenfants, on ne peut pas protéger les enfants et dissocier la famille. \"",
+      "char_start": 320,
+      "char_end": 906,
+      "status": "extracted"
+    }
   },
   "report": {
-    "total_citations": 2,
-    "verified_citations": 2,
+    "total_citations": 3,
+    "verified_citations": 3,
     "failed_citations": 0,
     "provenance_score": 1.0,
     "details": [
+      {
+        "field": "title",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "GRAND CONSEIL\nde la République et canton de Genève...",
+        "source_text_snippet": "GRAND CONSEIL\nde la République et canton de Genève\nQ 4165\nSignataire : Marc Falquet",
+        "char_start": 0,
+        "char_end": 83
+      },
+      {
+        "field": "background_and_rationale",
+        "page": 1,
+        "status": "extracted",
+        "verified": true,
+        "snippet_preview": "Déjà en 2013, lors des débats budgétaires consacré...",
+        "source_text_snippet": "Déjà en 2013, lors des débats budgétaires consacrés au s ervice de\nprotection des mineurs (SPMi), un député du parti UDC alertait notre Grand\nConseil en ces termes  : \" Cela fait trente ans que j 'entends parler des\ndysfonctionnements de ce service [ …]. Le problème, à mon avis, dans ce\nservice, c' est plutôt son état d 'esprit. On doit en finir avec ce système\npunitif ! Le SPMi a un esprit tendant vers la punition au lieu de tenter de\nrégler les problèmes des familles. On ne peut pas opposer les familles aux\nenfants, on ne peut pas protéger les enfants et dissocier la famille. \"",
+        "char_start": 320,
+        "char_end": 906
+      },
       {
         "field": "authors[0].Marc Falquet",
         "page": 1,
         "status": "extracted",
         "verified": true,
-        "snippet_preview": "Signataire : Marc Falquet\nDate de dépôt : 1er octo..."
+        "snippet_preview": "Signataire : Marc Falquet...",
+        "source_text_snippet": "Signataire : Marc Falquet",
+        "char_start": 58,
+        "char_end": 83
+      }
+    ],
+    "pages": [
+      {
+        "page_number": 1,
+        "text": "GRAND CONSEIL\nde la République et canton de Genève\nQ 4165\nSignataire : Marc Falquet\nDate de dépôt : 1er octobre 2026\nQuestion écrite\nCulture institutionnelle du service de protection des mineurs :\nva-t-on enfin en finir avec les pratiques coercitives et punitives\npour évoluer vers un soutien pédagogique aux familles ?\nDéjà en 2013, lors des débats budgétaires consacrés au s ervice de\nprotection des mineurs (SPMi), un député du parti UDC alertait notre Grand\nConseil en ces termes  : \" Cela fait trente ans que j 'entends parler des\ndysfonctionnements de ce service [ …]. Le problème, à mon avis, dans ce\nservice, c' est plutôt son état d 'esprit. On doit en finir avec ce système\npunitif ! Le SPMi a un esprit tendant vers la punition au lieu de tenter de\nrégler les problèmes des familles. On ne peut pas opposer les familles aux\nenfants, on ne peut pas protéger les enfants et dissocier la famille. \"\nPlus de dix ans plus tard, ce constat continue de résonner. En\nseptembre 2024, une pétition munie de 184 signatures ( P 2221) a été déposée\ndevant ce Grand Conseil, demandant \" une enquête et des contrôles sur les\npratiques du service de protection des mineurs  \", évoquant expressément des\n\" dysfonctionnements et abus  \" rapportés par de nombreux témoignages. En\ndécembre 2025, le rapport RD 1649 sur le suivi de la motion 2671 \" pour une\nréforme du système de protection de l 'enfance garantissant les droits\nfondamentaux \" reconnaissait lui- même, par la voix de la rédactrice de ce\nrapport, que \" si le processus de réforme au sein du SPMi a été entamé, il est\nloin d'être terminé \" - et ce alors que plus de 7000 enfants sont aujourd' hui\nencadrés par ce service.\nEntre-temps, un député socialiste relevait également que \" le SPMi peut\nêtre trop facilement instrumentalisé  \" et le jugeait \" trop radical dans le\nplacement des enfants ou le retrait du droit de garde  \" lors de séparations\nconflictuelles. Le scandale du foyer spécialisé de Mancy, révélant de graves",
+        "char_count": 1979
       },
       {
-        "field": "questions[0]",
-        "page": 2,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "3. Les enseignements tirés du scandale du foyer de..."
+        "page_number": 2,
+        "text": "Q 4165 2/2\n\ndysfonctionnements ayant conduit à une dénonciation pénale, a par ailleurs\nrappelé que les alertes des familles peinent parfois à être entendues à temps\npar l'institution.\nCe faisceau de constats, formulés sur plusieurs décennies par des élu -e-s\nde sensibilités politiques différentes, et aujourd 'hui relayés par plusieurs\npétitions citoyennes et objets parlementaires, suggère qu 'un problème de\nfond - davantage culturel qu' organisationnel - persiste au sein du\ndispositif genevois de protection des mineurs.\n\nAu vu de ce qui précède, il est demandé au Conseil d' Etat de répondre\naux questions suivantes :\n1.  Le Conseil d 'Etat dispose-t-il de statistiques permettant de comparer, sur\nles dix dernières années, la part des situations traitées par le SPMi ayant\nfait l' objet d 'un accompagnement socio- éducatif à domicile  plutôt que\nd'un retrait de garde ou d 'un placement  ? Cette proportion a -t-elle\névolué ?\n2.  Quelles mesures concrètes de formation continue ont été mises en place,\nou sont prévues, pour faire évoluer la culture professionnelle du SPMi\nvers une approche prioritairement orientée sur  le soutien à la parentalité,\nla collaboration volontaire plutôt que sur la sanction ?\n3.  Les enseignements tirés du scandale du foyer de Mancy ont -ils conduit à\nun audit plus large des pratiques d' évaluation et de décision au sein du\ndispositif de protection des mineurs, au -delà du seul établissement\nconcerné ?",
+        "char_count": 1445
       }
     ]
   },
-  "latency_sec": 7.698,
-  "tokens_prompt": 5210,
-  "tokens_completion": 1257,
-  "tokens_cached": 5184,
+  "latency_sec": 6.605,
+  "tokens_prompt": 5454,
+  "tokens_completion": 1044,
+  "tokens_cached": 4480,
   "cost_chf": 5.1e-05
 }

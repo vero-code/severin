@@ -10,10 +10,10 @@
     "submission_date": null,
     "authors": [
       {
-        "name": "Matteo Pronzini",
+        "name": "Matteo Pronzini e Giuseppe Sergi per MPS-Indipendenti",
         "role": "author",
-        "party_or_fraction": null,
-        "canton_or_municipality": null,
+        "party_or_fraction": "MPS-Indipendenti",
+        "canton_or_municipality": "TI",
         "provenance": {
           "page_number": 1,
           "source_text_snippet": "Presentata da: Matteo Pronzini e Giuseppe Sergi per MPS-Indipendenti",
@@ -23,10 +23,10 @@
         }
       },
       {
-        "name": "Giuseppe Sergi",
+        "name": "Matteo Pronzini e Giuseppe Sergi per MPS-Indipendenti",
         "role": "author",
-        "party_or_fraction": null,
-        "canton_or_municipality": null,
+        "party_or_fraction": "MPS-Indipendenti",
+        "canton_or_municipality": "TI",
         "provenance": {
           "page_number": 1,
           "source_text_snippet": "Presentata da: Matteo Pronzini e Giuseppe Sergi per MPS-Indipendenti",
@@ -36,16 +36,16 @@
         }
       }
     ],
-    "addressed_to": null,
+    "addressed_to": "Consiglio di Stato",
     "background_and_rationale": null,
     "questions_and_answers": [
       {
         "question": {
           "number": null,
-          "text": "Con la presente interrogazione si chiede al Consiglio di Stato di comunicare i seguenti dati relativi all’anno 2025 per i membri del CdA dell’AET",
+          "text": "Con la presente interrogazione si chiede al Consiglio di Stato di comunicare i seguenti dati relativi all'anno 2025 per i membri del CdA dell'AET",
           "provenance": {
             "page_number": 1,
-            "source_text_snippet": "Testo:\nCon la presente interrogazione si chiede al Consiglio di Stato di comunicare i seguenti dati relativi\nall’anno 2025 per i membri del CdA dell’AET",
+            "source_text_snippet": "Testo:\nCon la presente interrogazione si chiede al Consiglio di Stato di comunicare i seguenti dati relativi\nall'anno 2025 per i membri del CdA dell'AET",
             "char_start": 282,
             "char_end": 434,
             "status": "extracted"
@@ -58,22 +58,16 @@
     "procedural_events": [],
     "title_provenance": {
       "page_number": 1,
-      "source_text_snippet": "INTERROGAZIONE (art. 98 LGC)",
-      "char_start": 71,
-      "char_end": 99,
+      "source_text_snippet": "Repubblica e Cantone Ticino",
+      "char_start": 0,
+      "char_end": 27,
       "status": "extracted"
     },
-    "rationale_provenance": {
-      "page_number": 1,
-      "source_text_snippet": "INTERROGAZIONE (art. 98 LGC)",
-      "char_start": 71,
-      "char_end": 99,
-      "status": "extracted"
-    }
+    "rationale_provenance": null
   },
   "report": {
-    "total_citations": 5,
-    "verified_citations": 5,
+    "total_citations": 4,
+    "verified_citations": 4,
     "failed_citations": 0,
     "provenance_score": 1.0,
     "details": [
@@ -82,41 +76,53 @@
         "page": 1,
         "status": "extracted",
         "verified": true,
-        "snippet_preview": "INTERROGAZIONE (art. 98 LGC)..."
-      },
-      {
-        "field": "background_and_rationale",
-        "page": 1,
-        "status": "extracted",
-        "verified": true,
-        "snippet_preview": "INTERROGAZIONE (art. 98 LGC)..."
+        "snippet_preview": "Repubblica e Cantone Ticino...",
+        "source_text_snippet": "Repubblica e Cantone Ticino",
+        "char_start": 0,
+        "char_end": 27
       },
       {
         "field": "authors[0].Matteo Pronzini",
         "page": 1,
         "status": "extracted",
         "verified": true,
-        "snippet_preview": "Presentata da: Matteo Pronzini e Giuseppe Sergi pe..."
+        "snippet_preview": "Presentata da: Matteo Pronzini e Giuseppe Sergi pe...",
+        "source_text_snippet": "Presentata da: Matteo Pronzini e Giuseppe Sergi per MPS-Indipendenti",
+        "char_start": 177,
+        "char_end": 245
       },
       {
         "field": "authors[1].Giuseppe Sergi",
         "page": 1,
         "status": "extracted",
         "verified": true,
-        "snippet_preview": "Presentata da: Matteo Pronzini e Giuseppe Sergi pe..."
+        "snippet_preview": "Presentata da: Matteo Pronzini e Giuseppe Sergi pe...",
+        "source_text_snippet": "Presentata da: Matteo Pronzini e Giuseppe Sergi per MPS-Indipendenti",
+        "char_start": 177,
+        "char_end": 245
       },
       {
         "field": "questions[0]",
         "page": 1,
         "status": "extracted",
         "verified": true,
-        "snippet_preview": "Testo:\nCon la presente interrogazione si chiede al..."
+        "snippet_preview": "Testo:\nCon la presente interrogazione si chiede al...",
+        "source_text_snippet": "Testo:\nCon la presente interrogazione si chiede al Consiglio di Stato di comunicare i seguenti dati relativi\nall'anno 2025 per i membri del CdA dell'AET",
+        "char_start": 282,
+        "char_end": 434
+      }
+    ],
+    "pages": [
+      {
+        "page_number": 1,
+        "text": "Repubblica e Cantone Ticino\n\n\n1 di 1\nGran Consiglio\n6501 Bellinzona\n\n\n\nINTERROGAZIONE (art. 98 LGC)\n\nChiarezza sui versamenti ai membri del Consiglio di amministrazione di AET\n\nPresentata da: Matteo Pronzini e Giuseppe Sergi per MPS-Indipendenti\nData: 8 ottobre 2026\nNumero: 203.26\nTesto:\nCon la presente interrogazione si chiede al Consiglio di Stato di comunicare i seguenti dati relativi\nall'anno 2025 per i membri del CdA dell'AET\n\nNominativi Versamento\ncomplessivo\nper anno\n2026\nIndennità di\nseduta CdA,\nUP,\nCommissione,\naltro\nRimborso\nspese di\ntrasferta\nIndennità per\npresenze\nsupplementari\nMandati ad\nhoc\nCereghetti\nClaudio\n\nPassoni\nAlberto\n\nCauzza Dino\nGianora\nFabiana\n\n\nPantani\nRoberta\n\nBeretta\nPiccoli Luca\n\nDavid Roland\nTotale",
+        "char_count": 737
       }
     ]
   },
-  "latency_sec": 3.029,
-  "tokens_prompt": 4564,
-  "tokens_completion": 487,
-  "tokens_cached": 4544,
-  "cost_chf": 2e-05
+  "latency_sec": 3.158,
+  "tokens_prompt": 4807,
+  "tokens_completion": 475,
+  "tokens_cached": 4480,
+  "cost_chf": 2.2e-05
 }
