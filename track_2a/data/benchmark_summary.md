@@ -1,6 +1,6 @@
 # Cross-Cantonal Evaluation Benchmark
 
-Generated at: `2026-10-13T17:09:59Z` (Mode: `dry-run`)
+Generated at: `2026-10-15T05:03:09Z` (Mode: `dry-run`)
 
 | Canton / Body | Region & Language | Document Type | Provenance Match | Verified Citations | Latency (s) | Total Tokens | Cached (Alps) | Cost (CHF) |
 |---|---|---|---|---|---|---|---|---|

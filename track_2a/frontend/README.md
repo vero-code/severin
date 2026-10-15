@@ -1,75 +1,30 @@
-# React + TypeScript + Vite
+# SEVERIN Civic Web Explorer (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interactive 3-column parliamentary document studio and extraction explorer built for **Hack Apertus 2026 (Track 2A)**.
 
-Currently, two official plugins are available:
+## 🏛️ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Source Selector Panel**: Curated offline picker of 27 nationwide Swiss sample PDFs covering all 26 cantons plus Confederation (`CHE`), paired with live search across OpenParlData bodies and affairs.
+- **Document Studio Panel**: Side-by-side binary PDF viewer with inline page navigation, verbatim text inspection, provenance character highlight marks, and native cantonal web portal notice cards (`Not a PDF Document`).
+- **Extraction Studio Panel**: Real-time extraction triggers for `swiss-ai/Apertus-v1.5-8B` on CSCS Alps GH200, rendering structured affair cards, authors, questions/answers, and green verifiable citation badges.
+- **Persistent CSCS Telemetry**: Cumulative tracking of prompt/completion tokens, GPU PagedAttention cache hits, and micro-CHF expenditure counters.
 
-## React Compiler
+## 🛠️ Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Framework**: React 19 + TypeScript
+- **Bundler**: Vite
+- **Styling**: Vanilla CSS3 design system with CSS custom properties (`variables.css`)
+- **Typography**: Inter & JetBrains Mono
 
-## Expanding the ESLint configuration
+## 💻 Local Development
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+```bash
+# Install dependencies
+npm install
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+# Start Vite HMR dev server (proxies API requests to FastAPI on port 8000)
+npm run dev
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
-
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+# Compile production bundle for Docker distribution
+npm run build
 ```

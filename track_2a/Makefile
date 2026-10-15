@@ -18,6 +18,10 @@ dry-run:
 test:
 	python -X utf8 tests/test_schema.py
 	python -X utf8 tests/test_extractor.py
+	python -X utf8 tests/test_adapter.py
+	python -X utf8 tests/test_pdf_parser.py
+	python -X utf8 tests/test_cscs_client.py
+	python -X utf8 tests/test_dataset.py
 
 build:
 	docker compose build

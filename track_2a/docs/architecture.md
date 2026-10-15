@@ -125,7 +125,7 @@ When the jury initiates `make run` from the project root, the container mounts `
               │
               ▼
 [ Persists evaluation artifacts via Docker Volume mount to data/ ]
-  ├── data/benchmark_summary.md       (Summary markdown table: 98.6% match)
+  ├── data/benchmark_summary.md       (Summary markdown table: 100.0% match)
   ├── data/benchmark_results.json     (Per-canton latency, tokens, citations)
   ├── data/telemetry.json             (CSCS GPU token & micro-CHF cost counters)
   └── data/benchmark_cache/*.pdf.json (Cached model completions for dry-run)

@@ -1,5 +1,5 @@
 {
-  "benchmark_timestamp": "2026-10-13T17:09:59Z",
+  "benchmark_timestamp": "2026-10-15T05:03:09Z",
   "mode": "dry-run",
   "model": "swiss-ai/Apertus-v1.5-8B",
   "hardware": "CSCS Alps (NVIDIA GH200)",

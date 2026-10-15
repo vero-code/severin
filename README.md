@@ -2,7 +2,7 @@
 > **Hack Apertus 2026 • Track 2A: OpenParlData Challenge**  
 > *Extracting Swiss Parliamentary Affairs from Heterogeneous PDFs into One Common Structure with Verifiable Provenance*
 
-[![Python 3.14](https://img.shields.io/badge/Python-3.14-blue.svg)](https://www.python.org/)
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
 [![Apertus 1.5-8B](https://img.shields.io/badge/Model-Apertus--1.5--8B-red.svg)](https://huggingface.co/swiss-ai/Apertus-v1.5-8B)
 [![CSCS Alps](https://img.shields.io/badge/Hardware-NVIDIA_GH200_Alps-green.svg)](https://www.cscs.ch/)
 [![Pydantic v2](https://img.shields.io/badge/Pydantic-v2-e92063.svg)](https://docs.pydantic.dev/)
@@ -135,8 +135,8 @@ severin/
 | Layer | Technologies | Role in SEVERIN |
 |---|---|---|
 | **AI Inference** | [Apertus 1.5-8B](https://huggingface.co/swiss-ai/Apertus-v1.5-8B) • [CSCS Alps](https://www.cscs.ch/) (GH200) | Deterministic extraction (`temp=0.0`), vLLM prefix caching |
-| **Backend** | [FastAPI](https://fastapi.tiangolo.com/) • Python 3.11 / 3.14 | REST API, OpenAPI 3.1 & Swagger documentation |
-| **Schema & Parsing** | [Pydantic v2](https://docs.pydantic.dev/) • [pypdf](https://pypdf.readthedocs.io/) | Strict schema (`extra="forbid"`), page-level provenance grounding |
+| **Backend** | [FastAPI](https://fastapi.tiangolo.com/) • Python 3.11+ | REST API, OpenAPI 3.1 & Swagger documentation |
+| **Schema & Parsing** | [Pydantic v2](https://docs.pydantic.dev/) • [pypdf](https://pypdf.readthedocs.io/) • [Pillow](https://python-pillow.org/) | Strict schema (`extra="forbid"`), page-level provenance grounding, raster scan ingestion |
 | **Frontend** | [React 19](https://react.dev/) • [TypeScript](https://www.typescriptlang.org/) • [Vite](https://vite.dev/) | 3-column studio SPA, PDF/Text viewer with citation highlights |
 | **Styling** | Vanilla CSS3 | Minimalist design tokens, Inter & JetBrains Mono typography |
 | **Data Source** | [OpenParlData](https://api.openparldata.ch) | Live API client for federal and cantonal parliamentary affairs |

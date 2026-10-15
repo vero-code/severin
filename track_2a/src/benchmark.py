@@ -63,7 +63,7 @@ BENCHMARK_TARGETS = [
         "canton": "ZH",
         "region": "German (Deutschschweiz)",
         "language": "de",
-        "affair_type": "government_affair",
+        "affair_type": "postulate",
         "affair_id": 341002,
         "description": "Änderung der Kantonalen Opferhilfeverordnung (KOHV)"
     },
