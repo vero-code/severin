@@ -13,14 +13,18 @@ flowchart LR
     subgraph S1["1. Ingestion & Preprocessing"]
         API["OpenParlData API<br/>(Cantons + Federal)"] --> PDF["PDF Ingestion<br/>(pypdf)"]
         LOCAL["Sample Corpus<br/>(27 Curated PDFs)"] --> PDF
-        PDF --> TEXT["1-Indexed Page Parser<br/>&amp; Text Normalizer"]
+        PDF --> DETECT{"Text Layer Check<br/>char_count > 0?"}
+        DETECT -- Yes: Digital PDF --> TEXT["1-Indexed Page Parser<br/>&amp; Swiss Normalizer"]
+        DETECT -- No: Raster Scan --> OCR["Pillow Extraction &amp;<br/>Apertus Vision OCR"]
+        OCR --> CACHE_OCR[("Disk OCR Cache<br/>data/ocr_cache/")]
+        CACHE_OCR --> TEXT
     end
 
     subgraph S2["2. Model Inference"]
         TEXT --> PROMPT["Extraction Prompt<br/>+ Pydantic JSON Schema"]
         PROMPT --> CSCS["CSCS Inference API<br/>(Alps GH200, Lugano)"]
         CSCS --> APERTUS["swiss-ai/Apertus-v1.5-8B<br/>temperature=0.0"]
-        APERTUS --> CACHE["vLLM PagedAttention<br/>Prefix Cache"]
+        APERTUS --> CACHE["vLLM PagedAttention<br/>Prefix Cache (4,480 toks)"]
     end
 
     subgraph S3["3. Schema & Provenance"]
@@ -40,7 +44,7 @@ flowchart LR
     classDef c3 fill:#1e293b,stroke:#10b981,stroke-width:2px,color:#f8fafc;
     classDef c4 fill:#1e293b,stroke:#8b5cf6,stroke-width:2px,color:#f8fafc;
 
-    class API,PDF,LOCAL,TEXT c1;
+    class API,PDF,LOCAL,DETECT,TEXT,OCR,CACHE_OCR c1;
     class PROMPT,CSCS,APERTUS,CACHE c2;
     class NORM,SCHEMA,VERIFIER c3;
     class AUDIT,FASTAPI,REACT c4;
@@ -51,9 +55,10 @@ flowchart LR
 ## 2. Core Components
 
 ### 2.1 PDF Ingestion & Parsing (`src/pdf_parser.py`)
-- Extracts raw text per physical page, preserving strict 1-indexed page numbering that aligns with PDF viewers.
-- Normalizes whitespace and line breaks while keeping original casing and punctuation for exact substring searching.
-- Normalizes non-printable embedded font glyphs and ligature anomalies (e.g. control characters in historical gazettes).
+- **Digital PDF Extraction**: Extracts raw text per physical page using `pypdf`, preserving strict 1-indexed page numbering that aligns directly with PDF viewers.
+- **Multilingual Swiss Normalization**: Expands ligatures (`ﬁ`, `ﬂ`, `œ`, `æ`), strips non-printable ASCII control artifacts, and maps legacy Type-1/CP1252 embedded font glyphs (`\x11` -> `š`, `\x12` -> `č`).
+- **Native Vision OCR Fallback**: For scanned raster documents with 0 extractable digital characters (e.g. Canton Obwalden `OW_339491_925376.pdf`), automatically extracts full-page bitmap images via `Pillow`, optimizes resolution (max 2048px Lanczos), and transcribes via `swiss-ai/Apertus-v1.5-8B` Vision on CSCS Alps (`image_url` input at `temperature=0.0`).
+- **OCR Cache**: Persists transcribed text with 1-indexed page markers in `data/ocr_cache/{pdf_name}.json` for instant, deterministic offline replay.
 
 ### 2.2 CSCS Inference Client (`src/cscs_client.py`)
 - Connects to the OpenAI-compatible CSCS Alps endpoint (`https://api.inference.cscs.ch/v1`).
@@ -172,7 +177,9 @@ sequenceDiagram
 [ Clicks "Extract Affair" ]
          │
          ▼ (HTTP POST /api/extract)
-[ FastAPI extracts page text from PDF ]
+[ FastAPI / pdf_parser extracts page text ]
+  ├── Born-digital PDFs: pypdf physical page text extraction
+  └── Scanned bitmaps (OW): Apertus 1.5-8B Vision OCR fallback
          │
          ▼ (HTTPS POST to CSCS API)
 [ Apertus 1.5-8B extracts entities and quote snippets ]
@@ -184,7 +191,7 @@ sequenceDiagram
 [ React 19 UI renders results ]:
   ├── Affair metadata card (title, authors, summary, dates)
   ├── Question & Answer list with verification badges
-  ├── Embedded PDF viewer with document side-by-side
+  ├── Dual-mode Document Studio (raw PDF embed & Text viewer with <mark> citation highlights)
   └── CSCS telemetry bar (tokens, cost, speed)
 ```
 
@@ -207,6 +214,7 @@ sequenceDiagram
     User->>UI: Click "Extract Affair"
     UI->>API: POST /api/extract { sample_file: "..." }
     API->>Parser: extract_pdf_pages(sample_path)
+    Note over Parser: Born-digital: pypdf extraction<br/>Scanned bitmap (OW): Apertus Vision OCR fallback
     Parser-->>API: 1-indexed page text
     API->>CSCS: POST /chat/completions (Apertus 1.5-8B, temp=0.0)
     CSCS-->>API: JSON response with citations
@@ -214,6 +222,8 @@ sequenceDiagram
     Verifier-->>API: Grounded offsets (char_start, char_end)
     API-->>UI: Return ExtractResponse
     UI-->>User: Display Affair card, citation badges & telemetry
+    User->>UI: Click citation badge in affair card
+    UI->>UI: Switch to Text tab, auto-scroll & highlight snippet (<mark>)
 ```
 
 ---

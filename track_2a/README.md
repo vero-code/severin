@@ -49,7 +49,7 @@ make test
 ## 📦 Directory Structure & Rules Compliance
 
 - **`src/`**: Unified Pydantic v2 schema (`schema.py`), Apertus extraction engine (`extractor.py`), physical PDF parser (`pdf_parser.py`), CSCS client (`cscs_client.py`), OpenParlData API client (`api_client.py`), and FastAPI server (`server.py`).
-- **`data/`**: 27 curated nationwide Swiss sample PDFs (`data/sample_pdfs/`), model benchmark cache (`data/benchmark_cache/`), and live telemetry audit log (`data/telemetry.json`).  
+- **`data/`**: 27 curated nationwide Swiss sample PDFs (including born-digital text PDFs and scanned raster files in `data/sample_pdfs/`), persistent Vision OCR transcriptions (`data/ocr_cache/`), model benchmark cache (`data/benchmark_cache/`), and live telemetry audit log (`data/telemetry.json`).  
   *Total size:* **19.8 MB** (strictly below the 100 MB competition ceiling).
 - **`docs/`**: Technical architecture specifications ([docs/architecture.md](docs/architecture.md)) and system vector diagrams ([docs/architecture.svg](docs/architecture.svg)).
 - **`technical_report.md`**: Official Hack Apertus technical report for the jury.
@@ -60,8 +60,8 @@ make test
 ## ⚖️ Verification & Key Metrics
 
 - **Conservative Extraction**: Deterministic inference (`temperature=0.0`), Rule of Absence (`null` for unstated entities), and algorithmic offset verification (`char_start`, `char_end`) against physical PDF pages.
-- **Benchmark Provenance Accuracy**: **100.0%** (27/27 citations verified verbatim across 5 multilingual benchmark documents: CHE, ZH, GE, TI, GR).
-- **Cost & Latency**: Hardware prefix caching (vLLM PagedAttention on CSCS Alps) reduces warm inference latency to **~3.0s** and cost to **~0.000020 – 0.000039 CHF** per document.
+- **Benchmark Provenance Accuracy**: **100.0%** (19/19 citations verified verbatim across 5 multilingual benchmark documents: CHE, ZH, GE, TI, GR).
+- **Cost & Latency**: Hardware prefix caching (vLLM PagedAttention on CSCS Alps) reduces warm inference latency to **~3.16s** and cost to **~0.000022 – 0.000051 CHF** per document (0.000234 CHF total).
 
 ---
 

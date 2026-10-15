@@ -19,7 +19,7 @@ Switzerland's parliamentary system (Federal Assembly, 26 Cantonal Parliaments, a
 
 **SEVERIN** is an extraction and verification pipeline built for Track 2A:
 1. **Unified Semantic Model**: A Pydantic v2 schema (`ParliamentaryAffair`) serving as an intermediate layer (comparable to JATS for parliamentary affairs), mapped conceptually to *Popolo* and *Akoma Ntoso*.
-2. **Conservative Extraction Pipeline**: Structured output using **`swiss-ai/Apertus-v1.5-8B`** on the **CSCS Alps supercomputer** (NVIDIA GH200) at `temperature=0.0` with the Rule of Absence (`null` for unstated entities).
+2. **Conservative Extraction Pipeline**: Structured output using **`swiss-ai/Apertus-v1.5-8B`** on the **CSCS Alps supercomputer** (NVIDIA GH200) at `temperature=0.0` with the Rule of Absence (`null` for unstated entities). Automatically falls back to **Apertus Native Vision OCR** (via Pillow) when scanned or image-only PDFs (e.g. Canton Obwalden) are detected.
 3. **Provenance Verification**: Anchors extracted fields to 1-indexed physical page numbers and verbatim quotes, calculating character offsets (`char_start`, `char_end`) against the source PDF.
 4. **Web Interface**: React 19 single-page application with split-view PDF/text viewer, extracted affair data, citation verification indicators, and live CSCS token and cost telemetry.
 
@@ -64,7 +64,7 @@ When the SEVERIN platform is running, interactive OpenAPI/Swagger documentation 
 
 ### Key API Endpoints
 
-- `POST /api/extract` — Conservative extraction using Apertus 1.5-8B on CSCS Alps GH200 with page-anchored provenance verification against source PDF.
+- `POST /api/extract` — Conservative extraction using Apertus 1.5-8B on CSCS Alps GH200 with page-anchored provenance verification (supports born-digital text PDFs and scanned raster PDFs via Vision OCR).
 - `GET /api/schema` — Export JSON Schema for the unified `ParliamentaryAffair` Pydantic v2 model.
 - `GET /api/sample-pdfs` — List 27 curated Swiss cantonal sample PDFs from manifest.
 - `GET /api/bodies` — List indexed Swiss parliamentary bodies (cantons, federal assembly, cities).
@@ -83,22 +83,23 @@ Evaluated across all Swiss linguistic regions on real-world cantonal and federal
 
 | Jurisdiction | Linguistic Region | Document Type | Provenance Match | Verified Citations | Latency | Tokens | Cost (CHF) |
 |---|---|---|---|---|---|---|---|
-| **CHE** | Federal / National (DE) | `initiative` | **100.0%** | 14/14 | 10.05s | 6,944 | `0.000064` |
-| **ZH** | Zürich / Deutschschweiz (DE) | `postulate` | **100.0%** | 3/3 | 3.22s | 5,353 | `0.000020` |
-| **GE** | Genève / Suisse romande (FR) | `question` | **100.0%** | 2/2 | 7.70s | 6,467 | `0.000051` |
-| **TI** | Ticino / Svizzera italiana (IT) | `interpellation` | **100.0%** | 5/5 | 3.03s | 5,051 | `0.000020` |
-| **GR** | Graubünden / Trilingual (DE/IT/RM) | `question` | **100.0%** | 3/3 | 6.03s | 5,820 | `0.000039` |
+| **CHE** | Federal / National (DE) | `initiative` | **100.0%** | 3/3 | 6.01s | 6,422 | `0.000089` |
+| **ZH** | Zürich / Deutschschweiz (DE) | `postulate` | **100.0%** | 3/3 | 3.52s | 5,594 | `0.000026` |
+| **GE** | Genève / Suisse romande (FR) | `question` | **100.0%** | 3/3 | 6.61s | 6,498 | `0.000051` |
+| **TI** | Ticino / Svizzera italiana (IT) | `interpellation` | **100.0%** | 4/4 | 3.16s | 5,282 | `0.000022` |
+| **GR** | Graubünden / Trilingual (DE/IT/RM) | `question` | **100.0%** | 6/6 | 6.32s | 6,075 | `0.000046` |
 
-- **Provenance Accuracy**: **100.0%** (27/27 citations verified verbatim on physical PDF pages across the 5 benchmark documents).
-- **Average Latency**: **6.01s** (down to **3.03s** on warm cache calls).
-- **Benchmark Cost**: **0.000194 CHF** across all 5 benchmark targets (~0.000039 CHF per document).
-- **Prefix Caching**: CSCS Alps vLLM PagedAttention automatically caches ~4,500–5,300 prompt tokens (billed at 0.00 CHF under CSCS Academia pricing).
+- **Provenance Accuracy**: **100.0%** (19/19 citations verified verbatim on physical PDF pages across the 5 benchmark documents).
+- **Average Latency**: **5.12s** (down to **3.16s** on warm cache calls).
+- **Benchmark Cost**: **0.000234 CHF** across all 5 benchmark targets (~0.000047 CHF per document).
+- **Prefix Caching**: CSCS Alps vLLM PagedAttention automatically caches 4,480 prompt tokens (billed at 0.00 CHF under CSCS Academia pricing).
 
 ### 📂 Dataset Structure
 
 Data files are located under `track_2a/data/` (**19.8 MB** total, within the 100 MB limit):
 
-- **`data/sample_pdfs/` (19.7 MB)**: 27 sample PDFs covering all 26 Swiss cantons and the Federal Assembly (`CHE`) across German, French, Italian, and Romansh, bundled for offline evaluation and UI inspection.
+- **`data/sample_pdfs/` (19.7 MB)**: 27 sample PDFs covering all 26 Swiss cantons and the Federal Assembly (`CHE`) across German, French, Italian, and Romansh (including born-digital text PDFs and pure raster scans like OW).
+- **`data/ocr_cache/` (<1 MB)**: Pre-computed Apertus Native Vision OCR transcriptions for scanned documents (e.g., Canton Obwalden), enabling instant offline evaluation.
 - **`data/benchmark_cache/` (<1 MB)**: Authentic model outputs for the 5 benchmark targets (CHE, ZH, GE, TI, GR), used for offline dry-run testing when no CSCS API key is present.
 - **Benchmark Artifacts**:
   Generated by `make run` or `benchmark.py`:
@@ -129,6 +130,7 @@ severin/
 │   ├── frontend/                     # React 19 + TypeScript SPA
 │   ├── data/                         # Evaluation data (<20 MB)
 │   │   ├── sample_pdfs/              # 27 cantonal & federal PDFs
+│   │   ├── ocr_cache/                # Transcribed scan cache (OW)
 │   │   ├── benchmark_cache/          # Offline dry-run cache
 │   │   ├── benchmark_results.json    # Benchmark results
 │   │   ├── benchmark_summary.md      # Benchmark summary
