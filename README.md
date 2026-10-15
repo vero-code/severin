@@ -1,7 +1,7 @@
 # SEVERIN — Swiss Parliamentary Affairs Extraction Platform
 > **Hack Apertus 2026 • Track 2A: OpenParlData Challenge**  
 > *Extracting Swiss Parliamentary Affairs from Heterogeneous PDFs into One Common Structure with Verifiable Provenance*  
-> **Key Deliverables:** [Technical Report](track_2a/technical_report.md) • [System Architecture](track_2a/docs/architecture.md) • [Architecture Diagram](track_2a/docs/architecture.svg) • [Data Directory](track_2a/data/) • [Source Code](track_2a/src/)
+> **Key Deliverables:** [Technical Report](track_2a/technical_report.md) • [Architecture](track_2a/docs/architecture.md) • [Data](track_2a/data/)
 
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
 [![Apertus 1.5-8B](https://img.shields.io/badge/Model-Apertus--1.5--8B-red.svg)](https://huggingface.co/swiss-ai/Apertus-v1.5-8B)
@@ -47,7 +47,7 @@ docker compose up
 Once started:
 1. The container executes the automated cross-cantonal benchmark.
 2. The interactive web platform is available at **[http://localhost:8000](http://localhost:8000)**.
-3. Stop the container anytime with `docker compose down` (or `make clean` from root).
+3. Stop the container anytime with `make clean` from root (or `docker compose down` from the track_2a folder).
 
 ---
 
@@ -181,4 +181,4 @@ uvicorn src.server:app --port 8000 --reload
 - **Deterministic Extraction**: `temperature=0.0`, schema validation via Pydantic v2, and mandatory page-anchored provenance.
 - **Transparent Execution**: Offline dry-run mode is explicitly labeled (`Mode: OFFLINE DRY-RUN`) and validates citations against physical PDF pages without synthetic mock data.
 - **Data Size**: `track_2a/data/` is **19.8 MB** (within the 100 MB competition ceiling).
-- **License**: Creative Commons Attribution 4.0 International (**CC-BY 4.0**).
+- **License**: [Apache-2.0 License](LICENSE).

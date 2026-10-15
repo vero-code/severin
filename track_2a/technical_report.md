@@ -117,7 +117,7 @@ An audit across all 27 jurisdictional sample files revealed that real-world parl
 | **3. Disguised Web Portals** | Cantons Lucerne (`LU`), Appenzell Ausserrhoden (`AR`), Vaud (`VD`) | **11.1%** (3/27) | Files named `.pdf` but containing raw `<!DOCTYPE html>` payloads scraped from cantonal consultation webapps and parliament portals. |
 
 - **Disk Footprint:** The entire `track_2a/data/` directory measures **19.8 MB**, remaining well below the 100 MB competition limit.
-- **Licensing & Privacy:** All underlying documents are published under **CC-BY 4.0** or official Swiss Open Government Data (OGD) terms. The dataset contains solely public parliamentary records; no private personal information or non-redistributable materials were ingested.
+- **Licensing & Privacy:** All underlying source documents are published under official Swiss Open Government Data (OGD) terms. The dataset contains solely public parliamentary records; no private personal information or non-redistributable materials were ingested.
 
 ---
 
@@ -309,7 +309,7 @@ If granted an additional development period, our roadmap includes:
 
 ## License
 
-This project is licensed under the **Creative Commons Attribution 4.0 International (CC-BY-4.0)** license. All HackApertus code and materials are open-sourced.
+This project is licensed under the **Apache-2.0 License**. All HackApertus code and materials are open-sourced under the official competition terms.
 
 ---
 
