@@ -10,24 +10,24 @@
 
 ## 1. Summary
 
-In Switzerland's federalist democracy, substantive parliamentary activity—inquiries, committee debates, multi-million-franc credit requests, and binding executive responses—remains locked inside heterogeneous PDF documents issued by 26 distinct cantonal parliaments and the Federal Assembly across four national languages. Existing aggregators only index superficial metadata, leaving the substance of legislative oversight fragmented. **SEVERIN** solves this challenge by delivering an end-to-end, zero-hallucination extraction and normalization pipeline powered by Swiss-AI's sovereign **Apertus-v1.5-8B** foundation model executing on the **CSCS Alps Supercomputer** (Lugano). Using a unified Pydantic v2 schema with strict JSON constraints (`extra="forbid"`), deterministic inference (`temperature=0.0`), and an algorithmic provenance verification engine, SEVERIN achieves **100.0% verifiable citation accuracy** nationwide (27/27 citations mathematically verified verbatim across all Swiss linguistic regions, overcoming historical embedded font anomalies through defensive typographic normalization). Furthermore, by leveraging Alps' vLLM PagedAttention prefix caching, SEVERIN reduces incremental inference latency to **3.03s** and total cross-cantonal evaluation cost to **0.000194 CHF** (less than 2 ten-thousandths of a Franc), proving nationwide automated legislative harmonization is commercially and operationally feasible for Swiss public administrations.
+In Switzerland's federalist parliamentary system, substantive legislative oversight—inquiries, committee motions, credit requests, and executive answers—is largely contained inside heterogeneous PDF documents across 26 cantons and the Federal Assembly in four national languages. Existing aggregators primarily index high-level metadata, leaving core document substance unharmonized. **SEVERIN** addresses this challenge with a conservative extraction and normalization pipeline powered by **`swiss-ai/Apertus-v1.5-8B`** hosted on the **CSCS Alps supercomputer** (Lugano). Using a unified Pydantic v2 schema with strict JSON constraints (`extra="forbid"`), deterministic inference (`temperature=0.0`), and an algorithmic provenance verifier, SEVERIN achieves **100.0% verifiable citation accuracy** across the evaluation benchmark (27/27 citations verified verbatim on physical PDF pages across Swiss linguistic regions). Furthermore, vLLM PagedAttention prefix caching on Alps reduces warm inference latency to **3.03s** and cumulative evaluation cost to **0.000194 CHF** across the 5 benchmark targets (~0.000039 CHF per document), demonstrating that automated legislative harmonization is practically and economically viable.
 
 ---
 
 ## 2. Architecture
 
-SEVERIN is engineered as a modular, decoupled pipeline connecting civic data ingestion, sovereign supercomputing, algorithmic provenance verification, and an interactive dual-view user interface.
+SEVERIN is structured as a pipeline connecting data ingestion, model inference on CSCS Alps, algorithmic provenance verification, and an interactive web interface.
 
 ![SEVERIN System Architecture](docs/architecture.svg)
 
 ### 2.1 Ingestion & Parsing Subsystem
-- **OpenParlData API Client (`src/api_client.py`)**: Connects to the nationwide OpenParlData service, retrieving affairs, PDFs, and structural metadata across all cantonal legislative bodies.
-- **National Corpus (`data/sample_pdfs/`)**: A curated benchmark collection of 27 representative parliamentary affairs spanning all linguistic regions, totaling 19.8 MB (strictly adhering to the < 100 MB rule).
-- **Physical Page Parser (`src/pdf_parser.py`)**: Implements strict 1-indexed page extraction using `pypdf`, preserving physical page numbers that align with PDF viewer page counters. Normalizes whitespace and line breaks while keeping original casing and typographic punctuation for exact character offset calculations.
+- **OpenParlData API Client (`src/api_client.py`)**: Connects to the OpenParlData service, retrieving affairs, PDFs, and structural metadata across cantonal and federal legislative bodies.
+- **Sample Corpus (`data/sample_pdfs/`)**: A collection of 27 parliamentary affairs spanning all 26 cantons and the Federal Assembly (19.8 MB, within the 100 MB competition ceiling).
+- **Physical Page Parser (`src/pdf_parser.py`)**: Implements strict 1-indexed page extraction using `pypdf`, preserving physical page numbers that align with PDF viewer page counters. Normalizes whitespace and line breaks while keeping original casing and punctuation for exact character offset calculations.
 
-### 2.2 Sovereign Supercomputing Client (`src/cscs_client.py`)
-- Interfaces directly with `https://api.inference.cscs.ch/v1` on CSCS Alps GH200 nodes.
-- Enforces `temperature=0.0` for mathematical determinism and repeatable audits.
+### 2.2 CSCS Inference Client (`src/cscs_client.py`)
+- Interfaces with the OpenAI-compatible CSCS Alps endpoint (`https://api.inference.cscs.ch/v1`) on GH200 nodes.
+- Enforces `temperature=0.0` for deterministic and repeatable outputs.
 - Audits token usage, tracks PagedAttention prefix cache hit rates, computes micro-CHF expenditure, and maintains a persistent telemetry log in `data/telemetry.json`.
 
 ### 2.3 Unified Schema & Defensive Normalizer (`src/schema.py`, `src/extractor.py`)
@@ -48,9 +48,9 @@ To bridge the format gap identified by OpenParlData, SEVERIN positions `Parliame
 - Every extracted semantic entity (title, rationale, author, question, executive answer, financial credit) is bound to a mandatory `Provenance` block specifying its 1-indexed physical page number and exact quote.
 - The verifier performs exact substring locating against the physical page text and computes character offsets (`char_start`, `char_end`). If a quote cannot be found on the physical page, the verifier scans adjacent pages (updating the page number and setting status to `inferred`) or marks it as `not_found`, directly penalizing the provenance score.
 
-### 2.5 Delivery & Civic Web Interface (`frontend/`, `src/server.py`)
-- **FastAPI Backend**: Serves REST endpoints for live extraction, schema validation, telemetry metrics, and PDF retrieval.
-- **React 19 Civic Web UI**: Features a dual-column layout with a live OpenParlData search client, a 27-canton curated offline sample picker, dynamic provenance audit score badges (`100% match`), verbatim quote highlight cards, and an interactive Provenance Verification Audit Log.
+### 2.5 Delivery & Web Interface (`frontend/`, `src/server.py`)
+- **FastAPI Backend**: Serves REST endpoints for extraction, schema validation, telemetry metrics, and PDF streaming.
+- **React 19 Web UI**: Features a split-view layout with OpenParlData search, offline sample picker, provenance verification badges, and citation audit indicators.
 
 For full component specifications and Mermaid data flow diagrams, see [docs/architecture.md](docs/architecture.md).
 
@@ -59,11 +59,11 @@ For full component specifications and Mermaid data flow diagrams, see [docs/arch
 ## 3. Use of Apertus
 
 - **Model:** `swiss-ai/Apertus-v1.5-8B` (Default & Evaluated) / compatible with `swiss-ai/Apertus-v1.5-70B`.
-- **How it is used:** Structured conservative extraction with Pydantic JSON Schema enforcement, zero-hallucination constraint prompting, and downstream algorithmic citation auditing.
-- **Where it runs:** CSCS Alps Supercomputer (`https://api.inference.cscs.ch/v1`), NVIDIA Grace Hopper GH200 superchip nodes, Swiss National Supercomputing Centre (Lugano, Switzerland).
+- **How it is used:** Structured conservative extraction with Pydantic JSON Schema enforcement, Rule of Absence prompt constraints, and algorithmic citation auditing.
+- **Where it runs:** CSCS Alps Supercomputer (`https://api.inference.cscs.ch/v1`), NVIDIA Grace Hopper GH200 nodes, Swiss National Supercomputing Centre (Lugano, Switzerland).
 
 ### 3.1 Inference Parameters & Determinism
-All requests to the CSCS endpoint are strictly executed with:
+All requests to the CSCS endpoint are executed with:
 ```json
 {
   "model": "swiss-ai/Apertus-v1.5-8B",
@@ -72,16 +72,16 @@ All requests to the CSCS endpoint are strictly executed with:
   "max_tokens": 4096
 }
 ```
-Setting `temperature=0.0` ensures that model output is completely deterministic across repeated evaluations, eliminating stochastic hallucinations and ensuring that evaluations are reproducible.
+Setting `temperature=0.0` ensures model output is deterministic, preventing stochastic variation and ensuring evaluations are reproducible.
 
-### 3.2 Alps PagedAttention Prefix Caching & Economic Discovery
-During our cross-cantonal benchmark runs against the Alps GH200 cluster, we identified a critical operational advantage: **vLLM PagedAttention hardware prefix caching**.
+### 3.2 Alps PagedAttention Prefix Caching
+During benchmark runs on Alps GH200 nodes, we evaluated the impact of **vLLM PagedAttention prefix caching**:
 - **Cold Request (First Document, CHE)**: 5,314 prompt tokens, 0 cached tokens, latency = 10.35s, cost = `0.000118 CHF`.
-- **Warm Requests (ZH, GE, TI, GR)**: Because the comprehensive extraction instructions and Pydantic JSON Schema remain constant across requests, the Alps supercomputer automatically cached **4,500 to 5,312 prompt tokens** per call directly in GPU High-Bandwidth Memory (HBM3).
-- **Tariff Impact**: Under official CSCS Academia pricing, cached tokens are billed at **0.000000 CHF (100% free)**.
-- **Latency Impact**: Subsequent extraction latency dropped from 10.35s to **3.24s – 3.37s**, providing near-instantaneous responses suitable for interactive user applications.
+- **Warm Requests (ZH, GE, TI, GR)**: Because extraction instructions and the Pydantic JSON Schema remain constant across requests, Alps automatically cached **4,500 to 5,312 prompt tokens** per call in GPU memory.
+- **Tariff Impact**: Under CSCS Academia pricing, cached tokens are billed at **0.00 CHF**.
+- **Latency Impact**: Subsequent extraction latency dropped from 10.35s to **3.24s – 3.37s**, reducing wait times for interactive user requests.
 
-### 3.3 Economic Feasibility: 8B vs 70B
+### 3.3 Economic Comparison: 8B vs 70B
 Under CSCS pay-per-use tariffs:
 - **Apertus 1.5-8B**: 0.01 CHF / 1M input tokens • 0.04 CHF / 1M output tokens • 0.00 CHF cached.
 - **Apertus 1.5-70B**: 0.06 CHF / 1M input tokens • 0.40 CHF / 1M output tokens • 0.00 CHF cached.
@@ -91,7 +91,7 @@ Under CSCS pay-per-use tariffs:
 | **Apertus-v1.5-8B (Ours)** | **~0.000035 CHF** | **~0.018 CHF** (< 0.02 CHF) | **100.0%** |
 | Apertus-v1.5-70B | ~0.000320 CHF | ~0.160 CHF | 100.0% |
 
-**Key Finding**: When paired with structured JSON schema constraints and algorithmic provenance verification, **Apertus 1.5-8B achieves equivalent extraction fidelity to 70B while being 6x cheaper on input and 10x cheaper on output**. An entire canton's annual legislative output (~500 affairs) can be processed for **less than 0.02 CHF**, making sovereign automated parliamentary digitization accessible to even the smallest Swiss municipalities.
+**Key Finding**: When paired with structured JSON schema constraints and algorithmic provenance verification, **Apertus 1.5-8B achieves equivalent extraction fidelity to 70B on our benchmarks while being 6x cheaper on input and 10x cheaper on output**. An entire canton's annual legislative output (~500 affairs) can be processed for approximately **0.02 CHF** on CSCS Alps.
 
 ---
 
@@ -107,16 +107,16 @@ Under CSCS pay-per-use tariffs:
   - Italian-speaking: Ticino energy board inquiry (`TI_341386_928764.pdf`)
   - Trilingual / Romansh: Graubünden climate and wildlife inquiry (`GR_337559_920605.pdf`)
 
-#### 4.1 Nationwide Ingestion Audit: The Three Modalities of Swiss Parliamentary Data
-A comprehensive binary and typographic audit across all 27 jurisdictional sample files revealed that real-world parliamentary open data in Switzerland does not consist uniformly of clean digital PDFs:
+#### 4.1 Ingestion Audit: Three Document Modalities
+An audit across all 27 jurisdictional sample files revealed that real-world parliamentary open data in Switzerland comprises three distinct document formats:
 
 | Modality Classification | Cantons / Jurisdictions | Share | Technical Characteristics & Extraction Viability |
 |---|---|---|---|
-| **1. Born-Digital Text PDFs** | 23 bodies (CHE, ZH, BE, UR, SZ, NW, GL, ZG, SO, BS, BL, SH, AI, SG, AG, TG, GR, VS, FR, GE, NE, JU, TI) | **85.2%** (23/27) | Contains valid embedded digital font tables (`char_count`: 737 to 41,271 per document). **100% extractable** via Apertus pipeline with verifiable provenance. |
-| **2. Pure Raster Scans** | Canton Obwalden (`OW_339491_925376.pdf`) | **3.7%** (1/27) | 5 pages of pure bitmap images (`1 image/page, 0 text chars`). **100% extractable natively via Apertus 1.5-8B Vision OCR** on CSCS Alps (`image_url` multimodal input), achieving 100% verified citation provenance without third-party OCR tools. |
+| **1. Born-Digital Text PDFs** | 23 bodies (CHE, ZH, BE, UR, SZ, NW, GL, ZG, SO, BS, BL, SH, AI, SG, AG, TG, GR, VS, FR, GE, NE, JU, TI) | **85.2%** (23/27) | Contains digital font tables (`char_count`: 737 to 41,271). Extractable via text-layer parser with page-anchored provenance. |
+| **2. Pure Raster Scans** | Canton Obwalden (`OW_339491_925376.pdf`) | **3.7%** (1/27) | 5 pages of bitmap images (0 text characters). Processed via Apertus 1.5-8B Vision on CSCS Alps (`image_url` input), extracting text with verified page citations. |
 | **3. Disguised Web Portals** | Cantons Lucerne (`LU`), Appenzell Ausserrhoden (`AR`), Vaud (`VD`) | **11.1%** (3/27) | Files named `.pdf` but containing raw `<!DOCTYPE html>` payloads scraped from cantonal consultation webapps and parliament portals. |
 
-- **Disk Footprint:** The entire `track_2a/data/` directory measures **19.78 MB**, remaining well below the strict 100 MB competition limit.
+- **Disk Footprint:** The entire `track_2a/data/` directory measures **19.8 MB**, remaining well below the 100 MB competition limit.
 - **Licensing & Privacy:** All underlying documents are published under **CC-BY 4.0** or official Swiss Open Government Data (OGD) terms. The dataset contains solely public parliamentary records; no private personal information or non-redistributable materials were ingested.
 
 ---
@@ -131,15 +131,15 @@ We evaluated SEVERIN across five Swiss legislative jurisdictions representing al
 2. **Verified Citations**: Exact fraction of verified vs. total citations.
 3. **Round-Trip Latency (seconds)**: End-to-end processing time including PDF parsing, network transport to Lugano, Alps GH200 inference, Pydantic validation, and algorithmic character offset computation.
 4. **Token Usage & Caching**: Total tokens, prompt tokens, completion tokens, and PagedAttention cached tokens.
-5. **Cost (CHF)**: Exact micro-expenditure calculated against official CSCS Alps tariffs.
+5. **Cost (CHF)**: Micro-expenditure calculated against official CSCS Alps tariffs.
 
 ### 5.2 Comparative Results
 
 | Setup / System | Verifiable Provenance Match | Hallucination Rate | Substring Grounding (`char_start`, `char_end`) | Avg. Latency | Cost / Document |
 |---|---|---|---|---|---|
-| Standard LLM Prompting (Baseline) | ~55% – 70% | High (paraphrased quotes, invented co-signatories) | None (unanchored strings) | ~8 – 15s | ~0.002 CHF |
-| Raw Apertus 8B without Verifier | ~80% – 85% | Low-to-Moderate (layout and font artifacts) | None | ~10s | ~0.00012 CHF |
-| **SEVERIN (Apertus 8B + Verifier + Alps)** | **100.0%** | **0.0% (Zero Hallucinations)** | **Full exact character offset grounding** | **6.01s** (3.03s warm) | **0.000039 CHF** |
+| Standard LLM Prompting (Baseline) | ~55% – 70% | High (paraphrased quotes, unstated authors) | None (unanchored strings) | ~8 – 15s | ~0.002 CHF |
+| Raw Apertus 8B without Verifier | ~80% – 85% | Low-to-Moderate (layout artifacts) | None | ~10s | ~0.00012 CHF |
+| **SEVERIN (Apertus 8B + Verifier + Alps)** | **100.0%** | **0.0% (Rule of Absence enforced)** | **Full exact character offset grounding** | **6.01s** (3.03s warm) | **0.000039 CHF** |
 
 ### 5.3 Official Live Cross-Cantonal Benchmark Results (CSCS Alps GH200)
 
@@ -153,9 +153,9 @@ The following table reflects the results generated by `benchmark.py` running aga
 | **TI** | Italian (Svizzera italiana) (IT) | `interpellation` | **100.0%** | 5/5 | 3.029s | 5,051 | 4,544 | `0.000020 CHF` |
 | **GR** | Trilingual (de/it/rm) (DE) | `question` | **100.0%** | 3/3 | 6.030s | 5,820 | 4,832 | `0.000039 CHF` |
 
-- **Average Verifiable Provenance Match:** **100.0%** (27/27 citations verified verbatim nationwide)
+- **Average Verifiable Provenance Match:** **100.0%** (27/27 citations verified verbatim across 5 benchmark documents)
 - **Average Round-Trip Latency:** **6.01s** (down to **3.03s** on prefix-cached inquiries)
-- **Total Cross-Cantonal Benchmark Cost:** **0.000194 CHF** (24,704 tokens served free from GPU cache)
+- **Total Cross-Cantonal Benchmark Cost:** **0.000194 CHF** (24,704 cached tokens billed at 0.00 CHF)
 
 ### 5.4 Demonstration of Value: Answering a Cross-Parliamentary Query Across Linguistic Borders
 A primary deliverable of Track 2A is demonstrating tangible civic value by answering a cross-parliamentary question that is currently impossible to answer reliably across cantons.
@@ -209,37 +209,37 @@ The primary criterion of Track 2A is **Insight**: analyzing where a common schem
 
 ### 6.2 Empirical Case Studies & Discoveries
 
-#### Case Study A: The Inverted Word-Order Discovery in Zurich (`ZH_341002_927679.pdf`)
+#### Case Study A: Inverted Word-Order in Zurich Signature (`ZH_341002_927679.pdf`)
 During benchmark tuning on the Zurich cantonal letter regarding the victim support ordinance (*KOHV*), an unconstrained extraction prompt produced the citation `"Regierungsrätin Jacqueline Fehr"`.
 However, in the physical document on page 2, the formal executive signature block reads:
 ```text
 Jacqueline Fehr
 Regierungsrätin
 ```
-Our algorithmic provenance verifier **strictly rejected the citation as unverified (`not_found`)** because the model inverted the word order relative to the source text.
-> **Insight for the Jury:** This demonstrates the mathematical rigor of SEVERIN's Provenance Verifier. The engine does not act as a lenient rubber stamp; it demands exact character ordering, preventing LLMs from paraphrasing titles, reordering honorifics, or hallucinating syntax.
+The algorithmic provenance verifier **rejected the citation as unverified (`not_found`)** because the model inverted the word order relative to the source text.
+> **Insight:** The provenance verifier requires exact character sequences rather than lenient fuzzy matching, preventing the model from paraphrasing titles, reordering honorifics, or hallucinating syntax.
 
 #### Case Study B: Embedded Font Glyphs in Federal Initiative (`CHE_326604_819055.pdf`)
 In the Federal Popular Initiative «Nein zum F-35», author #2 was activist *Anjuška Weil*. In the source PDF's embedded Type 1 font, the Czech caron glyph `š` was encoded as an invisible ASCII control character `\u0011` (`Weil Anju\u0011ka`).
-Our algorithmic verifier honestly flagged the unnormalized citation as unverified (`13/14 verified, 92.9% match`). By introducing defensive typographic and ligature normalization into `pdf_parser.py`, our pipeline achieved 100% verified provenance grounding while preserving the audit trail of corrupted PDF glyphs.
+Our algorithmic verifier flagged the unnormalized citation as unverified (`13/14 verified, 92.9% match`). By introducing defensive typographic and ligature normalization into `pdf_parser.py`, our pipeline achieved 100% verified provenance grounding while preserving the audit trail of corrupted PDF glyphs.
 
 #### Case Study C: Multilingual JSON Nesting Idiosyncrasies in 8B Models
-During live French (`GE`) and Italian (`TI`) extraction, the 8B model occasionally placed top-level affair fields inside the first author dictionary (`authors[0]`) or flattened question items. Rather than weakening Pydantic's `extra="forbid"` rule (which would allow hallucinations to pass undetected), SEVERIN implements a deterministic **Defensive Normalizer** that hoists misplaced keys and structures question pairs prior to validation. This retains strict schema enforcement without discarding valid model outputs.
+During French (`GE`) and Italian (`TI`) extraction, the 8B model occasionally placed top-level affair fields inside the first author dictionary (`authors[0]`) or flattened question items. Rather than weakening Pydantic's `extra="forbid"` rule (which would allow hallucinations to pass undetected), SEVERIN implements a deterministic **Defensive Normalizer** that hoists misplaced keys and structures question pairs prior to validation. This retains strict schema enforcement without discarding valid model outputs.
 
 #### Case Study D: The "Ghost PDF" Phenomenon in OpenParlData (LU, AR, VD & OW)
-A qualitative breakthrough emerged from our empirical validation across all 27 jurisdictional test files: **14.8% of cantonal records (4/27) cannot be processed by a pure text-layer PDF pipeline**:
-1. **The Inverted Blueprint Barrier Conquered Sovereignly via Apertus Vision (Canton Obwalden, `OW_339491_925376.pdf`)**:
+An empirical audit across all 27 jurisdictional test files showed that **14.8% of cantonal records (4/27) cannot be processed by a pure text-layer PDF pipeline**:
+1. **Technical Drawing Raster Scans (Canton Obwalden, `OW_339491_925376.pdf`)**:
    - `OW` provided a 5-page PDF containing exclusively full-page raster scans (`images: 1 per page`, `char_count: 0`).
-   - *Empirical Forensic Discovery:* Visual inspection revealed that the document is not a typed legislative debate, but a **180-degree inverted civil engineering blueprint** (*Situationsplan 1:2'000*) featuring Swiss LV95 cadastral coordinate axes (`2 567 000` / `2 690 500`), topographic aerial orthophoto maps (*Orthophoto 2019 © GIS Daten AG*), and civil road profiles (*Profil 51–54: Älggi Parkplatz bis Furt Älggibach 410 m*). This technical drawing accompanied a cantonal road rehabilitation contribution (*Kantonsbeitrag an Sanierung Älggistrasse in Sachseln*).
-   - *Initial Risk:* Standard PDF parsers extract 0 text characters. Invoking language models on blank text causes extreme stochastic hallucinations (inventing non-existent motions, dates, and politicians from file names).
-   - *Sovereign Multimodal Resolution:* Rather than introducing non-sovereign third-party OCR engines (e.g. Google Cloud Vision or Tesseract), SEVERIN routes zero-text documents through **Swiss-AI Apertus 1.5-8B as its own native Vision OCR engine** on CSCS Alps. Despite the 180-degree inverted orientation, Apertus's vision encoder parsed the blueprint's title block (*Plankopf*) and engineering measures table (*Massnahmen 1-54*), recovering 7,867 characters across all 5 pages.
-   - *Conservative Zero-Hallucination Behavior:* The downstream extraction pipeline cleanly classified the document as `affair_type: other` (*Administrative / Technical Annex*), correctly reporting 0 parliamentary questions and 0 fabricated financial appropriations (*Rule of Absence*). All extracted entities (Title, Client *Korporation Sachseln*, and Civil Engineer *Adrian von Moos, dipl. Forsting. ETH*) achieved **100% verified citation provenance (3/3 verified, score = 1.0)** anchored directly to the Page 1 blueprint header.
-2. **The Disguised Web Portals (Cantons LU, AR, VD)**:
+   - *Document Analysis:* Visual inspection revealed that the document is a **180-degree inverted civil engineering blueprint** (*Situationsplan 1:2'000*) with cadastral coordinate axes, topographic maps, and civil road profiles for a cantonal road rehabilitation contribution (*Kantonsbeitrag an Sanierung Älggistrasse in Sachseln*).
+   - *Handling Zero-Text Documents:* Standard PDF text parsers extract 0 characters from scanned raster pages. Querying language models with empty text can lead to hallucinations based on file names alone.
+   - *Multimodal Vision Processing:* Zero-text documents are routed through Apertus 1.5-8B Vision on CSCS Alps (`image_url` input). Apertus transcribed the title block (*Plankopf*) and engineering measures table (*Massnahmen 1-54*), recovering 7,867 characters across all 5 pages.
+   - *Extraction Results:* The downstream extraction pipeline classified the document as `affair_type: other` (*Administrative / Technical Annex*), reporting 0 parliamentary questions and 0 unstated financial appropriations in accordance with the Rule of Absence. All extracted entities (Title, Client *Korporation Sachseln*, and Civil Engineer *Adrian von Moos, dipl. Forsting. ETH*) achieved **100% verified citation provenance (3/3 verified, score = 1.0)** anchored directly to the Page 1 blueprint header.
+2. **Disguised Web Portals (Cantons LU, AR, VD)**:
    - In 3 out of 27 cases (11.1%), the scraped files with a `.pdf` extension actually begin with `<!DOCTYPE html>`:
-     - **LU (`LU_339324_924638.pdf`)**: A cantonal *Vernehmlassungsverfahren* web form with interactive submission fields (`Angaben zur Person`, questionnaire options) rather than the draft bill itself.
-     - **AR (`AR_340850_927539.pdf`)**: A Single Page Application (SPA) shell containing only React/webpack bootstrapping scripts (`npm start` boilerplate, 135 visible characters).
-     - **VD (`VD_341097_927589.pdf`)**: A Grand Conseil parliamentary debate page containing ~99,500 characters of live debate transcripts and audio links, which was erroneously scraped under an affair title regarding external IT consultants (DRUIDE directive).
-   - *System Response & Ethical Grounding:* Serving these files as `application/pdf` caused Chrome's built-in PDF viewer to crash with `"Failed to load PDF document"`. SEVERIN's backend (`src/server.py`) inspects file headers for the `%PDF-` signature and strictly rejects non-PDF payloads with an explicit `HTTP 422 Unprocessable Entity`. The React civic explorer cleanly renders a native, dark-mode **"Not a PDF Document"** portal notice card with direct links to the official cantonal portal, fully satisfying the competition requirement to *"clearly distinguish extracted content from generated/inferred content; where information can't be reliably extracted, make that transparent rather than guess"*.
+     - **LU (`LU_339324_924638.pdf`)**: A cantonal *Vernehmlassungsverfahren* web form with interactive submission fields rather than the draft bill itself.
+     - **AR (`AR_340850_927539.pdf`)**: A Single Page Application (SPA) shell containing React/webpack bootstrapping scripts (135 visible characters).
+     - **VD (`VD_341097_927589.pdf`)**: A Grand Conseil parliamentary debate page containing ~99,500 characters of debate transcripts and audio links, which was scraped under an affair title regarding external IT consultants (DRUIDE directive).
+   - *System Handling:* Serving HTML payloads as `application/pdf` causes browser PDF viewers to fail. SEVERIN's backend (`src/server.py`) inspects file headers for the `%PDF-` magic bytes and returns `HTTP 422 Unprocessable Entity` for non-PDF payloads. The web UI displays a "Not a PDF Document" notice card with direct links to the official cantonal portal, fulfilling the competition requirement to make unextractable content transparent rather than guessing.
 
 ### 6.3 Technical Limitations & Production Boundaries
 To ensure scientific integrity and provide OpenParlData with an honest deployment roadmap, we document three fundamental technical boundaries:
@@ -261,7 +261,7 @@ To ensure scientific integrity and provide OpenParlData with an honest deploymen
 
 ## 7. Reproducibility
 
-SEVERIN is engineered for 100% turnkey reproducibility on a clean machine via Docker and a single `make run` command.
+SEVERIN is configured for reproducibility via Docker with a single `make run` command.
 
 ### 7.1 System Requirements
 - **Docker & Docker Compose**: Docker 24.0+ and Compose v2.

@@ -51,17 +51,14 @@ make test
 
 ---
 
-## ⚖️ Scientific Integrity & Key Metrics
+## ⚖️ Verification & Key Metrics
 
-- **Zero Hallucination Mandate**: Deterministic inference (`temperature=0.0`) and algorithmic character offset provenance verification (`char_start`, `char_end`) against physical PDF pages.
-- **National Verification Score**: **100.0%** verifiable citation accuracy (27/27 citations verified verbatim nationwide across DE, FR, IT, and RM).
-- **Economic Feasibility**: Leveraging CSCS Alps PagedAttention prefix caching reduces warm inference cost to **0.000020 – 0.000039 CHF** per document.
+- **Conservative Extraction**: Deterministic inference (`temperature=0.0`), Rule of Absence (`null` for unstated entities), and algorithmic offset verification (`char_start`, `char_end`) against physical PDF pages.
+- **Benchmark Provenance Accuracy**: **100.0%** (27/27 citations verified verbatim across 5 multilingual benchmark documents: CHE, ZH, GE, TI, GR).
+- **Cost & Latency**: Hardware prefix caching (vLLM PagedAttention on CSCS Alps) reduces warm inference latency to **~3.0s** and cost to **~0.000020 – 0.000039 CHF** per document.
 
 ---
 
-## 📜 Submission & Licensing
+## 📜 License
 
-- **Submission Portal**: [hackapertus.ch/online-hack/submissions](https://hackapertus.ch/online-hack/submissions)
-- **License**: Creative Commons Attribution 4.0 International (**CC-BY 4.0**).
-- **Terms & FAQ**: [hackapertus.ch/terms-and-conditions](https://hackapertus.ch/terms-and-conditions) • [hackapertus.ch/faq](https://hackapertus.ch/faq)
-- **Contact**: hello@hackapertus.ch
+This project is licensed under the **Creative Commons Attribution 4.0 International (CC-BY 4.0)** license.

@@ -12,15 +12,15 @@
 
 ---
 
-## 🇨🇭 Overview
+## Overview
 
-Switzerland's three-tier federal democracy (Federal Assembly, 26 Cantonal Parliaments, and hundreds of Municipal Councils) produces ~300,000 parliamentary affairs across four national languages (DE, FR, IT, RM). While [OpenParlData](https://openparldata.ch) indexes high-level titles and metadata, the critical substance — **exact questions, government rationale, financial credit appropriations, and decisions** — remains trapped inside heterogeneous, often scanned PDF documents.
+Switzerland's parliamentary system (Federal Assembly, 26 Cantonal Parliaments, and Municipal Councils) produces ~300,000 parliamentary affairs across four national languages (DE, FR, IT, RM). While [OpenParlData](https://openparldata.ch) indexes titles and filing metadata, substantive details — **questions, government replies, financial credit amounts, and procedural decisions** — are contained within PDF documents.
 
-**SEVERIN** provides an end-to-end, production-grade extraction and verification system:
-1. **Unified Semantic Model**: A Pydantic v2 schema (`ParliamentaryAffair`) acting as a domain-specific middle-layer (comparable to JATS for scientific papers), mapped to *Popolo* and *Akoma Ntoso*.
-2. **Zero-Hallucination Apertus Pipeline**: Conservative extraction using the sovereign Swiss model **`swiss-ai/Apertus-v1.5-8B`** hosted on the **CSCS Alps supercomputer** (NVIDIA GH200) with strictly locked `temperature=0.0`.
-3. **Algorithmic Provenance Verification**: Every extracted fact includes physical PDF page numbers and exact quotes, mathematically grounded to character offsets (`char_start`, `char_end`) to guarantee zero hallucinations.
-4. **Interactive Full-Stack Platform**: A dual-action React 19 UI with embedded PDF viewer, raw page text, extracted visual cards, and live CSCS micro-CHF cost telemetry.
+**SEVERIN** is an extraction and verification pipeline built for Track 2A:
+1. **Unified Semantic Model**: A Pydantic v2 schema (`ParliamentaryAffair`) serving as an intermediate layer (comparable to JATS for parliamentary affairs), mapped conceptually to *Popolo* and *Akoma Ntoso*.
+2. **Conservative Extraction Pipeline**: Structured output using **`swiss-ai/Apertus-v1.5-8B`** on the **CSCS Alps supercomputer** (NVIDIA GH200) at `temperature=0.0` with the Rule of Absence (`null` for unstated entities).
+3. **Provenance Verification**: Anchors extracted fields to 1-indexed physical page numbers and verbatim quotes, calculating character offsets (`char_start`, `char_end`) against the source PDF.
+4. **Web Interface**: React 19 single-page application with split-view PDF/text viewer, extracted affair data, citation verification indicators, and live CSCS token and cost telemetry.
 
 ---
 
@@ -81,23 +81,22 @@ Evaluated across all Swiss linguistic regions on real-world cantonal and federal
 | **TI** | Ticino / Svizzera italiana (IT) | `interpellation` | **100.0%** | 5/5 | 3.03s | 5,051 | `0.000020` |
 | **GR** | Graubünden / Trilingual (DE/IT/RM) | `question` | **100.0%** | 3/3 | 6.03s | 5,820 | `0.000039` |
 
-- **Average Verifiable Provenance Match**: **100.0%** (27/27 citations mathematically verified verbatim against physical PDF pages)
-- **Average Round-Trip Latency**: **6.01s**
-- **Cumulative Evaluation Cost**: **0.000194 CHF** across all 5 test jurisdictions (~0.000039 CHF per affair with Alps GH200 prefix cache hits).
-- **Economic Feasibility**: Alps GH200 PagedAttention prefix cache serves ~4,200 prompt tokens for free, projecting to **< 20 CHF** for the entire 300,000 OpenParlData corpus.
+- **Provenance Accuracy**: **100.0%** (27/27 citations verified verbatim on physical PDF pages across the 5 benchmark documents).
+- **Average Latency**: **6.01s** (down to **3.03s** on warm cache calls).
+- **Benchmark Cost**: **0.000194 CHF** across all 5 benchmark targets (~0.000039 CHF per document).
+- **Prefix Caching**: CSCS Alps vLLM PagedAttention automatically caches ~4,500–5,300 prompt tokens (billed at 0.00 CHF under CSCS Academia pricing).
 
 ### 📂 Dataset Structure & Runtime Artifacts
 
-The repository bundles all necessary data offline under `track_2a/data/` (**19.78 MB**, well below the competition's 100 MB ceiling):
+Data files are located under `track_2a/data/` (**19.8 MB** total, within the 100 MB limit):
 
-- **`data/sample_pdfs/` (19.4 MB)**: **27 curated nationwide PDF samples** covering all 26 Swiss cantons plus the Federal Assembly (`CHE`) across all 4 national languages (DE, FR, IT, RM). These documents are bundled offline so no external downloads are required during evaluation. All 27 documents are interactively browsable and extractable in the web UI.
-- **`data/benchmark_cache/` (<1 MB)**: Authentic model extraction responses for the 5 core cross-cantonal targets (CHE, ZH, GE, TI, GR). These JSON files enable transparent **offline dry-run verification** on machines without CSCS API access.
-- **Runtime Benchmark Outputs (`make run`)**:
-  When `make run` executes with a valid `CSCS_INFERENCE_API_KEY`, it dispatches 5 live requests to the CSCS Alps GH200 supercomputer and persists the latest evaluation metrics directly to `track_2a/data/`:
-  - `data/benchmark_results.json`: Detailed machine-readable metrics (latency, token counts, exact citation matches).
-  - `data/benchmark_summary.md`: Auto-generated summary table with verification percentages.
-  - `data/telemetry.json`: Persistent audit log of CSCS inference requests and micro-CHF expenditure.
-  - `data/benchmark_cache/*.pdf.json`: Fresh model completion cache updated with the latest inference run.
+- **`data/sample_pdfs/` (19.7 MB)**: 27 sample PDFs covering all 26 Swiss cantons and the Federal Assembly (`CHE`) across German, French, Italian, and Romansh, bundled for offline evaluation and UI inspection.
+- **`data/benchmark_cache/` (<1 MB)**: Authentic model outputs for the 5 benchmark targets (CHE, ZH, GE, TI, GR), used for offline dry-run testing when no CSCS API key is present.
+- **Benchmark Artifacts**:
+  Generated by `make run` or `benchmark.py`:
+  - `data/benchmark_results.json`: Machine-readable results (latency, tokens, citation matches).
+  - `data/benchmark_summary.md`: Markdown summary table.
+  - `data/telemetry.json`: Log of CSCS API requests, token counts, and cost.
 
 ---
 
@@ -167,10 +166,10 @@ uvicorn src.server:app --port 8000 --reload
 
 ---
 
-## ⚖️ Hackathon Compliance & Integrity
+## ⚖️ Compliance & Integrity
 
-- **Target LLM**: Strictly `swiss-ai/Apertus-v1.5-8B` via CSCS Alps endpoint `https://api.inference.cscs.ch/v1` (Rule 5).
-- **Zero Hallucination Mandate**: Inference temperature locked to `temperature=0.0`; all fields require physical page and verbatim quotation provenance.
-- **Scientific Honesty**: Strict prohibition of deceptive fallbacks; offline dry-run mode explicitly labeled (`Mode: OFFLINE DRY-RUN`).
-- **Data Size Limit**: `track_2a/data/` measures **19.78 MB**, well below the competition's 100 MB hard ceiling.
+- **Model & Endpoint**: `swiss-ai/Apertus-v1.5-8B` via CSCS Alps (`https://api.inference.cscs.ch/v1`).
+- **Deterministic Extraction**: `temperature=0.0`, schema validation via Pydantic v2, and mandatory page-anchored provenance.
+- **Transparent Execution**: Offline dry-run mode is explicitly labeled (`Mode: OFFLINE DRY-RUN`) and validates citations against physical PDF pages without synthetic mock data.
+- **Data Size**: `track_2a/data/` is **19.8 MB** (within the 100 MB competition ceiling).
 - **License**: Creative Commons Attribution 4.0 International (**CC-BY 4.0**).
